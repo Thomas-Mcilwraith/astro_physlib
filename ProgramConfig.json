@@ -1,0 +1,11 @@
+{
+    "test-program": {
+        "name": "Test Program",
+        "infoFile": "../assets/source-code/test-program/test.md",
+        "codeFile": "../assets/source-code/test-program/test.c",
+        "headerFile": "../assets/source-code/test-program/test.h",
+        "inputFile": null,
+        "outputFile": null,
+        "importList": []
+    }
+}
