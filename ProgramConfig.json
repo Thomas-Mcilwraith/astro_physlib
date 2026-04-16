@@ -1,9 +1,9 @@
 {
     "test-program": {
         "name": "Test Program",
-        "infoFile": "../assets/source-code/test-program/test.md",
-        "codeFile": "../assets/source-code/test-program/test.c",
-        "headerFile": "../assets/source-code/test-program/test.h",
+        "infoFile": "pages/orbit-dynamics/test-program/test.md",
+        "codeFile": "src/c/orbit-dynamics/test-program/test.c",
+        "headerFile": "src/c/orbit-dynamics/test-program/test.h",
         "inputFile": null,
         "outputFile": null,
         "importList": []
