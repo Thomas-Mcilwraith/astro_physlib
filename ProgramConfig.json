@@ -1,11 +1,31 @@
 {
-    "test-program": {
-        "name": "Test Program",
-        "infoFile": "pages/orbit-dynamics/test-program/test.md",
-        "codeFile": "src/c/orbit-dynamics/test-program/test.c",
-        "headerFile": "src/c/orbit-dynamics/test-program/test.h",
-        "inputFile": null,
-        "outputFile": null,
-        "importList": []
+    "orbit-dynamics": {
+        "prettyName": "Orbit Dynamics",
+        "test-library": {
+            "prettyName": "Test Library",
+            "infoFile": "media/orbit-dynamics/test-library/test.md",
+            "test-program": {
+                "prettyName": "Test Program",
+                "infoFile": "media/orbit-dynamics/test-program/test.md",
+                "codeFile": "src/c/orbit-dynamics/test-program/test.c",
+                "headerFile": "src/c/orbit-dynamics/test-program/test.h",
+                "inputFile": null,
+                "outputFile": null,
+                "importList": []
+            }
+        },
+        "another-test-library": {
+            "prettyName": "Another Really Really Really long TestLibrary",
+            "infoFile": "media/orbit-dynamics/another-test-library/test.md",
+            "test-program": {
+                "prettyName": "Test Program2",
+                "infoFile": "media/orbit-dynamics/test-program/test.md",
+                "codeFile": "src/c/orbit-dynamics/test-program/test.c",
+                "headerFile": "src/c/orbit-dynamics/test-program/test.h",
+                "inputFile": null,
+                "outputFile": null,
+                "importList": []
+            }
+        }
     }
 }
