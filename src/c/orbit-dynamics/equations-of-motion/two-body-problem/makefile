@@ -1,36 +1,40 @@
-# Compiler
+# ---- GLOBAL VARS [NEVER CHANGE] --------------------------------------------
 CC = gcc
 
-# Compiler Inlclude flags
 INCLUDES = -I. \
 		   -I../../../.
 
-# Flags
 CFLAGS = -Wall -Wextra -std=c11 $(INCLUDES)
 LDFLAGS = -lm
 
-# Source files
+BUILD_DIR = ../../../../../build
+OBJ_DIR = $(BUILD_DIR)/obj
+BIN_DIR = $(BUILD_DIR)/bin
+# ----------------------------------------------------------------------------
+
+
+# --- PROGRAM CONFIG [MUST UPDATE THESE] -------------------------------------
 SRC = two_body_problem.c \
       ../../../utilities/logging/log/log.c \
       ../../../mathematics-library/linear-algebra/matrix-operations/matrix_operations.c
 
-# Object files
-OBJ = $(SRC:.c=.o)
+TARGET = $(BIN_DIR)/two_body_problem
+# ----------------------------------------------------------------------------
 
-# Output executable
-TARGET = two_body_problem
 
-# Default target
+# --- BUILD [NEVER CHANGE] --------------------------------------------------
+OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
+
 all: $(TARGET)
 
-# Link
 $(TARGET): $(OBJ)
+	mkdir -p $(BIN_DIR)
 	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-# Compile
-%.o: %.c
+$(OBJ_DIR)/%.o: %.c
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -rf $(BUILD_DIR)
+# ----------------------------------------------------------------------------
