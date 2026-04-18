@@ -32,7 +32,7 @@ int two_body_problem(double out_acc[3],
     // Local variables
     int status = 0;
     double r_norm, r_direction_vec[3];
-    double intermediate_value;
+    double mu_over_r_squared;
 
     r_norm = vec3_norm(pos);
     status = vec3_unit(r_direction_vec, pos);
@@ -43,17 +43,27 @@ int two_body_problem(double out_acc[3],
 
     // Since mu*(1/r_norm^2) is constant for every element, we compute it once
     // and store it to avoid recomputing it
-    intermediate_value = - *mu / (r_norm * r_norm);
+    mu_over_r_squared = - *mu / (r_norm * r_norm);
 
-    out_acc[0] = r_direction_vec[0] * intermediate_value;
-    out_acc[1] = r_direction_vec[1] * intermediate_value;
-    out_acc[2] = r_direction_vec[2] * intermediate_value;
+    out_acc[0] = r_direction_vec[0] * mu_over_r_squared;
+    out_acc[1] = r_direction_vec[1] * mu_over_r_squared;
+    out_acc[2] = r_direction_vec[2] * mu_over_r_squared;
 
     return status;
 }
 
 /**
- * TODO: Add generation of ephemeris file.
+ * Example use case of two_body_problem.c.
+ *
+ * Generation of a Ephemeris (trajectory) file for an object experiencing
+ * un-perturbed keplerian motion.
+ *
+ * 1.  Load Initial Conditions (state vector and timespan)
+ * 2.  Compute Acceleration
+ * 2a.   Integrate using RK4 to generate the state vector at the next time
+ * 2b.   If t < tf, repeat from step 2a
+ * 2c.   If t >= tf, exit
+ * 3.  Generate the Ephemeris file for this trajectory
  */
 int main(int argc, char *argv[]) {
 
