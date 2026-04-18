@@ -2,16 +2,8 @@
  * two_body_problem.c
  *
  * Author: Thomas McIlwraith
+ * Date: 18/04/2026
  * url: /orbit-dynamics/equations-of-motion/two-body-problem/two_body_problem.c
- *
- * Description:
- *   The function two_body_problem() computes the accelation of a point mass
- *   orbiting a central mass assuming that both masses are point masses and m1
- *   << m2, where m1 is the mass of the satellite and m2 is the mass of the
- *   central body.
- *   
- *   It is important to remember that this equation IS ONLY VALID FOR INERTIAL
- *   FRAMES.
  */
 
 #include "two_body_problem.h"
@@ -90,7 +82,6 @@ int main(int argc, char *argv[]) {
     vel[1] = strtod(argv[6], NULL);
     vel[2] = strtod(argv[7], NULL);
 
-    printf("mu = %f\n", mu);
     LOG("INFO", "mu = %f", mu);
     LOG("INFO", "pos = (%f, %f, %f)", pos[0], pos[1], pos[2]);
     LOG("INFO", "vel = (%f, %f, %f)", vel[0], vel[1], vel[2]);

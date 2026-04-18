@@ -2,13 +2,8 @@
  * log.c
  * 
  * Author: Thomas McIlwraith
+ * Date: 18/04/2026
  * url: /utilities/logging/log/log.c
- *
- * Description:
- *    Everything related to logging the progress/status of the programs is
- *    here. The main function is logger(), you will notice that it is called
- *    via the macro LOG() in all functions to avoid passing the __FILE__ and
- *    __LINE__ macros to the logger function every time.
  */
 
 #include "log.h"

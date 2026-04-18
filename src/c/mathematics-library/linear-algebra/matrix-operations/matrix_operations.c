@@ -2,10 +2,8 @@
  * matrix_operations.c
  * 
  * Author: Thomas McIlwraith
+ * Date: 18/04/2026
  * url: /mathematics-library/linear-algebra/matrix-operations/matrix_operations.c
- *
- * Description:
- *   Library of operations that can be performed on vectors and matrices.
  */
 
 #include "matrix_operations.h"
