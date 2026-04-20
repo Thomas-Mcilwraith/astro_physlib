@@ -21,7 +21,8 @@ void logger(
         const char* filepath,
         const int line,
         const char* lvl,
-        const char* fmt, ...){
+        const char* fmt,
+        ...){
     // Local variables
     time_t now = time(NULL);
     long elapsed = (long)difftime(now, start_time);
@@ -40,11 +41,11 @@ void logger(
     filename = (filename) ? filename + 1 : filepath;
 
     if (strcmp(lvl, "INFO") == 0) {
-        printf("%s:%s [%s]", mins, secs, lvl);
+        printf("%s:%s [%s] ", mins, secs, lvl);
         vprintf(fmt, args);
         printf("\n");
     } else {
-        printf("%s:%s [%s] [%s ln%d]", mins, secs, lvl, filename, line);
+        printf("%s:%s [%s] [%s ln%d] ", mins, secs, lvl, filename, line);
         vprintf(fmt, args);
         printf("\n");
     }
