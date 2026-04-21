@@ -27,24 +27,22 @@ double vec3_dot(const double v[3], const double w[3]){
  *
  * Raise an error if input vector is of length 0.
  */
-int vec3_unit(double out_unit[3],
+StatusCode vec3_unit(double out_unit[3],
         const double v[3]){
 
     // Local variables
-    int status = 0;
     double norm = vec3_norm(v);
 
     if (norm == 0.0) {
-        status = 1;
         LOG("ERROR", "Tried to compute direction of 0 length vector");
-        return status;
+        return ERROR;
     }
 
     out_unit[0] = v[0] / norm;
     out_unit[1] = v[1] / norm;
     out_unit[2] = v[2] / norm;
 
-    return status;
+    return OK;
 }
 
 

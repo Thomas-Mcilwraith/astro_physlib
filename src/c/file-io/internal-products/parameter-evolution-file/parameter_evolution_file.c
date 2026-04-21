@@ -8,14 +8,20 @@
 
 #include "parameter_evolution_file.h"
 
-int write_parameter_evolution_file(
+/**
+ * See two_body_problem.h for IO description.
+ * 
+ * Files are written with a fixed col with, see header file.
+ * All Parameter evolutions must have the same number of data points, or else
+ * the write will raise an error.
+ */
+StatusCode write_parameter_evolution_file(
         // Inputs
         const char* filename,
         const ParameterEvolution* params,
         const int n_params){
 
     // Local variables
-    int status = 0;
     int i, j;
     char name_units[CHARS_PER_WORD];
 
@@ -24,31 +30,28 @@ int write_parameter_evolution_file(
         if (params[i].n_values != params[0].n_values) {
             LOG("ERROR",
                     "All arrays written to a .pef must have the same length");
-            return 1;
+            return ERROR;
         }
     }
 
-    FILE* fp = fopen(filename, "w");
+    // Open the file in append mode
+    FILE* fp = fopen(filename, "a");
     if (fp == NULL){
-        status = 1;
         LOG("ERROR", "Failed to open file %s", filename);
-        return status;
+        return ERROR;
     }
 
-    // At this point, the amount of params is known, so dynamically allocate
-    // space for the parameters and their arrays of length num_entries
-    const char **names = malloc(n_params * sizeof(char *));
-    double **arrays = malloc(n_params * sizeof(double *));
-
+    // Write the header line - params are in the format VAR_NAME~m/s^2
     for (i = 0; i < n_params; i++) {
         // first, format the name and units
         strcpy(name_units, params[i].name);
-        strcat(name_units, "~");
+        strcat(name_units, VAR_UNITS_SEPARATOR);
         strcat(name_units, params[i].units);
         fprintf(fp, "%-*s", CHARS_PER_WORD, name_units);
     }
     fprintf(fp, "\n");
 
+    // Write the data line(s)
     for (j = 0; j < params[0].n_values; j++) {
         for (i = 0; i < n_params; i++) {
             fprintf(fp, "%-*.*e",
@@ -56,10 +59,9 @@ int write_parameter_evolution_file(
         }
         fprintf(fp, "\n");
     }
-        
+
     fclose(fp);
-    
-    return status;
+    return OK;
 }
 
 int main(){

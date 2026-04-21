@@ -11,14 +11,15 @@
 // Variable and Macro definitions
 #define CHARS_PER_WORD 22        // Formatting
 #define WORD_PRECISION 8
+#define VAR_UNITS_SEPARATOR "~"
 
-#define ACC "acc"                // Accepted variable names in header
-#define ACC_X "acc_x"            // MUST NEVER BE LONGER THAN 10 CHARS
-#define ACC_Y "acc_y"
-#define ACC_Z "acc_z"
-#define ALT "alt"
-#define RHO "rho_alt_x"
-#define QUAT "quat"
+#define ACC "ACC"                // Accepted variable names in header
+#define ACC_X "ACC_X"            // MUST NEVER BE LONGER THAN 10 CHARS
+#define ACC_Y "ACC_Y"
+#define ACC_Z "ACC_Z"
+#define ALT "ALT"
+#define RHO "RHO"
+#define QUAT "QUAT"
 
 #define KM "km"                  // Accepted units in header
 #define M "m"                    // MUST NEVER BE LONGER THAN 10 CHARS
@@ -50,5 +51,19 @@ typedef struct {
 } ParameterEvolution;
 
 // Function prototypes
+
+/**
+ * @brief
+ * Write an array of Parameter evolution arrays to a file.
+ * 
+ * @param filename The path of the file to write to.
+ * @param params Array pointer to a list of parameter evolutions.
+ * @param n_params length of params.
+ */
+StatusCode write_parameter_evolution_file(
+        // Inputs
+        const char* filename,
+        const ParameterEvolution* params,
+        const int n_params);
 
 #endif

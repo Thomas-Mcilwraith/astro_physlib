@@ -27,8 +27,9 @@
  *
  * @return 0 if the calculation was successful, 1 otherwise.
  */
-int two_body_problem(double out_acc[3],
-        const double *mu,
-        const double pos[3]);
+StatusCode two_body_problem(double out_acc[3],
+        const double pos[3],
+        const double mu
+);
 
 #endif

@@ -16,30 +16,30 @@
  * out_acc will have the same spatial units as pos.
  *   (ie pos[km] -> out_acc[km/s^2])
  */
-int two_body_problem(double out_acc[3],
+StatusCode two_body_problem(double out_acc[3],
         // Inputs
-        const double *mu,
-        const double pos[3]){
+        const double pos[3],
+        const double mu){
 
     // Local variables
-    int status = 0;
+    StatusCode status = OK;
     double r_norm, r_direction_vec[3];
     double mu_over_r_squared;
 
     r_norm = vec3_norm(pos);
     status = vec3_unit(r_direction_vec, pos);
-    if (status != 0){
-        LOG("ERROR", "Failed to compute direction of r");
+    if (status != OK){
+        LOG("ERROR", "Failed to compute direction of position vector");
         return status;
     }
 
     // Since mu*(1/r_norm^2) is constant for every element, we compute it once
     // and store it to avoid recomputing it
-    mu_over_r_squared = - *mu / (r_norm * r_norm);
+    mu_over_r_squared = mu / (r_norm * r_norm);
 
-    out_acc[0] = r_direction_vec[0] * mu_over_r_squared;
-    out_acc[1] = r_direction_vec[1] * mu_over_r_squared;
-    out_acc[2] = r_direction_vec[2] * mu_over_r_squared;
+    out_acc[0] = - mu_over_r_squared * r_direction_vec[0];
+    out_acc[1] = - mu_over_r_squared * r_direction_vec[1];
+    out_acc[2] = - mu_over_r_squared * r_direction_vec[2];
 
     return status;
 }
@@ -60,20 +60,20 @@ int two_body_problem(double out_acc[3],
 int main(int argc, char *argv[]) {
 
     // Local variables
-    int status = 0;
+    StatusCode status = OK;
     double mu = 0.0;
     double pos[3], vel[3], acc[3];
 
-    // Initialise the log.
+    // Initialise the log
     init_log();
 
+    // Parse CLI arguments
     if (argc - 1 != TWO_BODY_PROBLEM_C_NARGS) {
-        int status = 1;
+        status = ERROR;
         LOG("ERROR", "Incorrect program arguments");
         LOG("INFO", "Required Args: <mu> <r1> <r2> <r3> <v1> <v2> <v3>");
         return status;
     }
-
     mu = strtod(argv[1], NULL);
     pos[0] = strtod(argv[2], NULL);
     pos[1] = strtod(argv[3], NULL);
@@ -86,13 +86,13 @@ int main(int argc, char *argv[]) {
     LOG("INFO", "pos = (%f, %f, %f)", pos[0], pos[1], pos[2]);
     LOG("INFO", "vel = (%f, %f, %f)", vel[0], vel[1], vel[2]);
 
-    status = two_body_problem(acc, &mu, pos);
+    status = two_body_problem(acc, pos, mu);
     if (status != 0){
-        LOG("ERROR", "Failed to compute a");
+        LOG("ERROR", "Failed to compute Two Body acceleration");
         return status;
     }
 
     LOG("INFO", "acc = (%f, %f, %f)", acc[0], acc[1], acc[2]);
 
-    return 0;
+    return OK;
 }

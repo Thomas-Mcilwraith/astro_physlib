@@ -4,7 +4,7 @@ CC = gcc
 INCLUDES = -I. \
 		   -I../../../.
 
-CFLAGS = -Wall -Wextra -std=c11 $(INCLUDES)
+CFLAGS = -Wall -Wextra -Werror -std=c11 $(INCLUDES)
 LDFLAGS = -lm
 
 BUILD_DIR = ../../../../../build
