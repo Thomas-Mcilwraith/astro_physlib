@@ -16,15 +16,19 @@
  * out_acc will have the same spatial units as pos.
  *   (ie pos[km] -> out_acc[km/s^2])
  */
-StatusCode two_body_problem(double out_acc[3],
+StatusCode two_body_problem(double out_du[6],
         // Inputs
-        const double pos[3],
-        const double mu){
+        const double u[6],
+        const double t,
+        void* params){
 
     // Local variables
     StatusCode status = OK;
+    TwoBodyProblemParams* p = (TwoBodyProblemParams*) params;
     double r_norm, r_direction_vec[3];
     double mu_over_r_squared;
+    double pos[3] = {u[0], u[1], u[2]};
+    (void) t;
 
     r_norm = vec3_norm(pos);
     status = vec3_unit(r_direction_vec, pos);
@@ -35,11 +39,14 @@ StatusCode two_body_problem(double out_acc[3],
 
     // Since mu*(1/r_norm^2) is constant for every element, we compute it once
     // and store it to avoid recomputing it
-    mu_over_r_squared = mu / (r_norm * r_norm);
+    mu_over_r_squared = p->mu / (r_norm * r_norm);
 
-    out_acc[0] = - mu_over_r_squared * r_direction_vec[0];
-    out_acc[1] = - mu_over_r_squared * r_direction_vec[1];
-    out_acc[2] = - mu_over_r_squared * r_direction_vec[2];
+    out_du[0] = u[3];
+    out_du[1] = u[4];
+    out_du[2] = u[5];
+    out_du[3] = - mu_over_r_squared * r_direction_vec[0];
+    out_du[4] = - mu_over_r_squared * r_direction_vec[1];
+    out_du[5] = - mu_over_r_squared * r_direction_vec[2];
 
     return status;
 }
@@ -61,11 +68,24 @@ int main(int argc, char *argv[]) {
 
     // Local variables
     StatusCode status = OK;
+    TwoBodyProblemParams params;
+    func ode = two_body_problem;
     double mu = 0.0;
-    double pos[3], vel[3], acc[3];
+    double state0[6], state1[6];
+    double t0 = 0.0;
+    double tf = 5400.0;
+    double t = t0;
+    int n_steps = 1000;
+    double dt;
 
     // Initialise the log
     init_log();
+
+    dt = (tf - t0) / n_steps;
+
+    // Since we know the n_steps, define the solutions
+    double r0s[n_steps], r1s[n_steps], r2s[n_steps];
+    double v0s[n_steps], v1s[n_steps], v2s[n_steps];
 
     // Parse CLI arguments
     if (argc - 1 != TWO_BODY_PROBLEM_C_NARGS) {
@@ -75,24 +95,66 @@ int main(int argc, char *argv[]) {
         return status;
     }
     mu = strtod(argv[1], NULL);
-    pos[0] = strtod(argv[2], NULL);
-    pos[1] = strtod(argv[3], NULL);
-    pos[2] = strtod(argv[4], NULL);
-    vel[0] = strtod(argv[5], NULL);
-    vel[1] = strtod(argv[6], NULL);
-    vel[2] = strtod(argv[7], NULL);
+    state0[0] = strtod(argv[2], NULL);
+    state0[1] = strtod(argv[3], NULL);
+    state0[2] = strtod(argv[4], NULL);
+    state0[3] = strtod(argv[5], NULL);
+    state0[4] = strtod(argv[6], NULL);
+    state0[5] = strtod(argv[7], NULL);
 
     LOG("INFO", "mu = %f", mu);
-    LOG("INFO", "pos = (%f, %f, %f)", pos[0], pos[1], pos[2]);
-    LOG("INFO", "vel = (%f, %f, %f)", vel[0], vel[1], vel[2]);
+    LOG("INFO", "vel = (%f, %f, %f)", state0[3], state0[4], state0[5]);
 
-    status = two_body_problem(acc, pos, mu);
-    if (status != 0){
-        LOG("ERROR", "Failed to compute Two Body acceleration");
-        return status;
+    params.mu = mu;
+    r0s[0] = state0[0];
+    r1s[0] = state0[1];
+    r2s[0] = state0[2];
+    v0s[0] = state0[3];
+    v1s[0] = state0[4];
+    v2s[0] = state0[5];
+
+    for (int i = 0; i < n_steps; i++){
+
+        // Integrate using RK4 to generate the state vector at the next time
+        status = runge_kutta_4(state1,
+                state0,
+                dt,
+                t0,
+                ode,
+                6,
+                &params);
+
+        if (status != OK){
+            LOG("ERROR", "Failed to Two Body problem");
+            return status;
+        }
+
+        r0s[i+1] = state1[0];
+        r1s[i+1] = state1[1];
+        r2s[i+1] = state1[2];
+        v0s[i+1] = state1[3];
+        v1s[i+1] = state1[4];
+        v2s[i+1] = state1[5];
+
+        t += dt;
+        *state0 = *state1;
     }
 
-    LOG("INFO", "acc = (%f, %f, %f)", acc[0], acc[1], acc[2]);
+    // Create the Parameters Evolution objects and write the file
+    ParameterEvolution ephemeris[6] = {
+        {POS_X, KM, r0s, n_steps},
+        {POS_Y, KM, r1s, n_steps},
+        {POS_Z, KM, r2s, n_steps},
+        {VEL_X, KMS, v0s, n_steps},
+        {VEL_Y, KMS, v1s, n_steps},
+        {VEL_Z, KMS, v2s, n_steps}
+    };
+
+    status = write_parameter_evolution_file("test.pef", ephemeris, 6);
+    if (status != OK){
+        LOG("ERROR", "Failed to write parameter evolution file");
+        return status;
+    }
 
     return OK;
 }

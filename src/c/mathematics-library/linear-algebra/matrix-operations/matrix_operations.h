@@ -24,6 +24,33 @@ double vec3_norm(const double v[3]);
 
 /**
  * @brief 
+ * Computes the sum of two nD vectors.
+ *
+ * @param dims The number of dimensions of the vectors.
+ * @param v1 The first vector.
+ * @param v2 The second vector.
+ */
+StatusCode vec_add(const int dims,
+        double* out_sum,
+        const double* v1,
+        const double* v2);
+
+/**
+ * @brief 
+ * Scales a vector by a scalar.
+ *
+ * @param dims The number of dimensions of the vector.
+ * @param out_scaled The scaled vector.
+ * @param v The vector to scale.
+ * @param scale The scalar to scale by.
+ */
+StatusCode vec_scale(const int dims,
+        double* out_scaled,
+        const double* v,
+        const double scale);
+
+/**
+ * @brief 
  * Computes the dot product of two 3D vectors.
  *
  * @param v The first vector.
@@ -40,6 +67,6 @@ double vec3_dot(const double v[3], const double w[3]);
  * @param v The input vector.
  * @return 0 if the vector is not zero length, 1 otherwise.
  */
-int vec3_unit(double out_unit[3], const double v[3]);
+StatusCode vec3_unit(double out_unit[3], const double v[3]);
 
 #endif

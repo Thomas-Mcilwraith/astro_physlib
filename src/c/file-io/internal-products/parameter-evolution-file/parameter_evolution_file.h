@@ -4,12 +4,14 @@
 // Standard libraries
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Local libraries
 #include "../../../utilities/logging/log/log.h"
 
 // Variable and Macro definitions
-#define CHARS_PER_WORD 22        // Formatting
+#define CHARS_PER_WORD 10        // Formatting
+#define CHARS_PER_COL 23
 #define WORD_PRECISION 8
 #define VAR_UNITS_SEPARATOR "~"
 
@@ -17,6 +19,13 @@
 #define ACC_X "ACC_X"            // MUST NEVER BE LONGER THAN 10 CHARS
 #define ACC_Y "ACC_Y"
 #define ACC_Z "ACC_Z"
+#define POS_X "POS_X"
+#define POS_Y "POS_Y"
+#define POS_Z "POS_Z"
+#define VEL_X "VEL_X"
+#define VEL_Y "VEL_Y"
+#define VEL_Z "VEL_Z"
+#define MASS "MASS"
 #define ALT "ALT"
 #define RHO "RHO"
 #define QUAT "QUAT"
@@ -44,10 +53,10 @@
  * @param n_values The number of values in the array.
  */
 typedef struct {
-    const char* name;
-    const char* units;
-    const double* values;
-    const int n_values;
+    char name[CHARS_PER_WORD];
+    char units[CHARS_PER_WORD];
+    double* values;
+    int n_values;
 } ParameterEvolution;
 
 // Function prototypes
@@ -65,5 +74,27 @@ StatusCode write_parameter_evolution_file(
         const char* filename,
         const ParameterEvolution* params,
         const int n_params);
+
+/**
+ * @brief
+ * Read an array of Parameter evolution arrays from a file.
+ * 
+ * @param out_params Array pointer to a list of parameter evolutions.
+ * @param out_n_params length of out_params.
+ * @param out_n_values length of the values in the ParameterEvolution.
+ * @param filename The path of the file to read from.
+ */
+StatusCode read_parameter_evolution_file(ParameterEvolution** out_params, 
+        int* out_n_params,
+        int* out_n_values,
+        const char* filename);
+
+/**
+ * @brief 
+ * Helper function - Remove trailing whitespace from a string.
+ *
+ * @param s The string to remove trailing whitespace from.
+ */
+void rtrim(char* s);
 
 #endif
