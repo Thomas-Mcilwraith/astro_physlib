@@ -29,6 +29,7 @@
 #define ALT "ALT"
 #define RHO "RHO"
 #define QUAT "QUAT"
+#define TIME "TIME"
 
 #define KM "km"                  // Accepted units in header
 #define M "m"                    // MUST NEVER BE LONGER THAN 10 CHARS
@@ -38,6 +39,11 @@
 #define KMS "km/s"
 #define KMS2 "km/s^2"
 #define KGM3 "kg/m^3"
+#define SECONDS "s"
+#define SECONDS_RELATIVE "s_rel"
+#define MINUTES "mn"
+#define HOURS "hr"
+#define DAYS "d"
 #define NO_UNIT "-"
 
 // Data structure definitions

@@ -62,6 +62,14 @@ void logger(
  */
 void init_log(void){
     start_time = time(NULL);
+    struct tm *utc = gmtime(&start_time);
+    LOG("INFO", "Program Start Time: %04d-%02d-%02dT%02d:%02d:%02dZ (UTC)",
+        utc->tm_year + 1900,
+        utc->tm_mon + 1,
+        utc->tm_mday,
+        utc->tm_hour,
+        utc->tm_min,
+        utc->tm_sec);
 }
 
 /**

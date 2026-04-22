@@ -76,14 +76,13 @@ int main(int argc, char *argv[]) {
     double tf = 5400.0;
     double t = t0;
     int n_steps = 1000;
-    double dt;
+    double dt = (tf - t0) / (n_steps - 1);
 
     // Initialise the log
     init_log();
 
-    dt = (tf - t0) / n_steps;
-
     // Since we know the n_steps, define the solutions
+    double t_out[n_steps];
     double r0s[n_steps], r1s[n_steps], r2s[n_steps];
     double v0s[n_steps], v1s[n_steps], v2s[n_steps];
 
@@ -102,10 +101,14 @@ int main(int argc, char *argv[]) {
     state0[4] = strtod(argv[6], NULL);
     state0[5] = strtod(argv[7], NULL);
 
+    LOG("INFO", "Loaded Args:");
     LOG("INFO", "mu = %f", mu);
+    LOG("INFO", "pos = (%f, %f, %f)", state0[0], state0[1], state0[2]);
     LOG("INFO", "vel = (%f, %f, %f)", state0[3], state0[4], state0[5]);
 
+    // save initial state in solution array
     params.mu = mu;
+    t_out[0] = t;
     r0s[0] = state0[0];
     r1s[0] = state0[1];
     r2s[0] = state0[2];
@@ -113,35 +116,34 @@ int main(int argc, char *argv[]) {
     v1s[0] = state0[4];
     v2s[0] = state0[5];
 
-    for (int i = 0; i < n_steps; i++){
+    LOG("INFO", "Propagating Arc");
+    for (int i = 1; i < n_steps; i++){
 
         // Integrate using RK4 to generate the state vector at the next time
-        status = runge_kutta_4(state1,
-                state0,
-                dt,
-                t0,
-                ode,
-                6,
-                &params);
-
+        status = runge_kutta_4(state1, state0, dt, t, ode, 6, &params);
         if (status != OK){
-            LOG("ERROR", "Failed to Two Body problem");
+            LOG("ERROR", "Failed to resolve Two Body Problem acceleration");
             return status;
         }
 
-        r0s[i+1] = state1[0];
-        r1s[i+1] = state1[1];
-        r2s[i+1] = state1[2];
-        v0s[i+1] = state1[3];
-        v1s[i+1] = state1[4];
-        v2s[i+1] = state1[5];
-
+        // Save the results in the solution array
         t += dt;
-        *state0 = *state1;
+        t_out[i] = t;
+        r0s[i] = state1[0];
+        r1s[i] = state1[1];
+        r2s[i] = state1[2];
+        v0s[i] = state1[3];
+        v1s[i] = state1[4];
+        v2s[i] = state1[5];
+
+        // Update the state
+        memcpy(state0, state1, 6 * sizeof(double));
     }
+    LOG("INFO", "Arc Complete");
 
     // Create the Parameters Evolution objects and write the file
-    ParameterEvolution ephemeris[6] = {
+    ParameterEvolution ephemeris[7] = {
+        {TIME, SECONDS_RELATIVE, t_out, n_steps},
         {POS_X, KM, r0s, n_steps},
         {POS_Y, KM, r1s, n_steps},
         {POS_Z, KM, r2s, n_steps},
@@ -150,11 +152,12 @@ int main(int argc, char *argv[]) {
         {VEL_Z, KMS, v2s, n_steps}
     };
 
-    status = write_parameter_evolution_file("test.pef", ephemeris, 6);
+    status = write_parameter_evolution_file("test.pef", ephemeris, 7);
     if (status != OK){
         LOG("ERROR", "Failed to write parameter evolution file");
         return status;
     }
+    LOG("INFO", "Parameter Evolution File written: %s", "test.pef");
 
     return OK;
 }
