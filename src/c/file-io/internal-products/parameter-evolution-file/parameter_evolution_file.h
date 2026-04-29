@@ -74,12 +74,14 @@ typedef struct {
  * @param filename The path of the file to write to.
  * @param params Array pointer to a list of parameter evolutions.
  * @param n_params length of params.
+ * @param comment The comment to write to the file.
  */
 StatusCode write_parameter_evolution_file(
         // Inputs
         const char* filename,
         const ParameterEvolution* params,
-        const int n_params);
+        const int n_params,
+        const char* comment);
 
 /**
  * @brief
@@ -89,10 +91,13 @@ StatusCode write_parameter_evolution_file(
  * @param out_n_params length of out_params.
  * @param out_n_values length of the values in the ParameterEvolution.
  * @param filename The path of the file to read from.
+ * @param comment The comment to read from the file.
  */
 StatusCode read_parameter_evolution_file(ParameterEvolution** out_params, 
-        int* out_n_params,
-        int* out_n_values,
+                                         char* out_comment,
+                                         int* out_n_params,
+                                         int* out_n_values,
+        // Inputs
         const char* filename);
 
 /**

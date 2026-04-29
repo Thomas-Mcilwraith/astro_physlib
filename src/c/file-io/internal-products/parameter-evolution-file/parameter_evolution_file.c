@@ -10,27 +10,27 @@
 #include "utilities/logging/log/log.h"
 
 /**
- * See parameter_evolution_file.h for IO description.
- * 
  * Files are written with a fixed col with, see header file.
  * All Parameter evolutions must have the same number of data points, or else
  * the write will raise an error.
+ * comment can be passed as NULL to write no comment.
  */
 StatusCode write_parameter_evolution_file(
         // Inputs
         const char* filename,
         const ParameterEvolution* params,
-        const int n_params){
+        const int n_params,
+        const char* comment) {
 
     // Local variables
     int i, j;
-    char name_units[CHARS_PER_COL];
+    char name_and_units[CHARS_PER_COL];
 
-    // Check that all ParameterToWrite structs have the same number of values
+    // Check that all ParameterEvolution structs have the same number of values
     for (i = 1; i < n_params; i++) {
         if (params[i].n_values != params[0].n_values) {
             LOG("ERROR",
-                    "All arrays written to a .pef must have the same length");
+                    "All arrays written to a .pev must have the same length");
             return ERROR;
         }
     }
@@ -42,13 +42,17 @@ StatusCode write_parameter_evolution_file(
         return ERROR;
     }
 
-    // Write the header line - params are in the format VAR_NAME~m/s^2
+    // Write the comment
+    if (comment && comment[0] != '\0') {
+        fprintf(fp, "# %s\n", comment);
+    }
+
+    // Write the header line - params are in the format VAR_NAME~VAR_UNITS
     for (i = 0; i < n_params; i++) {
-        // first, format the name and units
-        strcpy(name_units, params[i].name);
-        strcat(name_units, VAR_UNITS_SEPARATOR);
-        strcat(name_units, params[i].units);
-        fprintf(fp, "%-*s", CHARS_PER_COL, name_units);
+        strcpy(name_and_units, params[i].name);
+        strcat(name_and_units, VAR_UNITS_SEPARATOR);
+        strcat(name_and_units, params[i].units);
+        fprintf(fp, "%-*s", CHARS_PER_COL, name_and_units);
     }
     fprintf(fp, "\n");
 
@@ -66,16 +70,13 @@ StatusCode write_parameter_evolution_file(
 }
 
 /**
- * See parameter_evolution_file.h for IO description.
- *
  * This function assumes the same conditions as write_parameter_evolution_file.
- * I.e. any file attempted to be read must have the EXACT SAME FORMAT as what
- * write_parameter_evolution_file writes. Addition spaces, newlines, etc. will
- * cause the read to fail.
+ * Only one comment line is permitted.
 */
 StatusCode read_parameter_evolution_file(ParameterEvolution** out_params, 
-        int* out_n_params,
-        int* out_n_values,
+                                         char* out_comment,
+                                         int* out_n_params,
+                                         int* out_n_values,
         // Inputs
         const char* filename) {
 
@@ -84,20 +85,26 @@ StatusCode read_parameter_evolution_file(ParameterEvolution** out_params,
     int i, line_len, n_params, capacity;
     int n_values = 0;
 
+    // Open the file in read mode
     FILE* fp = fopen(filename, "r");
     if (!fp) {
         LOG("ERROR", "Failed to open file %s", filename);
         return ERROR;
     }
 
-    // Read the header into the buffer
-    if (!fgets(buffer, sizeof(buffer), fp)) {
-        fclose(fp);
-        LOG("ERROR", "Failed to read header from file %s", filename);
-        return ERROR;
+    // Read the comment line
+    out_comment[0] = '\0';
+    while (fgets(buffer, sizeof(buffer), fp)) {
+        if (buffer[0] == '#') {
+            strcpy(out_comment, buffer);
+            rtrim(out_comment);
+            continue;
+        }
+        break;
     }
 
-    // Determine the number of parameters
+    // Determine the number of parameters and allocate that many
+    // ParameterEvolution structs
     line_len = strlen(buffer);
     n_params = line_len / CHARS_PER_COL;
     ParameterEvolution* params =
@@ -146,8 +153,7 @@ StatusCode read_parameter_evolution_file(ParameterEvolution** out_params,
 
     // Now we know the number of parameters but need to read a number of data
     // points which we do not know.
-    // Start with an initial guess of 16 (lines) and double it until we get to
-    // the end of the file
+    // Start with an initial guess of 16 (lines) for each ParameterEvolution
     capacity = 16;
     for (i = 0; i < n_params; i++) {
         params[i].values = malloc(capacity * sizeof(double));
