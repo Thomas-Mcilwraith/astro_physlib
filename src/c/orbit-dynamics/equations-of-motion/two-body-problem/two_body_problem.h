@@ -32,7 +32,9 @@ typedef struct {
  * @param t The time.
  * @param params The parameters of the problem.
  */
-StatusCode two_body_problem(double out_du[6],
+StatusCode twobody_acceleration(
+        // Outputs
+        double out_du[6],
         // Inputs
         const double u[6],
         const double t,

@@ -77,7 +77,6 @@ typedef struct {
  * @param comment The comment to write to the file.
  */
 StatusCode write_parameter_evolution_file(
-        // Inputs
         const char* filename,
         const ParameterEvolution* params,
         const int n_params,
@@ -93,11 +92,11 @@ StatusCode write_parameter_evolution_file(
  * @param filename The path of the file to read from.
  * @param comment The comment to read from the file.
  */
-StatusCode read_parameter_evolution_file(ParameterEvolution** out_params, 
-                                         char* out_comment,
-                                         int* out_n_params,
-                                         int* out_n_values,
-        // Inputs
+StatusCode read_parameter_evolution_file(
+        ParameterEvolution** out_params, 
+        char* out_comment,
+        int* out_n_params,
+        int* out_n_values,
         const char* filename);
 
 /**

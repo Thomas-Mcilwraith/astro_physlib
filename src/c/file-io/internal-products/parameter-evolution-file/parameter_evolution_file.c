@@ -73,12 +73,14 @@ StatusCode write_parameter_evolution_file(
  * This function assumes the same conditions as write_parameter_evolution_file.
  * Only one comment line is permitted.
 */
-StatusCode read_parameter_evolution_file(ParameterEvolution** out_params, 
-                                         char* out_comment,
-                                         int* out_n_params,
-                                         int* out_n_values,
-        // Inputs
-        const char* filename) {
+StatusCode read_parameter_evolution_file(
+    // Outputs
+    ParameterEvolution** out_params, 
+    char* out_comment,
+    int* out_n_params,
+    int* out_n_values,
+    // Inputs
+    const char* filename) {
 
     // Local variables
     char buffer[1024];

@@ -9,18 +9,21 @@
 #include "two_body_problem.h"
 
 /**
- * See two_body_problem.h for IO description.
- *
  * pos must be in an inertial reference frame.
  * The elements of pos must have compatible units with mu.
- * out_acc will have the same spatial units as pos.
- *   (ie pos[km] -> out_acc[km/s^2])
+ * out_acc will have the same spatial units as pos and temporal units as mu.
+ *   (ie pos[km] and mu[km^3/s^-2]-> out_acc[km/s^2])
+ * 
+ * IMPORTANT: params must always be a pointer to a TwoBodyProblemParams type
+ *            see mathematics-library/numerical-methods/runge_kutta_4.c
  */
-StatusCode two_body_problem(double out_du[6],
+StatusCode twobody_acceleration(
+        // Outputs
+        double out_du[6],
         // Inputs
         const double u[6],
         const double t,
-        void* params){
+        void* params) {
 
     // Local variables
     StatusCode status = OK;
@@ -28,7 +31,8 @@ StatusCode two_body_problem(double out_du[6],
     double r_norm, r_direction_vec[3];
     double mu_over_r_squared;
     double pos[3] = {u[0], u[1], u[2]};
-    (void) t;
+    (void) t;  // The two body problem is time invariant. We pass it here simply
+               // to ensure compatibility with the integrator, it is not needed.
 
     r_norm = vec3_norm(pos);
     status = vec3_unit(r_direction_vec, pos);
@@ -52,6 +56,56 @@ StatusCode two_body_problem(double out_du[6],
 }
 
 /**
+ * Simple ephemeris generator, evaluates two body acceleration along a
+ * timeseries with RK4 integration method.
+ */
+StatusCode generate_twobody_ephemeris(
+        // Outputs
+        double (*out_stateseries)[6],
+        // Inputs
+        const TwoBodyProblemParams *params,
+        const double initial_state[6],
+        const double *timeseries,
+        const int n_points
+        ) {
+
+    // Local variables
+    StatusCode status = OK;
+    func ode = twobody_acceleration;
+    double stepsize;  // measured backward i.e. (s = t_n - t_n-1)
+
+    if (!out_stateseries || !params || !initial_state || !timeseries
+        || n_points <= 0) {
+        LOG("ERROR", "Invalid input(s) to generate_twobody_ephemeris");
+        return ERROR;
+    }
+
+    // The first solution is always the initial condition
+    memcpy(out_stateseries[0], initial_state, 6 * sizeof(double));
+
+    for (int i = 1; i < n_points; i++) {
+        stepsize = timeseries[i] - timeseries[i-1];
+
+        status = runge_kutta_4(
+            out_stateseries[i],
+            out_stateseries[i-1],
+            stepsize,
+            timeseries[i-1],
+            ode,
+            6,
+            params
+        );
+
+        if (status != OK){
+            LOG("ERROR", "Failed to resolve Two Body Problem acceleration");
+            return status;
+        }
+    }
+
+    return OK;
+}
+
+/**
  * Example use case of two_body_problem.c.
  *
  * Generation of a Ephemeris (trajectory) file for an object experiencing
@@ -69,7 +123,7 @@ int main(int argc, char *argv[]) {
     // Local variables
     StatusCode status = OK;
     TwoBodyProblemParams params;
-    func ode = two_body_problem;
+    func ode = twobody_acceleration;
     double mu = 0.0;
     double state0[6], state1[6];
     double t0 = 0.0;

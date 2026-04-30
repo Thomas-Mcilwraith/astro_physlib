@@ -21,7 +21,8 @@
  *               contained in u must be passed in a struct. The null pointer
  *               is a placeholder for a struct of unknown shape.
  */
-typedef StatusCode (*func)(double* out_du,
+typedef StatusCode (*func)(
+        double* out_du,
         const double* u,
         const double t,
         void* params);
@@ -40,7 +41,8 @@ typedef StatusCode (*func)(double* out_du,
  * @param n_dims The number of dimensions of the ODE.
  * @param params Any parameters required to resolve the ODE
  */
-StatusCode runge_kutta_4(double* out_u1,
+StatusCode runge_kutta_4(
+        double* out_u1,
         const double* u0,
         const double dt,
         const double t0,

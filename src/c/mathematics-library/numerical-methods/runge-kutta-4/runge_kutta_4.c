@@ -9,7 +9,20 @@
 
 #include "runge_kutta_4.h"
 
-StatusCode runge_kutta_4(double* out_u1, 
+/**
+ * u0 and u1 must have length dims.
+ * ode must be a function pointer to a function with the signature: 
+ *     func(double *out_du, const double *u, const double t, void* params);
+ * 
+ * params is a pointer to a struct which contains all constants required to
+ * evaluate the ODE.
+ * The void* format is so that different ODEs can be evaluated with this method.
+ * In each ODE, params should be immediately cast to the expected type for that
+ * ODE.
+*/
+StatusCode runge_kutta_4(
+        // Outputs
+        double* out_u1, 
         // Inputs
         const double* u0,
         const double dt,
