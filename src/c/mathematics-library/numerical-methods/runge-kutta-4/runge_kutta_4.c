@@ -18,7 +18,7 @@
  * evaluate the ODE.
  * The void* format is so that different ODEs can be evaluated with this method.
  * In each ODE, params should be immediately cast to the expected type for that
- * ODE.
+ * ODE. (see twobody_acceleration() for an example.)
 */
 StatusCode runge_kutta_4(
         // Outputs
