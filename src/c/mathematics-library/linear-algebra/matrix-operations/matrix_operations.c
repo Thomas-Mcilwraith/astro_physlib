@@ -76,4 +76,134 @@ StatusCode vec3_unit(double out_unit[3],
     return OK;
 }
 
+StatusCode mat3_mul(
+        // Outputs
+        double out[3][3],
+        // Inputs
+        const double m1[3][3],
+        const double m2[3][3]) {
 
+    // Local variables
+    int i, j, k;
+
+    if (!out || !m1 || !m2) {
+        LOG("ERROR", "Invalid input to mat3_mul (NULL pointer)");
+        return ERROR;
+    }
+    if (out == m1 || out == m2) {
+        LOG("ERROR", "Invalid input to mat3_mul (output is input)");
+        return ERROR;
+    }
+
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            out[i][j] = 0.0;
+
+            for (k = 0; k < 3; k++) {
+                out[i][j] += m1[i][k] * m2[k][j];
+            }
+        }
+    }
+
+    return OK;
+}
+
+StatusCode vec3_rotate(
+        // Outputs
+        double out[3],
+        // Inputs
+        const double mat[3][3],
+        const double vec[3]) {
+
+    // Local variables
+
+    if (!out || !mat || !vec) {
+        LOG("ERROR", "Invalid input to vec3_rotate (NULL pointer)");
+        return ERROR;
+    }
+    if (out == vec) {
+        LOG("ERROR", "Invalid input to vec3_rotate (output is input)");
+        return ERROR;
+    }
+
+    out[0] = mat[0][0] * vec[0] + mat[0][1] * vec[1] + mat[0][2] * vec[2];
+    out[1] = mat[1][0] * vec[0] + mat[1][1] * vec[1] + mat[1][2] * vec[2];
+    out[2] = mat[2][0] * vec[0] + mat[2][1] * vec[1] + mat[2][2] * vec[2];
+
+    return OK;
+}
+
+void mat3_rotate_x(
+        // Outputs
+        double out[3][3],
+        // Inputs
+        const double alpha) {
+
+    // Local variables
+    double c_alpha = cos(alpha);
+    double s_alpha = sin(alpha);
+
+    out[0][0] = 1.0;
+    out[0][1] = 0.0;
+    out[0][2] = 0.0;
+
+    out[1][0] = 0.0;
+    out[1][1] = c_alpha;
+    out[1][2] = s_alpha;
+
+    out[2][0] = 0.0;
+    out[2][1] = -s_alpha;
+    out[2][2] = c_alpha;
+
+    return;
+}
+
+void mat3_rotate_y(
+        // Outputs
+        double out[3][3],
+        // Inputs
+        const double alpha) {
+
+    // Local variables
+    double c_alpha = cos(alpha);
+    double s_alpha = sin(alpha);
+
+    out[0][0] = c_alpha;
+    out[0][1] = 0.0;
+    out[0][2] = -s_alpha;
+
+    out[1][0] = 0.0;
+    out[1][1] = 1.0;
+    out[1][2] = 0.0;
+
+    out[2][0] = s_alpha;
+    out[2][1] = 0.0;
+    out[2][2] = c_alpha;
+
+    return;
+}
+
+void mat3_rotate_z(
+        // Outputs
+        double out[3][3],
+        // Inputs
+        const double alpha) {
+
+    // Local variables
+    double c_alpha = cos(alpha);
+    double s_alpha = sin(alpha);
+
+    out[0][0] = c_alpha;
+    out[0][1] = s_alpha;
+    out[0][2] = 0.0;
+
+    out[1][0] = -s_alpha;
+    out[1][1] = c_alpha;
+    out[1][2] = 0.0;
+
+    out[2][0] = 0.0;
+    out[2][1] = 0.0;
+    out[2][2] = 1.0;
+
+    return;
+}

@@ -12,11 +12,8 @@ OBJ_DIR = $(BUILD_DIR)/obj
 
 
 # --- MODULE CONFIG [MUST UPDATE THESE] --------------------------------------
-SRC = two_body_problem.c \
-      ../../../utilities/logging/log/log.c \
-      ../../../mathematics-library/linear-algebra/matrix-operations/matrix_operations.c \
-      ../../../mathematics-library/numerical-methods/runge-kutta-4/runge_kutta_4.c \
-      ../../../file-io/internal-products/parameter-evolution-file/parameter_evolution_file.c
+SRC = parameter_evolution_file.c \
+      ../../../utilities/logging/log/log.c 
 # ----------------------------------------------------------------------------
 
 

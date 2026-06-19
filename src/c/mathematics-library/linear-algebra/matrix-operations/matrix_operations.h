@@ -69,4 +69,88 @@ double vec3_dot(const double v[3], const double w[3]);
  */
 StatusCode vec3_unit(double out_unit[3], const double v[3]);
 
+/**
+ * @brief
+ * Multiplies two 3x3 matrices.
+ *
+ * @param out The output matrix.
+ * @param m1 The first matrix.
+ * @param m2 The second matrix.
+ * @return 0 if the multiplication was successful, 1 otherwise.
+ */
+StatusCode mat3_mul(
+        // Outputs
+        double out[3][3],
+        // Inputs
+        const double m1[3][3],
+        const double m2[3][3]);
+
+/**
+ * @brief
+ * Rotates a 3D vector by a 3x3 matrix.
+ *
+ * @param out The output vector.
+ * @param mat The rotation matrix to apply.
+ * @param vec The vector to rotate.
+ * @return 0 if the rotation was successful, 1 otherwise.
+ */
+StatusCode vec3_rotate(
+        // Outputs
+        double out[3],
+        // Inputs
+        const double mat[3][3],
+        const double vec[3]);
+
+
+/**
+ * @brief
+ * Generates a rotation matrix corresponding to a rotation about the x-axis by
+ * an angle alpha.
+ *
+ * @note
+ * The convention is the **right-hand rule**.
+ *
+ * @param out The output matrix.
+ * @param alpha The angle to rotate by.
+ */
+void mat3_rotate_x(
+        // Outputs
+        double out[3][3],
+        // Inputs
+        const double alpha);
+
+/**
+ * @brief
+ * Generates a rotation matrix corresponding to a rotation about the y-axis by
+ * an angle alpha.
+ *
+ * @note
+ * The convention is the **right-hand rule**.
+ *
+ * @param out The output matrix.
+ * @param alpha The angle to rotate by.
+ */
+void mat3_rotate_y(
+        // Outputs
+        double out[3][3],
+        // Inputs
+        const double alpha);
+
+/**
+ * @brief
+ * Generates a rotation matrix corresponding to a rotation about the z-axis by
+ * an angle alpha.
+ *
+ * @note
+ * The convention is the **right-hand rule**.
+ *
+ * @param out The output matrix.
+ * @param alpha The angle to rotate by.
+ */
+void mat3_rotate_z(
+        // Outputs
+        double out[3][3],
+        // Inputs
+        const double alpha);
+
 #endif

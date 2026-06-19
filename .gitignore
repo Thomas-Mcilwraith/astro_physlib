@@ -1,3 +1,5 @@
 **/*.o
 build
 .clangd
+compile_commands.json
+**/compile_commands.json
