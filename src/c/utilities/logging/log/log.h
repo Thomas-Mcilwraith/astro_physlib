@@ -30,7 +30,8 @@ extern time_t start_time;
  */
 typedef enum {
     OK,
-    ERROR
+    ERROR,
+    WARNING
 } StatusCode;
 
 // Function prototypes
