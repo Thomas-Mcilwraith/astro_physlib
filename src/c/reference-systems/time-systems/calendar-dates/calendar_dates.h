@@ -3,6 +3,7 @@
 
 // Standard libraries
 #include <math.h>
+#include <stdbool.h>
 
 // Local libraries
 #include "utilities/logging/log/log.h"
@@ -49,5 +50,16 @@ StatusCode jd_to_date(
         // Inputs
         const double julian_day
     );
+
+/**
+ * Returns the day of the year for a given date.
+ *
+ * @param year Year
+ * @param month Month of Year
+ * @param day Day of Month
+ *
+ * @return Day of Year
+ */
+int day_of_year(int year, int month, int day);
 
 #endif

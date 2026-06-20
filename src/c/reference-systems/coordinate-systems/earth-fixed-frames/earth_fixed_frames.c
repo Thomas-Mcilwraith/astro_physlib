@@ -1,0 +1,158 @@
+/*
+ * orbital_frames.c
+ *
+ * Author: Thomas McIlwraith
+ * Date: 18/04/2026
+ */
+
+#include "earth_fixed_frames.h"
+#include "mathematics-library/linear-algebra/matrix-operations/matrix_operations.h"
+#include "utilities/constants/constants.h"
+
+StatusCode rotmat_gcrf_to_sez(
+        // Outputs
+        double output_rotmat[3][3],
+        // Inputs
+        const double r_site_gcrf[3]) {
+
+    // Local variables
+    StatusCode status = OK;
+    double K[3] = {0.0, 0.0, 1.0};
+    double r_site_unit[3];
+    double east_gcrf[3], east_unit[3];
+    double south_gcrf[3], south_unit[3];
+
+    status = vec3_unit(r_site_unit, r_site_gcrf);
+    if (status != OK) {
+        LOG("ERROR", "Failed to compute r_site unit vector");
+        return status;
+    }
+
+    status = vec3_cross(east_gcrf, K, r_site_unit);
+    status = vec3_unit(east_unit, east_gcrf);
+    if (status != OK) {
+        LOG("ERROR", "Failed to compute east unit vector");
+        return status;
+    }
+
+    status = vec3_cross(south_gcrf, east_unit, r_site_unit);
+    status = vec3_unit(south_unit, south_gcrf);
+    if (status != OK) {
+        LOG("ERROR", "Failed to compute south unit vector");
+        return status;
+    }
+
+    output_rotmat[0][0] = south_unit[0];
+    output_rotmat[0][1] = south_unit[1];
+    output_rotmat[0][2] = south_unit[2];
+
+    output_rotmat[1][0] = east_unit[0];
+    output_rotmat[1][1] = east_unit[1];
+    output_rotmat[1][2] = east_unit[2];
+
+    output_rotmat[2][0] = r_site_unit[0];
+    output_rotmat[2][1] = r_site_unit[1];
+    output_rotmat[2][2] = r_site_unit[2];
+    
+    return OK;
+}
+
+StatusCode latlon_to_ecef(
+        // Outputs
+        double r_ecef[3],
+        // Inputs
+        const double geodetic_lat,
+        const double longitude,
+        const double height_above_ellipsoid
+        ) {
+
+    // Local variables
+    double sin_lat = sin(geodetic_lat);
+    double cos_lat = cos(geodetic_lat);
+    double sin_lon = sin(longitude);
+    double cos_lon = cos(longitude);
+    double e_ellip2 = EARTH_SURFACE_ELLIP_ECC*EARTH_SURFACE_ELLIP_ECC;
+    double sin2_lat = sin_lat*sin_lat;
+    double C_ellip, S_ellip;
+
+    if (geodetic_lat < -PI_OVER_2 || geodetic_lat > PI_OVER_2) {
+        LOG("ERROR", "Invalid geodetic latitude - wrong quadrant");
+        return ERROR;
+    }
+
+    C_ellip = EARTH_RADIUS_EQUATORIAL_KM / sqrt(1.0 - e_ellip2*sin2_lat);
+    S_ellip = C_ellip * (1 - e_ellip2);
+
+    r_ecef[0] = (C_ellip+height_above_ellipsoid) * cos_lat * cos_lon;
+    r_ecef[1] = (C_ellip+height_above_ellipsoid) * cos_lat * sin_lon;
+    r_ecef[2] = (S_ellip+height_above_ellipsoid) * sin_lat;
+
+    return OK;
+}
+
+StatusCode ecef_to_latlon(
+        // Outputs
+        double *geodetic_lat,
+        double *longitude,
+        double *height_above_ellipsoid,
+        // Inputs
+        const double r_ecef[3]) {
+    
+    // Local variables
+    int i = 0;
+    const double e_ellip2 = EARTH_SURFACE_ELLIP_ECC*EARTH_SURFACE_ELLIP_ECC;
+    const double r_delta = sqrt(r_ecef[0]*r_ecef[0] + r_ecef[1]*r_ecef[1]);
+    const double delta = atan2(r_ecef[2], r_delta);
+    double C_ellip, S_ellip, sin2_lat;
+    double geodetic_lat_old = 0.0;
+    double r_norm = vec3_norm(r_ecef);
+
+    if (r_norm < MATRIX_SMALL_NUMBER) {
+        LOG("ERROR", "Zero length ECEF vector");
+        return ERROR;
+    }
+
+    // Determine geodetic latitude
+    // Initial guess
+    *geodetic_lat = delta;
+    while (fabs(*geodetic_lat - geodetic_lat_old) > GEODETIC_LATTITUDE_TOLERANCE) {
+        geodetic_lat_old = *geodetic_lat;
+        
+        sin2_lat = sin(geodetic_lat_old)*sin(geodetic_lat_old);
+        C_ellip = EARTH_RADIUS_EQUATORIAL_KM / sqrt(1.0 - e_ellip2*sin2_lat);
+
+        *geodetic_lat = atan(
+                (r_ecef[2] + C_ellip*e_ellip2*sin(geodetic_lat_old)) / r_delta
+                );
+
+        if (++i > GEODETIC_LATTITUDE_MAX_ITER) {
+            LOG("ERROR", "Failed to converge on geodetic latitude");
+            return ERROR;
+        }
+    }
+
+    // Determine height above ellipsoid
+    if (fabs(*geodetic_lat) > 89*DEG_TO_RAD) {
+        S_ellip = C_ellip * (1 - e_ellip2);
+        *height_above_ellipsoid = r_ecef[2] / sin(*geodetic_lat) - S_ellip;
+        LOG("WARNING", "r_ecef is near poles, using S_ellip approximation in" 
+                       "ecef_to_latlon");
+    } else {
+       *height_above_ellipsoid = r_delta / cos(*geodetic_lat) - C_ellip;
+    }
+
+    // Determine longitude
+    *longitude = atan2(r_ecef[1], r_ecef[0]);
+
+    return OK;
+}
+
+double geocentric_to_geodetic_lat(const double geocentric_lat) {
+
+    // Local variables
+    double tan_geodetic_lat;
+    double e2 = EARTH_SURFACE_ELLIP_ECC*EARTH_SURFACE_ELLIP_ECC;
+
+    tan_geodetic_lat = tan(geocentric_lat)/(1 - e2);
+    return atan(tan_geodetic_lat);
+}

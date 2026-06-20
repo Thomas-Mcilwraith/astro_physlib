@@ -6,6 +6,8 @@
 // Variable and Macro definitions
 #define EARTH_RADIUS_EQUATORIAL_M 6378137.0
 #define EARTH_RADIUS_EQUATORIAL_KM 6378.137
+#define EARTH_SURFACE_ELLIP_ECC 0.08181922145804127
+
 #define PI 3.141592
 #define TWO_PI 2.0*PI
 #define PI_OVER_2 PI/2.0

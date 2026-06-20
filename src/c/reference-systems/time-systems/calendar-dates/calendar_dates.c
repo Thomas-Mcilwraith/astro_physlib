@@ -9,7 +9,6 @@
 
 /**
  * Only valid from 1900 -> 2100.
- * Unless specified, julian date is a time based on UT1.
  */
 StatusCode date_to_jd(
         // Outputs
@@ -83,5 +82,25 @@ StatusCode jd_to_date(
 
 int day_of_week(double julian_day) {
     return floor(julian_day - 7*floor((julian_day+1)/7) + 2);
+}
+
+int day_of_year(int year, int month, int day) {
+
+    // Local variables
+    int day_of_year = 0;
+    int days_in_months[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    // Leap year check
+    if ((year%4 == 0 && year%100 != 0) || (year%400 == 0)) {
+        days_in_months[1] = 29;
+    }
+
+    for (int i=1; i<month; i++) {
+        day_of_year += days_in_months[i-1];
+    }
+
+    day_of_year += day;
+
+    return day_of_year;
 }
 

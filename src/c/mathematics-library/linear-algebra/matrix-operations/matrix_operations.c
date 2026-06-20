@@ -23,7 +23,7 @@ StatusCode vec_add(const int dims,
         const double* v2) {
 
     if (!out_sum || !v1 || !v2 || dims <= 0) {
-        LOG("ERROR", "Invalid input to vec_add");
+        LOG("ERROR", "Invalid inputs");
         return ERROR;
     }
 
@@ -42,7 +42,7 @@ StatusCode vec_scale(const int dims,
         const double scale) {
 
     if (!v || dims <= 0) {
-        LOG("ERROR", "Invalid input to vec_scale");
+        LOG("ERROR", "Invalid inputs");
         return ERROR;
     }
 
@@ -62,9 +62,9 @@ StatusCode vec3_unit(double out_unit[3],
         const double v[3]){
 
     // Local variables
-    double norm = vec3_norm(v);
+    const double norm = vec3_norm(v);
 
-    if (norm == 0.0) {
+    if (norm < MATRIX_SMALL_NUMBER) {
         LOG("ERROR", "Tried to compute direction of 0 length vector");
         return ERROR;
     }
@@ -87,11 +87,11 @@ StatusCode mat3_mul(
     int i, j, k;
 
     if (!out || !m1 || !m2) {
-        LOG("ERROR", "Invalid input to mat3_mul (NULL pointer)");
+        LOG("ERROR", "Invalid input (NULL pointer)");
         return ERROR;
     }
     if (out == m1 || out == m2) {
-        LOG("ERROR", "Invalid input to mat3_mul (output is input)");
+        LOG("ERROR", "Invalid input (output is input)");
         return ERROR;
     }
 
@@ -115,14 +115,12 @@ StatusCode vec3_rotate(
         const double mat[3][3],
         const double vec[3]) {
 
-    // Local variables
-
     if (!out || !mat || !vec) {
-        LOG("ERROR", "Invalid input to vec3_rotate (NULL pointer)");
+        LOG("ERROR", "Invalid input (NULL pointer)");
         return ERROR;
     }
     if (out == vec) {
-        LOG("ERROR", "Invalid input to vec3_rotate (output is input)");
+        LOG("ERROR", "Invalid input (output is input)");
         return ERROR;
     }
 
@@ -140,8 +138,8 @@ void mat3_rotate_x(
         const double alpha) {
 
     // Local variables
-    double c_alpha = cos(alpha);
-    double s_alpha = sin(alpha);
+    const double c_alpha = cos(alpha);
+    const double s_alpha = sin(alpha);
 
     out[0][0] = 1.0;
     out[0][1] = 0.0;
@@ -165,8 +163,8 @@ void mat3_rotate_y(
         const double alpha) {
 
     // Local variables
-    double c_alpha = cos(alpha);
-    double s_alpha = sin(alpha);
+    const double c_alpha = cos(alpha);
+    const double s_alpha = sin(alpha);
 
     out[0][0] = c_alpha;
     out[0][1] = 0.0;
@@ -190,8 +188,8 @@ void mat3_rotate_z(
         const double alpha) {
 
     // Local variables
-    double c_alpha = cos(alpha);
-    double s_alpha = sin(alpha);
+    const double c_alpha = cos(alpha);
+    const double s_alpha = sin(alpha);
 
     out[0][0] = c_alpha;
     out[0][1] = s_alpha;
@@ -206,4 +204,27 @@ void mat3_rotate_z(
     out[2][2] = 1.0;
 
     return;
+}
+
+StatusCode vec3_cross(
+        // Outputs
+        double out[3],
+        // Inputs
+        const double v1[3],
+        const double v2[3]) {
+
+    if (!out || !v1 || !v2) {
+        LOG("ERROR", "Invalid input pointers");
+        return ERROR;
+    }
+
+    const double x = v1[1] * v2[2] - v1[2] * v2[1];
+    const double y = v1[2] * v2[0] - v1[0] * v2[2];
+    const double z = v1[0] * v2[1] - v1[1] * v2[0];
+
+    out[0] = x;
+    out[1] = y;
+    out[2] = z;
+
+    return OK;
 }

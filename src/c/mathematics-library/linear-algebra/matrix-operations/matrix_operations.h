@@ -10,6 +10,7 @@
 #include "../../../utilities/logging/log/log.h"
 
 // Variable and Macro definitions
+#define MATRIX_SMALL_NUMBER 1e-13
 
 // Function prototypes
 
@@ -152,5 +153,21 @@ void mat3_rotate_z(
         double out[3][3],
         // Inputs
         const double alpha);
+
+/**
+ * @brief
+ * Computes the cross product of two 3D vectors.
+ *
+ * @param out The output vector.
+ * @param v1 The first vector.
+ * @param v2 The second vector.
+ * @return 0 if the cross product was successful, 1 otherwise.
+ */
+StatusCode vec3_cross(
+        // Outputs
+        double out[3],
+        // Inputs
+        const double v1[3],
+        const double v2[3]);
 
 #endif
