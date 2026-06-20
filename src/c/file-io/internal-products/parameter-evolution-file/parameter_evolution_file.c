@@ -7,7 +7,6 @@
  */
 
 #include "parameter_evolution_file.h"
-#include "utilities/logging/log/log.h"
 
 /**
  * Files are written with a fixed col with, see header file.
@@ -59,7 +58,7 @@ StatusCode write_parameter_evolution_file(
     // Write the data line(s)
     for (j = 0; j < params[0].n_values; j++) {
         for (i = 0; i < n_params; i++) {
-            fprintf(fp, "%-*.*e",
+            fprintf(fp, "%-*.*E",
                     CHARS_PER_COL, WORD_PRECISION, params[i].values[j]);
         }
         fprintf(fp, "\n");
