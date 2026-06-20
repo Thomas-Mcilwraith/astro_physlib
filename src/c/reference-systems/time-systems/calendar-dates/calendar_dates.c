@@ -81,3 +81,7 @@ StatusCode jd_to_date(
     return OK;
 }
 
+int day_of_week(double julian_day) {
+    return floor(julian_day - 7*floor((julian_day+1)/7) + 2);
+}
+
