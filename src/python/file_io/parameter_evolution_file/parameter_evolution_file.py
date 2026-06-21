@@ -9,12 +9,22 @@ Date: 20/06/2026
 # Imports
 import os
 from dataclasses import dataclass
+import pandas as pd
+import logging
 
 # Global variables
 CHARS_PER_WORD = 10
 CHARS_PER_SEPARATOR = 23
 WORD_PRECISION = 8
 VAR_UNITS_SEPARATOR = '~'
+UNITS_NO_UNIT = "-"
+
+# Global variables
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S"
+)
 
 # Class definition
 @dataclass
@@ -32,19 +42,17 @@ class ParameterEvolutionFile:
     ]
 
     def __init__(self):
-        self.filepath = None
-        self.comment = ""
-        self.data = []
-        self.n_data_points = 0
+        self.filepath: str | None = None
+        self.comment: str = ""
+        self.data: list[ParameterEvolution] = []
+        self.n_data_points: int = 0
         return
 
     def __repr__(self) -> str:
         repr_string = ""
         repr_string += f"filename= {self.filepath if self.filepath else 'NOTDEFINED'}"
         repr_string += "\n\n"
-
         repr_string += self._generate_file_string()
-
         return repr_string
 
     def set_filename(self, filename: str) -> None:
@@ -106,32 +114,27 @@ class ParameterEvolutionFile:
 
         return None
 
-    def read(self, filepath: str) -> None:
+    @classmethod
+    def from_pev(cls, filepath: str) -> 'ParameterEvolutionFile':
         """Read the file from disk"""
-
-        if (
-                self.filepath is not None or
-                len(self.data) > 0 or
-                self.n_data_points > 0
-                ):
-            raise ValueError("Attempted to read a ParameterEvolutionFile from " +
-                             "disk into an object with existing data.")
 
         if not os.path.isfile(filepath):
             raise FileNotFoundError(f"Attempted to read a ParameterEvolutionFile from " +
                              f"disk, but the file {filepath} does not exist.")
 
-        self.filepath = filepath
         with open(filepath, 'r') as f:
             lines = f.readlines()
 
+        logging.info(f"Reading ParameterEvolutionFile from {filepath}")
+
         headers = []
         data = []
+        comment = ""
         for i, line in enumerate(lines):
 
             # Load comment
             if i == 0 and line[0] == '#':
-                self.comment = line[2:].strip("\n")
+                comment = line[2:].strip("\n")
 
             if line[0] == '#':
                 continue
@@ -159,15 +162,94 @@ class ParameterEvolutionFile:
             for i, col in enumerate(cols):
                 data[i].append(float(col))
 
+        param_ev = ParameterEvolutionFile()
+        param_ev.set_filename(filepath)
+        param_ev.set_comment(comment)
+
         # Once the data is loaded, allocate the ParameterEvolution structs
         for i in range(len(headers)):
-            self.add_parameter_evolution(
-                    headers[i].split(VAR_UNITS_SEPARATOR)[0],
-                    headers[i].split(VAR_UNITS_SEPARATOR)[1],
-                    data[i]
-                    )
+            param_ev.add_parameter_evolution(
+                        headers[i].split(VAR_UNITS_SEPARATOR)[0],
+                        headers[i].split(VAR_UNITS_SEPARATOR)[1],
+                        data[i]
+                        ) 
 
-        return None
+        logging.info("ParameterEvolutionFile loaded from PEV")
+
+        return param_ev
+    
+    @classmethod
+    def from_csv(cls, 
+                 filepath: str, 
+                 comment: str = "",
+                 header_units: list[str] = [],
+                 skip_headers:list[str] = [],
+                 ) -> 'ParameterEvolutionFile':
+        """
+        Read a ParameterEvolutionFile from a CSV file
+        
+        :param filepath: The path of the CSV file to read from.
+        :param comment: The comment to read from the file.
+        :param header_units: The units of the headers. If not provided, the
+                             default is UNITS_NO_UNIT.
+        :param skip_headers: The headers to skip when reading the file.
+        """
+
+        logging.info(f"Reading ParameterEvolutionFile from {filepath}")
+        logging.info(f"Skipping headers: {" ".join(skip_headers)}")
+
+        if not os.path.isfile(filepath):
+            msg = (f"Attempted to read a ParameterEvolutionFile from disk, " +
+                  f"but the file {filepath} does not exist.")
+            logging.error(msg)
+            raise FileNotFoundError(msg)
+
+        try:
+            df = pd.read_csv(filepath)
+        except Exception as err:
+            logging.error(f"Failed to read CSV data")
+            print(err)
+            raise err
+        
+        out = ParameterEvolutionFile()
+        out.set_filename(filepath)
+        if comment:
+            out.set_comment(comment)
+
+        n_cols = len(df.columns)
+        # Check that consistent number of headers/units are provided
+        if (n_cols - len(skip_headers)) != len(header_units):
+            msg = (f"Attempted to read a ParameterEvolutionFile from disk, " +
+                   f"but the number of headers and units do not match.")
+            logging.error(msg)
+            raise ValueError(msg)
+
+        # Correct the units to the correct string, if no units are present or
+        # necessary for a param
+        header_units = [
+                header_units[i] if header_units[i] else UNITS_NO_UNIT
+                for i in range(n_cols - len(skip_headers))
+                ]
+
+        # Get the list of headers that will be used
+        headers = [
+                col for col in df.columns
+                if col not in skip_headers
+                ]
+
+        for i, col in enumerate(headers):
+            if col in skip_headers:
+                continue
+
+            out.add_parameter_evolution(
+                    name=col,
+                    units=header_units[i],
+                    values=df[col].tolist()
+            )
+
+        logging.info("ParameterEvolutionFile loaded from CSV")
+
+        return out
 
     def _generate_file_string(self) -> str:
         """Generate the file raw string for this ParameterEvolutionFile object"""
@@ -197,11 +279,20 @@ class ParameterEvolutionFile:
      
 
 if __name__ == '__main__':
-    pef = ParameterEvolutionFile()
-    # pef.set_filename('test.pev')
-    # pef.set_comment('This is a comment!')
-    # pef.add_parameter_evolution('a', 'm', range(10))
-    # pef.add_parameter_evolution('b', 'km', range(10))
-    # pef.write()
-    pef.read('test.pev')
-    print(pef)
+    eop_skip_headers = ["DATE", "DATA_TYPE"]
+    eop_units = ["days", "arcsec", "arcsec", "s", "s", "arcsec", "arcsec",
+                 "arcsec", "arcsec", "s"]
+    pef = ParameterEvolutionFile.from_csv(
+            "/home/thomas-mcilwraith/Documents/eop_last_5_years.csv",
+            "CELESTRAK_EOP_LAST_5_YEARS",
+            header_units=eop_units,
+            skip_headers=eop_skip_headers
+            )
+    pef.set_filename("/home/thomas-mcilwraith/Documents/test1.pev")
+    pef.write()
+
+    pef_from_pev = ParameterEvolutionFile.from_pev("/home/thomas-mcilwraith/Documents/eop_last_5_years.pev")
+    pef_from_pev.set_filename("/home/thomas-mcilwraith/Documents/test2.pev")
+    pef_from_pev.write()
+    exit()
+    
