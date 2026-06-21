@@ -68,6 +68,12 @@ StatusCode rotmat_gcrf_to_lvlh(
     rotmat_out[2][1] = w_unit[1];
     rotmat_out[2][2] = w_unit[2];
 
+    // Check the rotation matrix is valid
+    if (!mat3_is_rotation(rotmat_out, MATRIX_IDENTITY_TOLERANCE)) {
+        LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
+        return ERROR;
+    }
+
     return OK;
 }
 

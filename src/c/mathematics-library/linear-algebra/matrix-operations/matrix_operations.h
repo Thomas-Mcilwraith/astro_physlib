@@ -3,6 +3,7 @@
 
 // Standard libraries
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -11,6 +12,8 @@
 
 // Variable and Macro definitions
 #define MATRIX_SMALL_NUMBER 1e-13
+#define MATRIX_IDENTITY_TOLERANCE 1e-13
+#define MATRIX_DET_TOLERANCE 1e-13
 
 // Function prototypes
 
@@ -169,5 +172,57 @@ StatusCode vec3_cross(
         // Inputs
         const double v1[3],
         const double v2[3]);
+
+/**
+ * @brief
+ * Computes the transpose of a 3x3 matrix.
+ *
+ * @param m_transposed The output transposed matrix.
+ * @param m The input matrix.
+ */
+void mat3_transpose(
+        // Outputs
+        double m_transposed[3][3],
+        // Inputs
+        const double m[3][3]);
+
+/**
+ * @brief
+ * Computes the determinant of a 3x3 matrix.
+ *
+ * @param m The matrix.
+ * @return The determinant of the matrix.
+ */
+double mat3_det(const double m[3][3]);
+
+/**
+ * @brief
+ * Checks if a 3x3 matrix is the identity matrix.
+ *
+ * @param m The matrix.
+ * @param tolerance The tolerance to use for the comparison.
+ * @return True if the matrix is the identity matrix, false otherwise.
+ */
+bool mat3_is_identity(const double m[3][3], const double tolerance);
+
+/**
+ * @brief
+ * Checks if a 3x3 matrix is orthogonal.
+ *
+ * @param m The matrix.
+ * @param tolerance The tolerance to use for the comparison.
+ * @return True if the matrix is orthogonal, false otherwise.
+ */
+bool mat3_is_orthogonal(const double m[3][3], const double tolerance);
+
+/**
+ * @brief
+ * Checks if a 3x3 matrix is a pure rotation matrix.
+ *
+ * @param m The matrix.
+ * @param tolerance The tolerance to use for the comparison.
+ * @return True if the matrix is a rotation matrix, false otherwise.
+ */
+bool mat3_is_rotation(const double m[3][3], const double tolerance);
 
 #endif

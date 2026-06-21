@@ -147,10 +147,10 @@ void mat3_rotate_x(
 
     out[1][0] = 0.0;
     out[1][1] = c_alpha;
-    out[1][2] = s_alpha;
+    out[1][2] = -s_alpha;
 
     out[2][0] = 0.0;
-    out[2][1] = -s_alpha;
+    out[2][1] = s_alpha;
     out[2][2] = c_alpha;
 
     return;
@@ -168,13 +168,13 @@ void mat3_rotate_y(
 
     out[0][0] = c_alpha;
     out[0][1] = 0.0;
-    out[0][2] = -s_alpha;
+    out[0][2] = s_alpha;
 
     out[1][0] = 0.0;
     out[1][1] = 1.0;
     out[1][2] = 0.0;
 
-    out[2][0] = s_alpha;
+    out[2][0] = -s_alpha;
     out[2][1] = 0.0;
     out[2][2] = c_alpha;
 
@@ -192,10 +192,10 @@ void mat3_rotate_z(
     const double s_alpha = sin(alpha);
 
     out[0][0] = c_alpha;
-    out[0][1] = s_alpha;
+    out[0][1] = -s_alpha;
     out[0][2] = 0.0;
 
-    out[1][0] = -s_alpha;
+    out[1][0] = s_alpha;
     out[1][1] = c_alpha;
     out[1][2] = 0.0;
 
@@ -227,4 +227,63 @@ StatusCode vec3_cross(
     out[2] = z;
 
     return OK;
+}
+
+void mat3_transpose(
+        // Outputs
+        double m_transposed[3][3],
+        // Inputs
+        const double m[3][3]) {
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            m_transposed[i][j] = m[j][i];
+        }
+    }
+
+    return;
+}
+
+double mat3_det(const double m[3][3]) {
+    return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
+           m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) +
+           m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+}
+
+bool mat3_is_identity(const double m[3][3], const double tolerance) {
+    return (
+        fabs(m[0][0] - 1.0) < tolerance &&
+        fabs(m[1][1] - 1.0) < tolerance &&
+        fabs(m[2][2] - 1.0) < tolerance &&
+
+        fabs(m[0][1]) < tolerance &&
+        fabs(m[0][2]) < tolerance &&
+        fabs(m[1][0]) < tolerance &&
+        fabs(m[1][2]) < tolerance &&
+        fabs(m[2][0]) < tolerance &&
+        fabs(m[2][1]) < tolerance
+        );
+}
+
+bool mat3_is_orthogonal(const double m[3][3], const double tolerance) {
+
+    // Local variables
+    double mT[3][3], mTm[3][3];
+
+    mat3_transpose(mT, m);
+    mat3_mul(mTm, mT, m);
+
+    return mat3_is_identity(mTm, tolerance);
+}
+
+bool mat3_is_rotation(const double m[3][3], const double tolerance) {
+
+    // Local variables
+    double det_m = mat3_det(m);
+    bool is_orthogonal, det_is_plus1;
+
+    is_orthogonal = mat3_is_orthogonal(m, tolerance);
+    det_is_plus1 = fabs(det_m - 1.0) < tolerance;
+
+    return is_orthogonal && det_is_plus1;
 }

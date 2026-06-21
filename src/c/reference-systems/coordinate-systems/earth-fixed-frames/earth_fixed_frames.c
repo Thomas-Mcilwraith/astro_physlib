@@ -6,8 +6,6 @@
  */
 
 #include "earth_fixed_frames.h"
-#include "mathematics-library/linear-algebra/matrix-operations/matrix_operations.h"
-#include "utilities/constants/constants.h"
 
 StatusCode rotmat_gcrf_to_sez(
         // Outputs
@@ -53,6 +51,12 @@ StatusCode rotmat_gcrf_to_sez(
     output_rotmat[2][0] = r_site_unit[0];
     output_rotmat[2][1] = r_site_unit[1];
     output_rotmat[2][2] = r_site_unit[2];
+
+    // Check the rotation matrix is valid
+    if (!mat3_is_rotation(output_rotmat, MATRIX_IDENTITY_TOLERANCE)) {
+        LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
+        return ERROR;
+    }
     
     return OK;
 }
@@ -155,4 +159,34 @@ double geocentric_to_geodetic_lat(const double geocentric_lat) {
 
     tan_geodetic_lat = tan(geocentric_lat)/(1 - e2);
     return atan(tan_geodetic_lat);
+}
+
+/*All angles in radians.*/
+StatusCode rotmat_itrs_to_tirs(
+        // Outputs
+        double output_rotmat[3][3],
+        // Inputs
+        const double x_polar_motion_angle,
+        const double y_polar_motion_angle) {
+
+    // Local variables
+    StatusCode status = OK;
+    double r1[3][3], r2[3][3];
+    
+    mat3_rotate_x(r1, y_polar_motion_angle);
+    mat3_rotate_y(r2, x_polar_motion_angle);
+
+    status = mat3_mul(output_rotmat, r2, r1);
+    if (status != OK) {
+        LOG("ERROR", "Failed to compute rotation matrix");
+        return status;
+    }
+
+    // Check the rotation matrix is valid
+    if (!mat3_is_rotation(output_rotmat, MATRIX_IDENTITY_TOLERANCE)) {
+        LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
+        return ERROR;
+    }
+
+    return OK;
 }

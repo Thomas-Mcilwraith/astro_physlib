@@ -81,3 +81,22 @@ StatusCode ecef_to_latlon(
  * @param e_ellip Eccentricity of the earth-surface ellipsiod. See WGS-84.
  */
 double geocentric_to_geodetic_lat(double geocentric_lat);
+
+/**
+ * @brief
+ * Computes the rotation matrix from ITRF to TIRF
+ *
+ * @note
+ * All angles are in radians.
+ *
+ * @param output_rotmat The output rotation matrix.
+ * @param x_polar_motion_angle The x polar motion angle.
+ * @param y_polar_motion_angle The y polar motion angle.
+ * @return 0 if the rotation matrix was computed successfully, 1 otherwise.
+ */
+StatusCode rotmat_itrs_to_tirs(
+        // Outputs
+        double output_rotmat[3][3],
+        // Inputs
+        const double x_polar_motion_angle,
+        const double y_polar_motion_angle);
