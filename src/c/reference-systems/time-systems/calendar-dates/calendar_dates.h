@@ -62,4 +62,14 @@ StatusCode jd_to_date(
  */
 int day_of_year(int year, int month, int day);
 
+
+/**
+ * @brief
+ * Returns the day of the week for a given Julian Day
+ * 
+ * @param julian_day The Julian Day
+ * @return The day of the week 1 -> 7 (Monday -> Sunday)
+ */
+int day_of_week(double julian_day);
+
 #endif

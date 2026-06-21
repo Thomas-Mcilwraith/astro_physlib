@@ -19,19 +19,14 @@ double eq_of_time(double sun_mean_anomaly, double obliquity_of_ecliptic) {
            );
 }
 
-double ut0(double hour_angle, double longitude, bool is_greenwich) {
-    if (is_greenwich) {
-        return 12 + hour_angle;
-    } else {
-        return 12 + hour_angle - angle_to_hour_angle(longitude);
-    }
-}
-
-double ut0_to_ut1(double ut0, double xp, double yp, double longitude,
-                  double geocentric_latitude) {
-    return ut0+(xp*sin(longitude)+yp*cos(longitude))*tan(geocentric_latitude);
+double utc_to_ut1(double jd_utc, double ut1_minus_utc_seconds) {
+    return jd_utc + ut1_minus_utc_seconds/SECONDS_PER_DAY;
 }
 
 double angle_to_hour_angle(double angle) {
     return angle/DEG_TO_RAD*15;
+}
+
+double earth_rotation_angle(double mjd2000_ut1) {
+    return 2*PI*(0.7790572732640 + 1.00273781191135448*mjd2000_ut1);
 }

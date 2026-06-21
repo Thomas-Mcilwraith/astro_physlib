@@ -16,6 +16,8 @@
 #define ARCSEC_TO_RAD = PI/648000.0
 #define RAD_TO_ARCSEC = 648000.0/PI
 
+#define SECONDS_PER_DAY 86400.0
+
 // Function prototypes
 
 #endif

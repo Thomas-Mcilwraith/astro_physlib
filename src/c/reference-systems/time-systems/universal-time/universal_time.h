@@ -20,7 +20,7 @@
  * @param jc1900 The Julian Centuries since Jan 0 1900 @ Greenwich
  * @return Fictitious Mean Sun
  */
-double jc1900_to_FMS(double jc1900);
+double jc1900_to_FMS(const double jc1900);
 
 /**
  * @brief
@@ -30,38 +30,20 @@ double jc1900_to_FMS(double jc1900);
  * @param obliquity_of_ecliptic The obliquity of the ecliptic
  * @return Equation of time
  */
-double eq_of_time(double sun_mean_anomaly, double obliquity_of_ecliptic);
+double eq_of_time(const double sun_mean_anomaly, const double obliquity_of_ecliptic);
 
 /**
  * @brief
- * Calculates the universal time at Greenwich.
+ * Converts jd_utc to jd_ut1
  *
  * @note
- * The longitude is in radians. The output is in hours.
+ * UT1-UTC is retrieved from Online EOP sources.
  * 
- * @param hour_angle The hour angle
- * @param longitude The longitude, measure in radians
- * @param is_greenwich Whether the time is Greenwich or Local
- * @return UT0
+ * @param jd_utc Julian Day
+ * @param ut1_minus_utc_seconds UT1 - UTC in seconds
+ * @return jd_ut1
  */
-double ut0(double hour_angle, double longitude, bool is_greenwich);
-
-/**
- * @brief
- * Determine UT1 from UT0
- *
- * @note
- * Angles are in radians.
- * 
- * @param ut0 The universal time at Greenwich
- * @param xp The x-coordinate of the pole
- * @param yp The y-coordinate of the pole
- * @param longitude The longitude of the observer, measure in radians
- * @param geocentric_latitude The geocentric latitude of the observer, measure in radians
- * @return UT1
- */
-double ut0_to_ut1(double ut0, double xp, double yp, double longitude,
-                  double geocentric_latitude);
+double utc_to_ut1(const double jd_utc, const double ut1_minus_utc_seconds);
 
 /**
  * @brief
@@ -70,14 +52,15 @@ double ut0_to_ut1(double ut0, double xp, double yp, double longitude,
  * @param angle The angle in radians
  * @return The hour angle
  */
-double angle_to_hour_angle(double angle);
-#endif
+double angle_to_hour_angle(const double angle);
 
 /**
  * @brief
- * Returns the day of the week for a given Julian Day
+ * Calculates the earth rotation angle
  * 
- * @param julian_day The Julian Day
- * @return The day of the week 1 -> 7 (Monday -> Sunday)
+ * @param mjd2000_ut1 Modified Julian Date 2000 @ UT1
+ * @return The earth rotation angle
  */
-int day_of_week(double julian_day);
+double earth_rotation_angle(const double mjd2000_ut1);
+
+#endif
