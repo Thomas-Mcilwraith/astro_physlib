@@ -19,6 +19,10 @@ WORD_PRECISION = 8
 VAR_UNITS_SEPARATOR = '~'
 UNITS_NO_UNIT = "-"
 
+NO_TYPE = "UNSPECIFIED"
+NO_SOURCE = "UNSPECIFIED"
+NO_REFERENCE = "UNSPECIFIED"
+
 # Global variables
 logging.basicConfig(
     level=logging.INFO,
@@ -37,6 +41,9 @@ class ParameterEvolutionFile:
     __slots__ = [
         'filepath',
         'comment',
+        'type',
+        'source',
+        'reference',
         'data',
         'n_data_points'
     ]
@@ -44,6 +51,9 @@ class ParameterEvolutionFile:
     def __init__(self):
         self.filepath: str | None = None
         self.comment: str = ""
+        self.type: str | None = None
+        self.source: str | None = None
+        self.reference: str | None = None
         self.data: list[ParameterEvolution] = []
         self.n_data_points: int = 0
         return
@@ -62,6 +72,18 @@ class ParameterEvolutionFile:
     def set_comment(self, comment: str) -> None:
         """Set the comment"""
         self.comment = comment
+
+    def set_type(self, type: str) -> None:
+        """Set the type"""
+        self.type = type
+
+    def set_source(self, source: str) -> None:
+        """Set the source"""
+        self.source = source
+
+    def set_reference(self, reference: str) -> None:
+        """Set the reference"""
+        self.reference = reference
 
     def add_parameter_evolution(
             self,
@@ -109,6 +131,8 @@ class ParameterEvolutionFile:
         if self.filepath is None:
             raise ValueError("Attempted to write a ParameterEvolutionFile to disk with no filename.")
 
+        logging.info(f"Writing ParameterEvolutionFile to {self.filepath}")
+
         with open(self.filepath, 'w') as f:
             f.write(self._generate_file_string())
 
@@ -129,14 +153,26 @@ class ParameterEvolutionFile:
 
         headers = []
         data = []
+        type = ""
+        source = ""
+        reference = ""
         comment = ""
         for i, line in enumerate(lines):
 
-            # Load comment
-            if i == 0 and line[0] == '#':
-                comment = line[2:].strip("\n")
-
-            if line[0] == '#':
+            # Load the metadata
+            if line.startswith("# TYPE:"):
+                type = line[8:].strip("\n")
+                continue
+            elif line.startswith("# SOURCE:"):
+                source = line[10:].strip("\n")
+                continue
+            elif line.startswith("# REFERENCE:"):
+                reference = line[13:].strip("\n")
+                continue
+            elif line.startswith("# COMMENT:"):
+                comment = line[11:].strip("\n")
+                continue
+            elif not line.strip():
                 continue
 
             # Load header line
@@ -164,6 +200,9 @@ class ParameterEvolutionFile:
 
         param_ev = ParameterEvolutionFile()
         param_ev.set_filename(filepath)
+        param_ev.set_type(type)
+        param_ev.set_source(source)
+        param_ev.set_reference(reference)
         param_ev.set_comment(comment)
 
         # Once the data is loaded, allocate the ParameterEvolution structs
@@ -181,6 +220,9 @@ class ParameterEvolutionFile:
     @classmethod
     def from_csv(cls, 
                  filepath: str, 
+                 type: str | None = None,
+                 source: str | None = None,
+                 reference: str | None = None,
                  comment: str = "",
                  header_units: list[str] = [],
                  skip_headers:list[str] = [],
@@ -189,6 +231,9 @@ class ParameterEvolutionFile:
         Read a ParameterEvolutionFile from a CSV file
         
         :param filepath: The path of the CSV file to read from.
+        :param type: The type of data within the file.
+        :param source: The source of the data.
+        :param reference: The reference system of the data, if applicable.
         :param comment: The comment to read from the file.
         :param header_units: The units of the headers. If not provided, the
                              default is UNITS_NO_UNIT.
@@ -215,6 +260,21 @@ class ParameterEvolutionFile:
         out.set_filename(filepath)
         if comment:
             out.set_comment(comment)
+
+        if type:
+            out.set_type(type)
+        else:
+            out.set_type(NO_TYPE)
+
+        if source:
+            out.set_source(source)
+        else:
+            out.set_source(NO_SOURCE)
+
+        if reference:
+            out.set_reference(reference)
+        else:
+            out.set_reference(NO_TYPE)
 
         n_cols = len(df.columns)
         # Check that consistent number of headers/units are provided
@@ -265,7 +325,13 @@ class ParameterEvolutionFile:
                              "with no columns.")
 
         file_string = ""
-        file_string += f"# {self.comment}\n" if self.comment else ""
+
+        file_string += f"# TYPE: {self.type}\n" if self.type else f"# TYPE: {NO_TYPE}\n"
+        file_string += f"# SOURCE: {self.source}\n" if self.source else f"# SOURCE: {NO_SOURCE}\n"
+        file_string += f"# REFERENCE: {self.reference}\n" if self.reference else f"# REFERENCE: {NO_REFERENCE}\n"
+        file_string += f"# COMMENT: {self.comment}\n" if self.comment else "# COMMENT: \n"
+
+        file_string += "\n"
 
         for param_ev in self.data:
             file_string += f"{param_ev.header}{VAR_UNITS_SEPARATOR}{param_ev.units}".ljust(CHARS_PER_SEPARATOR)
@@ -282,17 +348,36 @@ if __name__ == '__main__':
     eop_skip_headers = ["DATE", "DATA_TYPE"]
     eop_units = ["days", "arcsec", "arcsec", "s", "s", "arcsec", "arcsec",
                  "arcsec", "arcsec", "s"]
-    pef = ParameterEvolutionFile.from_csv(
-            "/home/thomas-mcilwraith/Documents/eop_last_5_years.csv",
-            "CELESTRAK_EOP_LAST_5_YEARS",
-            header_units=eop_units,
-            skip_headers=eop_skip_headers
-            )
-    pef.set_filename("/home/thomas-mcilwraith/Documents/test1.pev")
-    pef.write()
+    # pef = ParameterEvolutionFile.from_csv(
+    #         "/home/thomas-mcilwraith/Documents/eop_last_5_years.csv",
+    #         "CELESTRAK_EOP_LAST_5_YEARS",
+    #         header_units=eop_units,
+    #         skip_headers=eop_skip_headers
+    #         )
+    # pef.set_filename("/home/thomas-mcilwraith/Documents/test1.pev")
+    # pef.write()
 
-    pef_from_pev = ParameterEvolutionFile.from_pev("/home/thomas-mcilwraith/Documents/eop_last_5_years.pev")
-    pef_from_pev.set_filename("/home/thomas-mcilwraith/Documents/test2.pev")
-    pef_from_pev.write()
+    # pef = ParameterEvolutionFile.from_pev(r"C:\Users\tmcilwraith\Documents\github\psf_physlib\src\python\test1.pev")
+    # pef.set_filename(r"C:\Users\tmcilwraith\Documents\github\psf_physlib\src\python\test2.pev")
+    # pef.set_comment("")
+    # pef.set_reference(None)
+    # pef.set_source(None)
+    # pef.set_type(None)
+    # pef.write()
+
+    # pef_from_pev = ParameterEvolutionFile.from_pev("/home/thomas-mcilwraith/Documents/eop_last_5_years.pev")
+    # pef_from_pev.set_filename("/home/thomas-mcilwraith/Documents/test2.pev")
+    # pef_from_pev.write()
+
+    csv = r"C:\Users\tmcilwraith\Documents\github\psf_physlib\src\python\eop_last_5_years.csv"
+    pef = ParameterEvolutionFile.from_csv(
+        filepath=csv,
+        type="EOP_LAST_5_YEARS",
+        source="CELESTRAK",
+        header_units=eop_units,
+        skip_headers=eop_skip_headers
+    )
+    pef.set_filename(r"C:\Users\tmcilwraith\Documents\github\psf_physlib\src\python\test3.pev")
+    pef.write()
     exit()
     

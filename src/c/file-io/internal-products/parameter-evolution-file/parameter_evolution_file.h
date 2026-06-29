@@ -15,6 +15,7 @@
 #define WORD_PRECISION 8
 #define VAR_UNITS_SEPARATOR "~"
 
+// Variable Names
 #define ACC "ACC"                // Accepted variable names in header
 #define ACC_X "ACC_X"            // MUST NEVER BE LONGER THAN 10 CHARS
 #define ACC_Y "ACC_Y"
@@ -29,8 +30,11 @@
 #define ALT "ALT"
 #define RHO "RHO"
 #define QUAT "QUAT"
-#define TIME "TIME"
+#define UTC "UTC"
+#define UT1 "UT1"
 
+// Variable units
+#define NO_UNIT "-"
 #define KM "km"                  // Accepted units in header
 #define M "m"                    // MUST NEVER BE LONGER THAN 10 CHARS
 #define S "s"
@@ -44,7 +48,17 @@
 #define MINUTES "mn"
 #define HOURS "hr"
 #define DAYS "d"
-#define NO_UNIT "-"
+#define JD "JD"
+#define MJD2000 "MJD2000"
+
+// ParameterEvolutionFile Types
+#define NO_TYPE "UNSPECIFIED"
+
+// ParameterEvolutionFile Sources
+#define NO_SOURCE "UNSPECIFIED"
+
+// ParameterEvolutionFile References
+#define NO_REFERENCE "UNSPECIFIED"
 
 // Data structure definitions
 
@@ -59,44 +73,56 @@
  * @param n_values The number of values in the array.
  */
 typedef struct {
-    char name[CHARS_PER_WORD];
-    char units[CHARS_PER_WORD];
+    char* name;
+    char* units;
     double* values;
     int n_values;
 } ParameterEvolution;
 
-// Function prototypes
+/**
+ * @brief
+ * This struct contains a dataset (an array of ParameterEvolution structs) plus
+ * some metadata, it can be directly written/read to/from a .pev file.
+ * 
+ * @param parameters An array of parameter evolutions.
+ * @param n_parameters Number of parameter evolutions in parameters array.
+ * @param filename Name of the file associated to (be) this data.
+ * @param type Type of data. This is some context for the data inside parameters.
+ * @param source Source of information.
+ * @param reference Reference frame/system, where applicable.
+ * @param comment Extra information useful to a human, not the computer.
+ */
+typedef struct {
+    ParameterEvolution* parameters;
+    int n_parameters;
+    char* filename;
+    char* type;
+    char* source;
+    char* reference;
+    char* comment;
+} ParameterEvolutionFile;
 
 /**
  * @brief
  * Write an array of Parameter evolution arrays to a file.
  * 
- * @param filename The path of the file to write to.
- * @param params Array pointer to a list of parameter evolutions.
- * @param n_params length of params.
- * @param comment The comment to write to the file.
+ * @param p ParameterEvolutionFile contents + metadata to write to a file.
  */
 StatusCode write_parameter_evolution_file(
-        const char* filename,
-        const ParameterEvolution* params,
-        const int n_params,
-        const char* comment);
+    // Inputs
+    const ParameterEvolutionFile p);
 
 /**
  * @brief
  * Read an array of Parameter evolution arrays from a file.
  * 
- * @param out_params Array pointer to a list of parameter evolutions.
- * @param out_n_params length of out_params.
- * @param out_n_values length of the values in the ParameterEvolution.
- * @param filename The path of the file to read from.
- * @param comment The comment to read from the file.
+ * @param out_p ParameterEvolutionFile object data.
+ * @param filename file to read data from.
  */
 StatusCode read_parameter_evolution_file(
-        ParameterEvolution** out_params, 
-        char* out_comment,
-        int* out_n_params,
-        int* out_n_values,
+        // Outputs
+        ParameterEvolutionFile* out_p,
+        // Inputs
         const char* filename);
 
 /**
@@ -106,5 +132,16 @@ StatusCode read_parameter_evolution_file(
  * @param s The string to remove trailing whitespace from.
  */
 void rtrim(char* s);
+
+/**
+ * @brief
+ * Helper function - Returns the text after a given number of characters
+ * within a string.
+ * 
+ * @param line The entire string
+ * @param prefix_len The length of the prefix, all characters after this will be
+ *                   returned.
+ */
+static char* copy_after_prefix(char* line, int prefix_len);
 
 #endif
