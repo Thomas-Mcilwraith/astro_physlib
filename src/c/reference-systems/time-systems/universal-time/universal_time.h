@@ -54,13 +54,6 @@ double utc_to_ut1(const double jd_utc, const double ut1_minus_utc_seconds);
  */
 double angle_to_hour_angle(const double angle);
 
-/**
- * @brief
- * Calculates the earth rotation angle
- * 
- * @param mjd2000_ut1 Modified Julian Date 2000 @ UT1
- * @return The earth rotation angle
- */
-double earth_rotation_angle(const double mjd2000_ut1);
+
 
 #endif

@@ -100,3 +100,28 @@ StatusCode rotmat_itrs_to_tirs(
         // Inputs
         const double x_polar_motion_angle,
         const double y_polar_motion_angle);
+
+/**
+ * @brief
+ * Calculates the earth rotation angle
+ * 
+ * @param mjd2000_ut1 Modified Julian Date 2000 @ UT1
+ * @return The earth rotation angle
+ */
+double earth_rotation_angle(const double mjd2000_ut1);
+
+/**
+ * @brief
+ * Calculate the rotation matrix from TIRS to CIRS. Such that M x v_tirs = v_cirs
+ * 
+ * @note
+ * Earth rotation angle in radians.
+ * 
+ * @param output_rotmat The output rotation matrix
+ * @param earth_rotation_angle Earth rotation angle, derived directly from UT1.
+ */
+StatusCode rotmat_tirs_to_cirs(
+    // Outputs
+    double output_rotmat[3][3],
+    // Inputs
+    double earth_rotation_angle);

@@ -8,7 +8,6 @@ Date: 20/06/2026
 # Imports
 import requests
 import logging
-from enum import Enum
 
 # Global variables
 logging.basicConfig(
@@ -58,4 +57,4 @@ class CelestrakAPI:
 if __name__ == "__main__":
     api = CelestrakAPI()
     api.get_EOP_last_5_years()
-    api.save_raw_response("/home/thomas-mcilwraith/Documents/eop_last_5_years.csv")
+    api.save_raw_response(r"C:\Users\tmcilwraith\Documents\github\psf_physlib\src\python\eop_last_5_years.csv")

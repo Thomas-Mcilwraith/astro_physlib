@@ -55,7 +55,7 @@
 #define NO_TYPE "UNSPECIFIED"
 
 // ParameterEvolutionFile Sources
-#define NO_SOURCE "UNKNOWN"
+#define NO_SOURCE "UNSPECIFIED"
 
 // ParameterEvolutionFile References
 #define NO_REFERENCE "UNSPECIFIED"
