@@ -173,8 +173,8 @@ StatusCode rotmat_itrs_to_tirs(
     StatusCode status = OK;
     double r1[3][3], r2[3][3];
     
-    mat3_rotate_x(r1, y_polar_motion_angle);
-    mat3_rotate_y(r2, x_polar_motion_angle);
+    mat3_rotate_x(r1, - y_polar_motion_angle);
+    mat3_rotate_y(r2, - x_polar_motion_angle);
 
     status = mat3_mul(output_rotmat, r2, r1);
     if (status != OK) {
@@ -187,6 +187,21 @@ StatusCode rotmat_itrs_to_tirs(
         LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
         return ERROR;
     }
+
+    return OK;
+}
+
+double earth_rotation_angle(double mjd2000_ut1) {
+    return 2*PI*(0.7790572732640 + 1.00273781191135448*mjd2000_ut1);
+}
+
+StatusCode rotmat_tirs_to_cirs(
+    // Outputs
+    double output_rotmat[3][3],
+    // Inputs
+    double earth_rotation_angle) {
+
+    mat3_rotate_z(output_rotmat, earth_rotation_angle);
 
     return OK;
 }

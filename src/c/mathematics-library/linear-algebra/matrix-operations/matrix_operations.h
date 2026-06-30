@@ -112,7 +112,7 @@ StatusCode vec3_rotate(
  * an angle alpha.
  *
  * @note
- * The convention is the **right-hand rule**.
+ * The convention is the **right-hand rule**. This represents an **active** rotation.
  *
  * @param out The output matrix.
  * @param alpha The angle to rotate by.
@@ -129,7 +129,7 @@ void mat3_rotate_x(
  * an angle alpha.
  *
  * @note
- * The convention is the **right-hand rule**.
+ * The convention is the **right-hand rule**. This represents an **active** rotation.
  *
  * @param out The output matrix.
  * @param alpha The angle to rotate by.
@@ -146,7 +146,7 @@ void mat3_rotate_y(
  * an angle alpha.
  *
  * @note
- * The convention is the **right-hand rule**.
+ * The convention is the **right-hand rule**. This represents an **active** rotation.
  *
  * @param out The output matrix.
  * @param alpha The angle to rotate by.

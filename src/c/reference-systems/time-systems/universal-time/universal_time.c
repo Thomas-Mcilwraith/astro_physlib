@@ -26,7 +26,3 @@ double utc_to_ut1(double jd_utc, double ut1_minus_utc_seconds) {
 double angle_to_hour_angle(double angle) {
     return angle/DEG_TO_RAD*15;
 }
-
-double earth_rotation_angle(double mjd2000_ut1) {
-    return 2*PI*(0.7790572732640 + 1.00273781191135448*mjd2000_ut1);
-}
