@@ -92,6 +92,7 @@ double geocentric_to_geodetic_lat(double geocentric_lat);
  * @param output_rotmat The output rotation matrix.
  * @param x_polar_motion_angle The x polar motion angle.
  * @param y_polar_motion_angle The y polar motion angle.
+ * @param tio_locator The TIO locator angle.
  * @return 0 if the rotation matrix was computed successfully, 1 otherwise.
  */
 StatusCode rotmat_itrs_to_tirs(
@@ -99,7 +100,8 @@ StatusCode rotmat_itrs_to_tirs(
         double output_rotmat[3][3],
         // Inputs
         const double x_polar_motion_angle,
-        const double y_polar_motion_angle);
+        const double y_polar_motion_angle,
+        const double tio_locator);
 
 /**
  * @brief
@@ -108,11 +110,26 @@ StatusCode rotmat_itrs_to_tirs(
  * @param mjd2000_ut1 Modified Julian Date 2000 @ UT1
  * @return The earth rotation angle
  */
-double earth_rotation_angle(const double mjd2000_ut1);
+double calculate_earth_rotation_angle(const double mjd2000_ut1);
+
+/**
+ * @brief
+ * Calculates the TIO locator
+ * 
+ * @note
+ * Output is in radians
+ * 
+ * @param mjd2000_tt 
+ */
+double calculate_tio_locator(const double mjd2000_tt);
 
 /**
  * @brief
  * Calculate the rotation matrix from TIRS to CIRS. Such that M x v_tirs = v_cirs
+ * 
+ * @note
+ * Only valid for rotating position vectors into the CIRS frame. For velocity,
+ * see tirs_to_cirs_vel
  * 
  * @note
  * Earth rotation angle in radians.
@@ -124,4 +141,24 @@ StatusCode rotmat_tirs_to_cirs(
     // Outputs
     double output_rotmat[3][3],
     // Inputs
-    double earth_rotation_angle);
+    const double earth_rotation_angle);
+
+/**
+ * @brief
+ * Convert a TIRS velocity vector to CIRS.
+ * 
+ * @param vel_cirs The velocity in the CIRS frame.
+ * @param pos_tirs The position in the TIRS frame.
+ * @param vel_tirs The velocity in the TIRS frame.
+ * @param ang_rate_earth_tirs Angular rotate rate of earth in TIRS. [0 0 w]
+ * @param earth_rotation_angle Earth rotation angle, used to compute rotmat
+ *                             TIRS to CIRS
+ */
+StatusCode convert_tirs_to_cirs_vel(
+    // Outputs
+    double vel_cirs[3],
+    // Inputs
+    const double pos_tirs[3],
+    const double vel_tirs[3],
+    const double ang_rate_earth_tirs[3],
+    const double earth_rotation_angle);

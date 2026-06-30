@@ -167,16 +167,20 @@ StatusCode rotmat_itrs_to_tirs(
         double output_rotmat[3][3],
         // Inputs
         const double x_polar_motion_angle,
-        const double y_polar_motion_angle) {
+        const double y_polar_motion_angle,
+        const double tio_locator) {
 
     // Local variables
     StatusCode status = OK;
-    double r1[3][3], r2[3][3];
-    
+    double r1[3][3], r2[3][3], r3[3][3];
+    double intermediate_rotmat[3][3];
+
     mat3_rotate_x(r1, - y_polar_motion_angle);
     mat3_rotate_y(r2, - x_polar_motion_angle);
+    mat3_rotate_z(r3, tio_locator);
 
-    status = mat3_mul(output_rotmat, r2, r1);
+    status |= mat3_mul(intermediate_rotmat, r2, r1);
+    status |= mat3_mul(output_rotmat, r3, intermediate_rotmat);
     if (status != OK) {
         LOG("ERROR", "Failed to compute rotation matrix");
         return status;
@@ -191,17 +195,59 @@ StatusCode rotmat_itrs_to_tirs(
     return OK;
 }
 
-double earth_rotation_angle(double mjd2000_ut1) {
+double calculate_earth_rotation_angle(const double mjd2000_ut1) {
     return 2*PI*(0.7790572732640 + 1.00273781191135448*mjd2000_ut1);
 }
 
+/*Output is in radians*/
+double calculate_tio_locator(const double mjd2000_tt) {
+    // Convert time to julian centuries since 2000.
+    return - (TIO_LOCATOR_ARCSEC * (mjd2000_tt - 0.5) / 36525) * ARCSEC_TO_RAD;
+}
+
+/*All angles in radians*/
 StatusCode rotmat_tirs_to_cirs(
     // Outputs
     double output_rotmat[3][3],
     // Inputs
-    double earth_rotation_angle) {
+    const double earth_rotation_angle) {
 
     mat3_rotate_z(output_rotmat, earth_rotation_angle);
+
+    return OK;
+}
+
+/*All angles in radians*/
+StatusCode convert_tirs_to_cirs_vel(
+    // Outputs
+    double vel_cirs[3],
+    // Inputs
+    const double pos_tirs[3],
+    const double vel_tirs[3],
+    const double ang_rate_earth_tirs[3],
+    const double earth_rotation_angle) {
+
+    // Local variables
+    StatusCode status = OK;
+    double intermediate_rotmat[3][3];
+    double intermediate_vec[3], intermediate_cross_product[3];
+
+    mat3_rotate_z(intermediate_rotmat, earth_rotation_angle);
+    status |= mat3_mul(intermediate_vec, intermediate_rotmat, vel_tirs);
+    if (status != OK) {
+        LOG("ERROR", "Failed to rotate vel_tirs to intermediate frame");
+    }
+
+    status |= vec3_cross(intermediate_cross_product, ang_rate_earth_tirs,
+                         pos_tirs);
+    if (status != OK) {
+        LOG("ERROR", "Failed to compute cross product");
+    }
+
+    status |= vec_add(3, vel_cirs, intermediate_vec, intermediate_cross_product);
+    if (status != OK) {
+        LOG("ERROR", "Failed to compute v_cirs");
+    }
 
     return OK;
 }

@@ -13,10 +13,12 @@
 #define PI_OVER_2 PI/2.0
 #define DEG_TO_RAD PI/180.0
 #define RAD_TO_DEG 180.0/PI
-#define ARCSEC_TO_RAD = PI/648000.0
-#define RAD_TO_ARCSEC = 648000.0/PI
+#define ARCSEC_TO_RAD PI/648000.0
+#define RAD_TO_ARCSEC 648000.0/PI
 
 #define SECONDS_PER_DAY 86400.0
+
+#define TIO_LOCATOR_ARCSEC -47e-6
 
 // Function prototypes
 
