@@ -26,6 +26,14 @@ StatusCode rotmat_gcrf_to_sez(
         return status;
     }
 
+    // Check that the site is not near the poles, which will cause mathematical
+    // singularity in following cross product
+    if (fabs(vec3_dot(K, r_site_unit)) > VEC_DOT_PARALLEL_THRESH) {
+        LOG("ERROR", "Site is located at the poles. SEZ frame is undefined "
+                     "here. Cannot compute GCRF -> SEZ Rotation");
+        return ERROR;
+    }
+
     status = vec3_cross(east_gcrf, K, r_site_unit);
     status = vec3_unit(east_unit, east_gcrf);
     if (status != OK) {
@@ -195,16 +203,6 @@ StatusCode rotmat_itrs_to_tirs(
     return OK;
 }
 
-double calculate_earth_rotation_angle(const double mjd2000_ut1) {
-    return 2*PI*(0.7790572732640 + 1.00273781191135448*mjd2000_ut1);
-}
-
-/*Output is in radians*/
-double calculate_tio_locator(const double mjd2000_tt) {
-    // Convert time to julian centuries since 2000.
-    return - (TIO_LOCATOR_ARCSEC * (mjd2000_tt - 0.5) / 36525) * ARCSEC_TO_RAD;
-}
-
 /*All angles in radians*/
 StatusCode rotmat_tirs_to_cirs(
     // Outputs
@@ -217,37 +215,48 @@ StatusCode rotmat_tirs_to_cirs(
     return OK;
 }
 
-/*All angles in radians*/
-StatusCode convert_tirs_to_cirs_vel(
-    // Outputs
-    double vel_cirs[3],
-    // Inputs
-    const double pos_tirs[3],
-    const double vel_tirs[3],
-    const double ang_rate_earth_tirs[3],
-    const double earth_rotation_angle) {
-
-    // Local variables
-    StatusCode status = OK;
-    double intermediate_rotmat[3][3];
-    double intermediate_vec[3], intermediate_cross_product[3];
-
-    mat3_rotate_z(intermediate_rotmat, earth_rotation_angle);
-    status |= vec3_rotate(intermediate_vec, intermediate_rotmat, vel_tirs);
-    if (status != OK) {
-        LOG("ERROR", "Failed to rotate vel_tirs to intermediate frame");
-    }
-
-    status |= vec3_cross(intermediate_cross_product, ang_rate_earth_tirs,
-                         pos_tirs);
-    if (status != OK) {
-        LOG("ERROR", "Failed to compute cross product");
-    }
-
-    status |= vec_add(3, vel_cirs, intermediate_vec, intermediate_cross_product);
-    if (status != OK) {
-        LOG("ERROR", "Failed to compute v_cirs");
-    }
-
-    return OK;
+double calculate_earth_rotation_angle(const double mjd2000_ut1) {
+    return 2*PI*(0.7790572732640 + 1.00273781191135448*mjd2000_ut1);
 }
+
+/*Output is in radians*/
+double calculate_tio_locator(const double mjd2000_tt) {
+    // Convert time to julian centuries since 2000.
+    return - (TIO_LOCATOR_ARCSEC * (mjd2000_tt - 0.5) / 36525) * ARCSEC_TO_RAD;
+}
+
+/* We may just be able to apply the following rotation at the end.*/
+// /*All angles in radians*/
+// StatusCode convert_tirs_to_cirs_vel(
+//     // Outputs
+//     double vel_cirs[3],
+//     // Inputs
+//     const double pos_tirs[3],
+//     const double vel_tirs[3],
+//     const double ang_rate_earth_tirs[3],
+//     const double earth_rotation_angle) {
+
+//     // Local variables
+//     StatusCode status = OK;
+//     double intermediate_rotmat[3][3];
+//     double intermediate_vec[3], intermediate_cross_product[3];
+
+//     mat3_rotate_z(intermediate_rotmat, earth_rotation_angle);
+//     status |= vec3_rotate(intermediate_vec, intermediate_rotmat, vel_tirs);
+//     if (status != OK) {
+//         LOG("ERROR", "Failed to rotate vel_tirs to intermediate frame");
+//     }
+
+//     status |= vec3_cross(intermediate_cross_product, ang_rate_earth_tirs,
+//                          pos_tirs);
+//     if (status != OK) {
+//         LOG("ERROR", "Failed to compute cross product");
+//     }
+
+//     status |= vec_add(3, vel_cirs, intermediate_vec, intermediate_cross_product);
+//     if (status != OK) {
+//         LOG("ERROR", "Failed to compute v_cirs");
+//     }
+
+//     return OK;
+// }

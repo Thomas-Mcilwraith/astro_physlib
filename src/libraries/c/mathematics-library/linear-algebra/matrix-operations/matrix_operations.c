@@ -147,10 +147,10 @@ void mat3_rotate_x(
 
     out[1][0] = 0.0;
     out[1][1] = c_alpha;
-    out[1][2] = -s_alpha;
+    out[1][2] = s_alpha;
 
     out[2][0] = 0.0;
-    out[2][1] = s_alpha;
+    out[2][1] = - s_alpha;
     out[2][2] = c_alpha;
 
     return;
@@ -168,13 +168,13 @@ void mat3_rotate_y(
 
     out[0][0] = c_alpha;
     out[0][1] = 0.0;
-    out[0][2] = s_alpha;
+    out[0][2] = - s_alpha;
 
     out[1][0] = 0.0;
     out[1][1] = 1.0;
     out[1][2] = 0.0;
 
-    out[2][0] = -s_alpha;
+    out[2][0] = s_alpha;
     out[2][1] = 0.0;
     out[2][2] = c_alpha;
 
@@ -192,10 +192,10 @@ void mat3_rotate_z(
     const double s_alpha = sin(alpha);
 
     out[0][0] = c_alpha;
-    out[0][1] = -s_alpha;
+    out[0][1] = s_alpha;
     out[0][2] = 0.0;
 
-    out[1][0] = s_alpha;
+    out[1][0] = - s_alpha;
     out[1][1] = c_alpha;
     out[1][2] = 0.0;
 
