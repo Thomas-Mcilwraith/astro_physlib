@@ -1,5 +1,23 @@
 
-# Libraries ------------------------------------------------------------------
+##############################################################################
+# EXTERNAL LIBRARIES ---------------------------------------------------------
+##############################################################################
+
+file(GLOB SOFA_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/external/sofa/*.c"
+)
+
+add_library(sofa STATIC ${SOFA_SOURCES})
+
+target_include_directories(sofa PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/sofa
+)
+
+target_compile_features(sofa PUBLIC c_std_23)
+
+##############################################################################
+# INTERNAL LIBRARIES ---------------------------------------------------------
+##############################################################################
 
 add_library(psf STATIC
 
@@ -18,6 +36,8 @@ add_library(psf STATIC
 
     utilities/logging/log/log.c
 )
+
+target_link_libraries(psf PUBLIC sofa)
 
 # Compiler settings ----------------------------------------------------------
 
