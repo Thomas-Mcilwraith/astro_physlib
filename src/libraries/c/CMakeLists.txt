@@ -10,7 +10,7 @@ file(GLOB SOFA_SOURCES
 add_library(sofa STATIC ${SOFA_SOURCES})
 
 target_include_directories(sofa PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/sofa
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_compile_features(sofa PUBLIC c_std_23)
@@ -28,7 +28,7 @@ add_library(psf STATIC
 
     orbit-dynamics/equations-of-motion/two-body-problem/two_body_problem.c
 
-    reference-systems/coordinate-systems/earth-fixed-frames/earth_fixed_frames.c
+    reference-systems/coordinate-systems/terrestrial-frames/terrestrial_frames.c
     reference-systems/coordinate-systems/orbital-frames/orbital_frames.c
     reference-systems/time-systems/calendar-dates/calendar_dates.c
     reference-systems/time-systems/julian-dates/julian_dates.c

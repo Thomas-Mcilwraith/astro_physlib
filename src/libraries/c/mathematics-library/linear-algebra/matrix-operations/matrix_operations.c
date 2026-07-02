@@ -76,6 +76,21 @@ StatusCode vec3_unit(double out_unit[3],
     return OK;
 }
 
+void mat3_initialise(double out[3][3]) {
+    out[0][0] = 1.0;
+    out[0][1] = 0.0;
+    out[0][2] = 0.0;
+
+    out[1][0] = 0.0;
+    out[1][1] = 1.0;
+    out[1][2] = 0.0;
+
+    out[2][0] = 0.0;
+    out[2][1] = 0.0;
+    out[2][2] = 1.0;
+    return;
+}
+
 StatusCode mat3_mul(
         // Outputs
         double out[3][3],

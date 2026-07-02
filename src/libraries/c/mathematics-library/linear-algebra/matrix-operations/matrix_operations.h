@@ -75,6 +75,14 @@ double vec3_dot(const double v[3], const double w[3]);
 StatusCode vec3_unit(double out_unit[3], const double v[3]);
 
 /**
+ * @brief 
+ * Initialises a 3x3 matrix to the identity matrix.
+ *
+ * @param out The output matrix.
+ */
+void mat3_initialise(double out[3][3]);
+
+/**
  * @brief
  * Multiplies two 3x3 matrices.
  *

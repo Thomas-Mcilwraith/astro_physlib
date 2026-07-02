@@ -19,6 +19,7 @@
 */
 
 #include "math.h"
+#include "utilities/logging/log/log.h"
 
 #ifdef __cplusplus
 extern "C" {
