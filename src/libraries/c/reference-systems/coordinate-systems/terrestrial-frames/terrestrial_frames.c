@@ -7,7 +7,7 @@
 
 #include "terrestrial_frames.h"
 
-StatusCode rotmat_itrs_to_tirs(
+StatusCode rotmat_tirs_to_itrs(
     // Outputs
     double output_rotmat[3][3],
     // Inputs
@@ -38,7 +38,7 @@ StatusCode rotmat_itrs_to_tirs(
     return OK;
 }
 
-StatusCode rotmat_tirs_to_cirs(
+StatusCode rotmat_cirs_to_tirs(
     // Outputs
     double output_rotmat[3][3],
     // Inputs
@@ -67,7 +67,7 @@ StatusCode rotmat_tirs_to_cirs(
     return OK;
 }
 
-StatusCode rotmat_cirs_to_gcrs(
+StatusCode rotmat_gcrs_to_cirs(
     // Outputs
     double output_rotmat[3][3],
     // Inputs

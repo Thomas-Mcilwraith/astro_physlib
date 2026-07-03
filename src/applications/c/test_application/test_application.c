@@ -3,10 +3,9 @@
 #include "reference-systems/time-systems/time-formats/time_formats.h"
 #include "reference-systems/time-systems/epoch-transformations/epoch_transformations.h"
 #include "mathematics-library/linear-algebra/matrix-operations/matrix_operations.h"
+#include "external/sofa/sofa.h"
 
 int main() {
-    init_log();
-
     // Local variables
     const int year = 2019;
     const int month = 1;
@@ -14,16 +13,24 @@ int main() {
     const int hour = 12;
     const int minute = 0;
     const double seconds = 0.0;
-    const double utc_ut1_sec = -0.0417339;
-    const double xp_arcsec = 0.068294;
-    const double yp_arcsec = 0.277004;
-    const double dx_CIP = 0.426 / 1000 * ARCSEC_TO_RAD;
-    const double dy_CIP = 0.170 / 1000 * ARCSEC_TO_RAD;
+    const double gcrf_vec[3] = {-2981784, 5207055, 3161595};
+    // -------------------------------------------------------------------------
+    const double utc_ut1_sec = -0.0417339; //                                  |
+    const double xp = 0.068294 * ARCSEC_TO_RAD; //                             |
+    const double yp = 0.277004 * ARCSEC_TO_RAD; //            FROM EOP DATA    |
+    const double dx_CIP = 0.426 / 1000 * ARCSEC_TO_RAD; //                     |
+    const double dy_CIP = 0.170 / 1000 * ARCSEC_TO_RAD; //                     |
+    // -------------------------------------------------------------------------
     StatusCode status = OK;
     double utc_jd, ut1_jd, tt_jd, tai_jd, tt_mjd2000;
     double tio_locator, earth_rotation_angle;
-    double R_itrs_tirs[3][3], R_tirs_cirs[3][3], R_cirs_gcrs[3][3], R_itrs_gcrs[3][3];
-    double R_temp1[3][3], R_temp2[3][3];
+    double R_gcrs_tirs[3][3], R_cirs_tirs[3][3], R_gcrs_cirs[3][3], R_tirs_itrs[3][3], R_gcrs_itrs[3][3];
+    double itrf_vec[3];
+
+    init_log();
+    LOG("INFO", "Computing GCRF -> ITRF Rotation");
+    LOG("INFO", "Date: %04d-%02d-%02d %02d:%02d:%06.3f UTC", year, month, day, hour, minute, seconds);
+    LOG("INFO", "GCRF Input vec : %f    %f    %f", gcrf_vec[0], gcrf_vec[1], gcrf_vec[2]);
 
     status = date_to_jd(&utc_jd, year, month, day, hour, minute, seconds);
     if (status != OK) {
@@ -50,42 +57,46 @@ int main() {
     tio_locator = get_tio_locator(tt_jd);
     LOG("INFO", "TIO locator is: %.16f", tio_locator);
 
-    status = rotmat_itrs_to_tirs(R_itrs_tirs, xp_arcsec*ARCSEC_TO_RAD,
-                                 yp_arcsec*ARCSEC_TO_RAD, tio_locator, false);
-    if (status != OK) {
-        LOG("ERROR", "Failed to compute rotation ITRS -> TIRS");
-        return ERROR;
-    }
-
     earth_rotation_angle = get_earth_rotation_angle(ut1_jd);
     LOG("INFO", "Earth Rotation Angle is: %.10f", earth_rotation_angle);
 
-    status = rotmat_tirs_to_cirs(R_tirs_cirs, earth_rotation_angle, false);
-    if (status != OK) {
-        LOG("ERROR", "Failed to compute rotation TIRS -> CIRS");
-        return ERROR;
-    }
-
-    status = rotmat_cirs_to_gcrs(R_cirs_gcrs, tt_mjd2000, 2, dx_CIP, dy_CIP, false);
+    status = rotmat_gcrs_to_cirs(R_gcrs_cirs, tt_mjd2000, 2, dx_CIP, dy_CIP, false);
     if (status != OK) {
         LOG("ERROR", "Failed to compute rotation CIRS -> GCRS");
         return ERROR;
     }
 
-    // ITRS -> CIRS rotation
-    mat3_mul(R_temp1, R_tirs_cirs, R_itrs_tirs);
-    mat3_mul(R_itrs_gcrs, R_cirs_gcrs, R_temp1);
+    status = rotmat_cirs_to_tirs(R_cirs_tirs, earth_rotation_angle, false);
+    if (status != OK) {
+        LOG("ERROR", "Failed to compute rotation TIRS -> CIRS");
+        return ERROR;
+    }
 
-    mat3_transpose(R_temp2, R_itrs_gcrs);
+    status = rotmat_tirs_to_itrs(R_tirs_itrs, xp, yp, tio_locator, false);
+    if (status != OK) {
+        LOG("ERROR", "Failed to compute rotation ITRS -> TIRS");
+        return ERROR;
+    }
+
+    // Assemble rotations
+    mat3_mul(R_gcrs_tirs, R_cirs_tirs, R_gcrs_cirs);
+    mat3_mul(R_gcrs_itrs, R_tirs_itrs, R_gcrs_tirs);
 
     // Final results(s)
-    const double input_vec[3] = {-5762640, -1682738, 3156028};
     double output_vec[3];
 
-    // vec3_rotate(output_vec, R_itrs_gcrs, input_vec);
-    vec3_rotate(output_vec, R_temp2, input_vec);
-    LOG("INFO", "Input vec : %f    %f    %f", input_vec[0], input_vec[1], input_vec[2]);
-    LOG("INFO", "Output vec: %f    %f    %f", output_vec[0], output_vec[1], output_vec[2]);
+    vec3_rotate(output_vec, R_gcrs_itrs, gcrf_vec);
+    LOG("INFO", "ITRF Output vec: %f    %f    %f", output_vec[0], output_vec[1], output_vec[2]);
 
+    LOG("INFO", "Performing comparison with iauC2t06a method");
+    double iauR_gcrs_itrs[3][3];
+    double iau_output_vec[3];
+    iauC2t06a(tt_jd, 0.0, ut1_jd, 0.0, xp, yp, iauR_gcrs_itrs);
+    vec3_rotate(iau_output_vec, iauR_gcrs_itrs, gcrf_vec);
+    LOG("INFO", "ITRF Output vec (iau): %f    %f    %f", output_vec[0], output_vec[1], output_vec[2]);
+
+    LOG("INFO", "RMS difference with IAU: %.10f", fabs(vec3_norm(iau_output_vec) - vec3_norm(output_vec)));
+
+    LOG("INFO", "Program complete.");
     return OK;
 }

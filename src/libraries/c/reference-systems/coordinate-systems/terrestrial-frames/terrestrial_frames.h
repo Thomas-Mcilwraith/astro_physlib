@@ -14,18 +14,18 @@
 // Function prototypes
 
 /**
- * @brief Generate the rotation matrix from ITRS to TIRS
+ * @brief Generate the rotation matrix from TIRS -> ITRS.
  *
  * @note All angles in radians. 
+ * @note Such that r_itrs = output_rotmat x v_tirs
  *
- * @param output_rotmat The rotation matrix from ITRS to TIRS
+ * @param output_rotmat The rotation matrix from TIRS -> ITRS
  * @param xp The X-coordinate of the Celestial Intermediate Pole (in radians)
  * @param yp The Y-coordinate of the Celestial Intermediate Pole (in radians)
  * @param tio_locator The TIO locator (in radians)
  * @param transpose Transpose the output matrix
- * @return StatusCode
  */
-StatusCode rotmat_itrs_to_tirs(
+StatusCode rotmat_tirs_to_itrs(
     // Outputs
     double output_rotmat[3][3],
     // Inputs
@@ -35,15 +35,16 @@ StatusCode rotmat_itrs_to_tirs(
     const bool transpose);
 
 /**
- * @brief Generate the rotation matrix from TIRS to CIRS
+ * @brief Generate the rotation matrix from CIRS -> TIRS
  *
  * @note All angles in radians
+ * @note Such that r_tirs = output_rotmat x r_cirs
  *
- * @param output_rotmat TIRS to CIRS rotation matrix
+ * @param output_rotmat CIRS -> TIRS rotation matrix
  * @param earth_rotation_angle The Earth Rotation Angle, in radians.
  * @param transpose Transpose the output matrix
  */
-StatusCode rotmat_tirs_to_cirs(
+StatusCode rotmat_cirs_to_tirs(
     // Outputs
     double output_rotmat[3][3],
     // Inputs
@@ -51,21 +52,22 @@ StatusCode rotmat_tirs_to_cirs(
     const bool transpose);
 
 /**
- * @brief Generate the rotation matrix from CIRS to GCRS
+ * @brief Generate the rotation matrix from GCRS -> CIRS
  * 
  * @note CIP offsets are included in IERS/Celestrak EOP data.
+ * @note Such that r_cirs = output_rotmat x r_gcrs
  *
- * @param output_rotmat CIRS to GCRS rotation matrix
+ * @param output_rotmat GCRS -> CIRS rotation matrix
  * @param tt_mjd2000 The Terrestrial Time in Modified Julian Date (MJD) 2000
  * @param c2i_method The C2I method to use:
  *      0: IAU 2000A
  *      1: IAU 2000B
  *      2: IAU 2006A
  * @param dX_cip CIP offset in radians. Only required if c2i_method==2.
- * @param dX_cip CIP offset in radians. Only required if c2i_method==2.
+ * @param dY_cip CIP offset in radians. Only required if c2i_method==2.
  * @param transpose Transpose the output matrix
  */
-StatusCode rotmat_cirs_to_gcrs(
+StatusCode rotmat_gcrs_to_cirs(
     // Outputs
     double output_rotmat[3][3],
     // Inputs

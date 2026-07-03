@@ -95,7 +95,7 @@ double geocentric_to_geodetic_lat(double geocentric_lat);
  * @param tio_locator The TIO locator angle.
  * @return 0 if the rotation matrix was computed successfully, 1 otherwise.
  */
-StatusCode rotmat_itrs_to_tirs(
+StatusCode rotmat_tirs_to_itrs(
         // Outputs
         double output_rotmat[3][3],
         // Inputs
@@ -113,7 +113,7 @@ StatusCode rotmat_itrs_to_tirs(
  * @param output_rotmat The output rotation matrix
  * @param earth_rotation_angle Earth rotation angle, derived directly from UT1.
  */
-StatusCode rotmat_tirs_to_cirs(
+StatusCode rotmat_cirs_to_tirs(
     // Outputs
     double output_rotmat[3][3],
     // Inputs
