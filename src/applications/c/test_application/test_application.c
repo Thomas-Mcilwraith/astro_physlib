@@ -12,19 +12,26 @@
 
 int main(int argc, char *argv[]) {
     // Local variables
-    const char *filename = "/home/admin/github/test.json";
     TestApplicationInputs main_options;
+    ExecutionSettings execution_settings;
     StatusCode status = OK;
     double utc_jd, ut1_jd, tt_jd, tai_jd, tt_mjd2000;
     double tio_locator, earth_rotation_angle;
     double R_gcrs_tirs[3][3], R_cirs_tirs[3][3], R_gcrs_cirs[3][3], R_tirs_itrs[3][3], R_gcrs_itrs[3][3];
     double itrf_vec[3];
 
-    init_log();
-
-    status = read_TestApplicationInputs(&main_options, filename);
+    status = parse_cmdline(&execution_settings, argc, argv);
     if (status != OK) {
-        LOG(ERROR, "Failed to read JSON file: %s", filename);
+        LOG(ERROR, "Failed to parse command line");
+        return ERROR;
+    }
+
+    init_log(execution_settings.run_title, execution_settings.working_directory);
+
+    status = read_TestApplicationInputs(&main_options, execution_settings.working_directory,
+                                        execution_settings.run_title);
+    if (status != OK) {
+        LOG(ERROR, "Failed to read Inputs");
         return ERROR;
     }
 
@@ -116,6 +123,8 @@ int main(int argc, char *argv[]) {
 
     LOG(INFO, "RMS difference with IAU: %.10f", fabs(vec3_norm(iau_output_vec) - vec3_norm(output_vec)));
 
+    free_TestApplicationInputs(&main_options);
+    close_log();
     LOG(INFO, "Program complete.");
     return OK;
 }

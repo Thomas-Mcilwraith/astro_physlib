@@ -4,6 +4,7 @@
 // Standard libraries
 
 // Local libraries
+#include "utilities/misc/parse-cmdline/parse_cmdline.h"
 #include "utilities/logging/log/log.h"
 #include "reference-systems/coordinate-systems/terrestrial-frames/terrestrial_frames.h"
 #include "reference-systems/time-systems/time-formats/time_formats.h"

@@ -35,6 +35,7 @@ add_library(psf STATIC
     reference-systems/time-systems/epoch-transformations/epoch_transformations.c
 
     utilities/logging/log/log.c
+    utilities/misc/parse-cmdline/parse_cmdline.c
 )
 
 target_link_libraries(psf PUBLIC sofa cjson)

@@ -12,16 +12,21 @@ StatusCode read_TestApplicationInputs(
         // Outputs
         TestApplicationInputs *options,
         // Inputs
-        const char *filename) {
+        const char *working_directory,
+        const char *run_title) {
 
     // Local variables
     cJSON *json;
     StatusCode status = OK;
+    char filepath[1024];
+
+    // Construct the file path
+    snprintf(filepath, sizeof(filepath), "%s/%s/%s.json", working_directory, WORKDIR_INPUTS, run_title);
 
     // Read the JSON file
-    status = read_json(&json, filename);
+    status = read_json(&json, filepath);
     if (status != OK) {
-        LOG(ERROR, "Failed to read JSON file: %s", filename);
+        LOG(ERROR, "Failed to read JSON file: %s", filepath);
         return ERROR;
     }
 
