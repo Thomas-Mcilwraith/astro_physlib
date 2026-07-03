@@ -52,6 +52,8 @@ StatusCode rotmat_tirs_to_cirs(
 
 /**
  * @brief Generate the rotation matrix from CIRS to GCRS
+ * 
+ * @note CIP offsets are included in IERS/Celestrak EOP data.
  *
  * @param output_rotmat CIRS to GCRS rotation matrix
  * @param tt_mjd2000 The Terrestrial Time in Modified Julian Date (MJD) 2000
@@ -59,6 +61,8 @@ StatusCode rotmat_tirs_to_cirs(
  *      0: IAU 2000A
  *      1: IAU 2000B
  *      2: IAU 2006A
+ * @param dX_cip CIP offset in radians. Only required if c2i_method==2.
+ * @param dX_cip CIP offset in radians. Only required if c2i_method==2.
  * @param transpose Transpose the output matrix
  */
 StatusCode rotmat_cirs_to_gcrs(
@@ -67,6 +71,8 @@ StatusCode rotmat_cirs_to_gcrs(
     // Inputs
     const double tt_mjd2000,
     const int c2i_method,
+    const double dX_cip,
+    const double dY_cip,
     const bool transpose
     );
 

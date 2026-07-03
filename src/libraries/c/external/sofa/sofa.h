@@ -19,7 +19,6 @@
 */
 
 #include "math.h"
-#include "utilities/logging/log/log.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -207,7 +206,7 @@ void iauBp06(double date1, double date2,
 void iauBpn2xy(double rbpn[3][3], double *x, double *y);
 void iauC2i00a(double date1, double date2, double rc2i[3][3]);
 void iauC2i00b(double date1, double date2, double rc2i[3][3]);
-void iauC2i06a(double date1, double date2, double rc2i[3][3]);
+void iauC2i06a(double date1, double date2, double dX, double dY, double rc2i[3][3]);
 void iauC2ibpn(double date1, double date2, double rbpn[3][3],
                double rc2i[3][3]);
 void iauC2ixy(double date1, double date2, double x, double y,

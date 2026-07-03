@@ -1,6 +1,6 @@
 #include "sofa.h"
 
-void iauC2i06a(double date1, double date2, double rc2i[3][3])
+void iauC2i06a(double date1, double date2, double dX, double dY, double rc2i[3][3])
 /*
 **  - - - - - - - - - -
 **   i a u C 2 i 0 6 a
@@ -16,6 +16,7 @@ void iauC2i06a(double date1, double date2, double rc2i[3][3])
 **
 **  Given:
 **     date1,date2 double       TT as a 2-part Julian Date (Note 1)
+**     dX, dY       CIP observed/predicted offsets. (In radians)
 **
 **  Returned:
 **     rc2i        double[3][3] celestial-to-intermediate matrix (Note 2)
@@ -79,6 +80,10 @@ void iauC2i06a(double date1, double date2, double rc2i[3][3])
 
 /* Extract the X,Y coordinates. */
    iauBpn2xy(rbpn, &x, &y);
+
+/* Apply observed offsets. */
+   x += dX;
+   y += dY;
 
 /* Obtain the CIO locator. */
    s = iauS06(date1, date2, x, y);

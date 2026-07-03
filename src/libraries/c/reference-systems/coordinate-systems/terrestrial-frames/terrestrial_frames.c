@@ -73,6 +73,8 @@ StatusCode rotmat_cirs_to_gcrs(
     // Inputs
     const double tt_mjd2000,
     const int c2i_method,
+    const double dX_cip,
+    const double dY_cip,
     const bool transpose) {
 
     // Local variables
@@ -90,7 +92,7 @@ StatusCode rotmat_cirs_to_gcrs(
             iauC2i00b(jd_part_1, tt_mjd2000, output_rotmat);
             break;
         case 2:
-            iauC2i06a(jd_part_1, tt_mjd2000, output_rotmat);
+            iauC2i06a(jd_part_1, tt_mjd2000, dX_cip, dY_cip, output_rotmat);
             break;
         default:
             LOG("ERROR", "Invalid C2I method: %d", c2i_method);
