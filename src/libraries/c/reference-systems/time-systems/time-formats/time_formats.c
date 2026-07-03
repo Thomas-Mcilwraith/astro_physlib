@@ -120,3 +120,4 @@ double jd_to_mjdGPS(const double julian_day) {
 double jd_to_jc(const double julian_day) {
     return julian_day/36525.0;
 }
+

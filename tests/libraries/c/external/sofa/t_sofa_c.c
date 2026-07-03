@@ -2183,7 +2183,7 @@ static void t_c2i06a(int *status)
    double rc2i[3][3];
 
 
-   iauC2i06a(2400000.5, 53736.0, rc2i);
+   iauC2i06a(2400000.5, 53736.0, 0.0, 0.0, rc2i);
 
    vvd(rc2i[0][0], 0.9999998323037159379, 1e-12,
        "iauC2i06a", "11", status);

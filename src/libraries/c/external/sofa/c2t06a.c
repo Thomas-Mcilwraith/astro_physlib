@@ -88,7 +88,7 @@ void iauC2t06a(double tta, double ttb, double uta, double utb,
 
 
 /* Form the celestial-to-intermediate matrix for this TT. */
-   iauC2i06a(tta, ttb, rc2i);
+   iauC2i06a(tta, ttb, 0.0, 0.0, rc2i);
 
 /* Predict the Earth rotation angle for this UT1. */
    era = iauEra00(uta, utb);
