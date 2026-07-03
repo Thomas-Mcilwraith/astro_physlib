@@ -1,15 +1,12 @@
 /*
- * calendar_dates.c
+ * time_formats.c
  *
  * Author: Thomas McIlwraith
  * Date: 19/06/2026
  */
 
-#include "calendar_dates.h"
+#include "time_formats.h"
 
-/**
- * Only valid from 1900 -> 2100.
- */
 StatusCode date_to_jd(
         // Outputs
         double *julian_day,
@@ -104,3 +101,22 @@ int day_of_year(int year, int month, int day) {
     return day_of_year;
 }
 
+double jd_to_mjd(const double julian_day) {
+    return julian_day - 2400000.5;
+}
+
+double jd_to_mjd2000(const double julian_day) {
+    return julian_day - 2451545.0;
+}
+
+double jd_to_mjd1900(const double julian_day) {
+    return julian_day - 2415021.0;
+}
+
+double jd_to_mjdGPS(const double julian_day) {
+    return julian_day - 2444244.5;
+}
+
+double jd_to_jc(const double julian_day) {
+    return julian_day/36525.0;
+}
