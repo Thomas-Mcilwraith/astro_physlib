@@ -9,6 +9,12 @@ add_library(sofa STATIC ${SOFA_SOURCES})
 target_include_directories(sofa PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_features(sofa PUBLIC c_std_23)
 
+# CJSON
+file(GLOB CJSON_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/external/cjson/*.c")
+add_library(cjson STATIC ${CJSON_SOURCES})
+target_include_directories(cjson PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_features(cjson PUBLIC c_std_23)
+
 ##############################################################################
 # INTERNAL LIBRARIES ---------------------------------------------------------
 ##############################################################################
@@ -16,6 +22,7 @@ target_compile_features(sofa PUBLIC c_std_23)
 add_library(psf STATIC
 
     file-io/internal-products/parameter-evolution-file/parameter_evolution_file.c
+    file-io/internal-products/read-json/read_json.c
 
     mathematics-library/linear-algebra/matrix-operations/matrix_operations.c
     mathematics-library/numerical-methods/runge-kutta-4/runge_kutta_4.c
@@ -30,7 +37,7 @@ add_library(psf STATIC
     utilities/logging/log/log.c
 )
 
-target_link_libraries(psf PUBLIC sofa)
+target_link_libraries(psf PUBLIC sofa cjson)
 
 # Compiler settings ----------------------------------------------------------
 
