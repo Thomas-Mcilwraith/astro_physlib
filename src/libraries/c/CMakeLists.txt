@@ -3,16 +3,10 @@
 # EXTERNAL LIBRARIES ---------------------------------------------------------
 ##############################################################################
 
-file(GLOB SOFA_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/external/sofa/*.c"
-)
-
+# SOFA
+file(GLOB SOFA_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/external/sofa/*.c")
 add_library(sofa STATIC ${SOFA_SOURCES})
-
-target_include_directories(sofa PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
+target_include_directories(sofa PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_features(sofa PUBLIC c_std_23)
 
 ##############################################################################
@@ -42,7 +36,6 @@ target_link_libraries(psf PUBLIC sofa)
 # Compiler settings ----------------------------------------------------------
 
 target_compile_features(psf PUBLIC c_std_23)
-
 target_compile_options(psf PRIVATE
     -Wall
     -Wextra
@@ -52,6 +45,4 @@ target_compile_options(psf PRIVATE
 
 # Linker settings ------------------------------------------------------------
 
-target_include_directories(psf PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
+target_include_directories(psf PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
