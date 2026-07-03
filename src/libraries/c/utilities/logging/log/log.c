@@ -20,7 +20,7 @@ time_t start_time;
 void logger(
         const char* filepath,
         const int line,
-        const char* lvl,
+        const StatusCode lvl,
         const char* fmt,
         ...){
     // Local variables
@@ -28,7 +28,27 @@ void logger(
     long elapsed = (long)difftime(now, start_time);
     char mins[10], secs[10];
     const char* filename;
+    const char *lvl_string;
     va_list args;
+
+    // Select the level string, based on the StatusCode
+    switch (lvl) {
+        case 0:
+            lvl_string = "INFO";
+            break;
+        case 1:
+            lvl_string = "ERROR";
+            break;
+        case 2:
+            lvl_string = "WARNING";
+            break;
+        case 3:
+            lvl_string = "INFO";
+            break;
+        default:
+            lvl_string = "INFO";
+            break;
+    }
 
     // Initialise the variable argument list
     va_start(args, fmt);
@@ -40,12 +60,12 @@ void logger(
     filename = strrchr(filepath, '/');
     filename = (filename) ? filename + 1 : filepath;
 
-    if (strcmp(lvl, "INFO") == 0) {
-        printf("%s:%s [%s] ", mins, secs, lvl);
+    if (strcmp(lvl_string, "INFO") == 0) {
+        printf("%s:%s [%s] ", mins, secs, lvl_string);
         vprintf(fmt, args);
         printf("\n");
     } else {
-        printf("%s:%s [%s] [%s ln%d] ", mins, secs, lvl, filename, line);
+        printf("%s:%s [%s] [%s ln%d] ", mins, secs, lvl_string, filename, line);
         vprintf(fmt, args);
         printf("\n");
     }
@@ -63,7 +83,7 @@ void logger(
 void init_log(void){
     start_time = time(NULL);
     struct tm *utc = gmtime(&start_time);
-    LOG("INFO", "Program Start Time: %04d-%02d-%02dT%02d:%02d:%02dZ (UTC)",
+    LOG(INFO, "Program Start Time: %04d-%02d-%02dT%02d:%02d:%02dZ (UTC)",
         utc->tm_year + 1900,
         utc->tm_mon + 1,
         utc->tm_mday,

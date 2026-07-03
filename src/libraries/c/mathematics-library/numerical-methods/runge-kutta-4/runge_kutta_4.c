@@ -37,7 +37,7 @@ StatusCode runge_kutta_4(
     double k_buf[n_dims], u_buf[n_dims];
 
     if (!out_u1 || !u0 || !ode || n_dims <= 0 || dt == 0.0){
-        LOG("ERROR", "Invalid input(s) to runge_kutta_4");
+        LOG(ERROR, "Invalid input(s) to runge_kutta_4");
         return ERROR;
     }
 
@@ -45,7 +45,7 @@ StatusCode runge_kutta_4(
     // At every step, we compute terms k_buf=k*dt/2 then u_buf=u0+k_buf
     status = ode(k1, u0, t0, params);
     if (status != OK){
-        LOG("ERROR", "Failed to compute k1 in RK4");
+        LOG(ERROR, "Failed to compute k1 in RK4");
         return status;
     }
 
@@ -54,7 +54,7 @@ StatusCode runge_kutta_4(
     vec_add(n_dims, u_buf, u0, k_buf);
     status = ode(k2, u_buf, t0 + 0.5 * dt, params);
     if (status != OK){
-        LOG("ERROR", "Failed to compute k2 in RK4");
+        LOG(ERROR, "Failed to compute k2 in RK4");
         return status;
     }
 
@@ -63,7 +63,7 @@ StatusCode runge_kutta_4(
     vec_add(n_dims, u_buf, u0, k_buf);
     status = ode(k3, u_buf, t0 + 0.5 * dt, params);
     if (status != OK){
-        LOG("ERROR", "Failed to compute k3 in RK4");
+        LOG(ERROR, "Failed to compute k3 in RK4");
         return status;
     }
 
@@ -72,7 +72,7 @@ StatusCode runge_kutta_4(
     vec_add(n_dims, u_buf, u0, k_buf);
     status = ode(k4, u_buf, t0 + dt, params);
     if (status != OK){
-        LOG("ERROR", "Failed to compute k4 in RK4");
+        LOG(ERROR, "Failed to compute k4 in RK4");
         return status;
     }
 

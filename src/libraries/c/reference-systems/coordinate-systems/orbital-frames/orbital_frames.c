@@ -27,7 +27,7 @@ StatusCode rotmat_gcrf_to_lvlh(
     v_norm = vec3_norm(v_gcrf);
 
     if (r_norm < MATRIX_SMALL_NUMBER || v_norm < MATRIX_SMALL_NUMBER) {
-        LOG("ERROR", "Tried to convert GCRF to LVLH with 0 length vector");
+        LOG(ERROR, "Tried to convert GCRF to LVLH with 0 length vector");
         return ERROR;
     }
 
@@ -39,13 +39,13 @@ StatusCode rotmat_gcrf_to_lvlh(
     status = vec3_cross(w, r_unit, v_unit);
     status = vec3_unit(w_unit, w);
     if (status != OK) {
-        LOG("ERROR", "Failed to compute w unit vector");
+        LOG(ERROR, "Failed to compute w unit vector");
         return status;
     }
 
     w_norm = vec3_norm(w);
     if (w_norm < ORBITAL_ANG_MOMENTUM_THRESHOLD) {
-        LOG("ERROR", "r_gcrf and v_gcrf are ~parallel");
+        LOG(ERROR, "r_gcrf and v_gcrf are ~parallel");
         return ERROR;
     }
 
@@ -68,7 +68,7 @@ StatusCode rotmat_gcrf_to_lvlh(
 
     // Check the rotation matrix is valid
     if (!mat3_is_rotation(rotmat_out, MATRIX_IDENTITY_TOLERANCE)) {
-        LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
+        LOG(ERROR, "Computed rotation matrix is not a pure rotation matrix");
         return ERROR;
     }
 

@@ -22,14 +22,14 @@
 //
 //     status = vec3_unit(r_site_unit, r_site_gcrf);
 //     if (status != OK) {
-//         LOG("ERROR", "Failed to compute r_site unit vector");
+//         LOG(ERROR, "Failed to compute r_site unit vector");
 //         return status;
 //     }
 //
 //     // Check that the site is not near the poles, which will cause mathematical
 //     // singularity in following cross product
 //     if (fabs(vec3_dot(K, r_site_unit)) > VEC_DOT_PARALLEL_THRESH) {
-//         LOG("ERROR", "Site is located at the poles. SEZ frame is undefined "
+//         LOG(ERROR, "Site is located at the poles. SEZ frame is undefined "
 //                 "here. Cannot compute GCRF -> SEZ Rotation");
 //         return ERROR;
 //     }
@@ -37,14 +37,14 @@
 //     status = vec3_cross(east_gcrf, K, r_site_unit);
 //     status = vec3_unit(east_unit, east_gcrf);
 //     if (status != OK) {
-//         LOG("ERROR", "Failed to compute east unit vector");
+//         LOG(ERROR, "Failed to compute east unit vector");
 //         return status;
 //     }
 //
 //     status = vec3_cross(south_gcrf, east_unit, r_site_unit);
 //     status = vec3_unit(south_unit, south_gcrf);
 //     if (status != OK) {
-//         LOG("ERROR", "Failed to compute south unit vector");
+//         LOG(ERROR, "Failed to compute south unit vector");
 //         return status;
 //     }
 //
@@ -62,7 +62,7 @@
 //
 //     // Check the rotation matrix is valid
 //     if (!mat3_is_rotation(output_rotmat, MATRIX_IDENTITY_TOLERANCE)) {
-//         LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
+//         LOG(ERROR, "Computed rotation matrix is not a pure rotation matrix");
 //         return ERROR;
 //     }
 //
@@ -88,7 +88,7 @@
 //     double C_ellip, S_ellip;
 //
 //     if (geodetic_lat < -PI_OVER_2 || geodetic_lat > PI_OVER_2) {
-//         LOG("ERROR", "Invalid geodetic latitude - wrong quadrant");
+//         LOG(ERROR, "Invalid geodetic latitude - wrong quadrant");
 //         return ERROR;
 //     }
 //
@@ -120,7 +120,7 @@
 //     double r_norm = vec3_norm(r_ecef);
 //
 //     if (r_norm < MATRIX_SMALL_NUMBER) {
-//         LOG("ERROR", "Zero length ECEF vector");
+//         LOG(ERROR, "Zero length ECEF vector");
 //         return ERROR;
 //     }
 //
@@ -138,7 +138,7 @@
 //                 );
 //
 //         if (++i > GEODETIC_LATTITUDE_MAX_ITER) {
-//             LOG("ERROR", "Failed to converge on geodetic latitude");
+//             LOG(ERROR, "Failed to converge on geodetic latitude");
 //             return ERROR;
 //         }
 //     }
@@ -147,7 +147,7 @@
 //     if (fabs(*geodetic_lat) > 89*DEG_TO_RAD) {
 //         S_ellip = C_ellip * (1 - e_ellip2);
 //         *height_above_ellipsoid = r_ecef[2] / sin(*geodetic_lat) - S_ellip;
-//         LOG("WARNING", "r_ecef is near poles, using S_ellip approximation in" 
+//         LOG(WARNING, "r_ecef is near poles, using S_ellip approximation in" 
 //                 "ecef_to_latlon");
 //     } else {
 //         *height_above_ellipsoid = r_delta / cos(*geodetic_lat) - C_ellip;
@@ -190,13 +190,13 @@
 //     status |= mat3_mul(intermediate_rotmat, r2, r1);
 //     status |= mat3_mul(output_rotmat, r3, intermediate_rotmat);
 //     if (status != OK) {
-//         LOG("ERROR", "Failed to compute rotation matrix");
+//         LOG(ERROR, "Failed to compute rotation matrix");
 //         return status;
 //     }
 //
 //     // Check the rotation matrix is valid
 //     if (!mat3_is_rotation(output_rotmat, MATRIX_IDENTITY_TOLERANCE)) {
-//         LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
+//         LOG(ERROR, "Computed rotation matrix is not a pure rotation matrix");
 //         return ERROR;
 //     }
 //
@@ -244,18 +244,18 @@
 // //     mat3_rotate_z(intermediate_rotmat, earth_rotation_angle);
 // //     status |= vec3_rotate(intermediate_vec, intermediate_rotmat, vel_tirs);
 // //     if (status != OK) {
-// //         LOG("ERROR", "Failed to rotate vel_tirs to intermediate frame");
+// //         LOG(ERROR, "Failed to rotate vel_tirs to intermediate frame");
 // //     }
 //
 // //     status |= vec3_cross(intermediate_cross_product, ang_rate_earth_tirs,
 // //                          pos_tirs);
 // //     if (status != OK) {
-// //         LOG("ERROR", "Failed to compute cross product");
+// //         LOG(ERROR, "Failed to compute cross product");
 // //     }
 //
 // //     status |= vec_add(3, vel_cirs, intermediate_vec, intermediate_cross_product);
 // //     if (status != OK) {
-// //         LOG("ERROR", "Failed to compute v_cirs");
+// //         LOG(ERROR, "Failed to compute v_cirs");
 // //     }
 //
 // //     return OK;

@@ -23,7 +23,7 @@ StatusCode vec_add(const int dims,
         const double* v2) {
 
     if (!out_sum || !v1 || !v2 || dims <= 0) {
-        LOG("ERROR", "Invalid inputs");
+        LOG(ERROR, "Invalid inputs");
         return ERROR;
     }
 
@@ -42,7 +42,7 @@ StatusCode vec_scale(const int dims,
         const double scale) {
 
     if (!v || dims <= 0) {
-        LOG("ERROR", "Invalid inputs");
+        LOG(ERROR, "Invalid inputs");
         return ERROR;
     }
 
@@ -65,7 +65,7 @@ StatusCode vec3_unit(double out_unit[3],
     const double norm = vec3_norm(v);
 
     if (norm < MATRIX_SMALL_NUMBER) {
-        LOG("ERROR", "Tried to compute direction of 0 length vector");
+        LOG(ERROR, "Tried to compute direction of 0 length vector");
         return ERROR;
     }
 
@@ -102,11 +102,11 @@ StatusCode mat3_mul(
     int i, j, k;
 
     if (!out || !m1 || !m2) {
-        LOG("ERROR", "Invalid input (NULL pointer)");
+        LOG(ERROR, "Invalid input (NULL pointer)");
         return ERROR;
     }
     if (out == m1 || out == m2) {
-        LOG("ERROR", "Invalid input (output is input)");
+        LOG(ERROR, "Invalid input (output is input)");
         return ERROR;
     }
 
@@ -131,11 +131,11 @@ StatusCode vec3_rotate(
         const double vec[3]) {
 
     if (!out || !mat || !vec) {
-        LOG("ERROR", "Invalid input (NULL pointer)");
+        LOG(ERROR, "Invalid input (NULL pointer)");
         return ERROR;
     }
     if (out == vec) {
-        LOG("ERROR", "Invalid input (output is input)");
+        LOG(ERROR, "Invalid input (output is input)");
         return ERROR;
     }
 
@@ -229,7 +229,7 @@ StatusCode vec3_cross(
         const double v2[3]) {
 
     if (!out || !v1 || !v2) {
-        LOG("ERROR", "Invalid input pointers");
+        LOG(ERROR, "Invalid input pointers");
         return ERROR;
     }
 

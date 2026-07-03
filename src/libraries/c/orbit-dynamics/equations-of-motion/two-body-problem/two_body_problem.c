@@ -32,7 +32,7 @@ StatusCode compute_two_body_derivative(
     // Compute the normal of the position vector.
     r_norm = vec3_norm(u);
     if (r_norm <= TWO_BODY_PROBLEM_SMALL_R_THRESHOLD) {
-        LOG("ERROR", "Zero denominator detected in twobody_acceleration()");
+        LOG(ERROR, "Zero denominator detected in twobody_acceleration()");
         return ERROR;
     }
 
@@ -71,14 +71,14 @@ StatusCode compute_two_body_derivative(
 
 //     if (!out_state_array || !params || !initial_state || !time_array
 //         || n_points <= 0) {
-//         LOG("ERROR", "Invalid input(s) to generate_twobody_ephemeris");
+//         LOG(ERROR, "Invalid input(s) to generate_twobody_ephemeris");
 //         return ERROR;
 //     }
 
 //     // The first solution is always the initial condition
 //     memcpy(out_state_array[0], initial_state, 6 * sizeof(double));
 
-//     LOG("INFO", "Propagating Arc");
+//     LOG(INFO, "Propagating Arc");
 
 //     for (int i = 1; i < n_points; i++) {
 //         stepsize = time_array[i] - time_array[i-1];
@@ -89,12 +89,12 @@ StatusCode compute_two_body_derivative(
 //             (void *)params
 //         );
 //         if (status != OK){
-//             LOG("ERROR", "Failed to resolve Two Body Problem acceleration");
+//             LOG(ERROR, "Failed to resolve Two Body Problem acceleration");
 //             return status;
 //         }
 //     }
 
-//     LOG("INFO", "Arc Complete");
+//     LOG(INFO, "Arc Complete");
 
 //     return OK;
 // }
@@ -128,8 +128,8 @@ StatusCode compute_two_body_derivative(
 
 //     // Parse CLI arguments
 //     if (argc - 1 != TWO_BODY_PROBLEM_C_NARGS) {
-//         LOG("ERROR", "Incorrect program arguments");
-//         LOG("INFO", "Required Args: <mu> <r1> <r2> <r3> <v1> <v2> <v3> <tf>");
+//         LOG(ERROR, "Incorrect program arguments");
+//         LOG(INFO, "Required Args: <mu> <r1> <r2> <r3> <v1> <v2> <v3> <tf>");
 //         return ERROR;
 //     }
 //     mu = strtod(argv[1], NULL);
@@ -141,12 +141,12 @@ StatusCode compute_two_body_derivative(
 //     state_array[0][4] = strtod(argv[6], NULL);
 //     state_array[0][5] = strtod(argv[7], NULL);
 
-//     LOG("INFO", "Loaded Args:");
-//     LOG("INFO", "mu = %f", mu);
-//     LOG("INFO", "tf = %f", tf);
-//     LOG("INFO", "pos = (%f, %f, %f)",
+//     LOG(INFO, "Loaded Args:");
+//     LOG(INFO, "mu = %f", mu);
+//     LOG(INFO, "tf = %f", tf);
+//     LOG(INFO, "pos = (%f, %f, %f)",
 //         state_array[0][0], state_array[0][1], state_array[0][2]);
-//     LOG("INFO", "vel = (%f, %f, %f)",
+//     LOG(INFO, "vel = (%f, %f, %f)",
 //         state_array[0][3], state_array[0][4], state_array[0][5]);
 
 //     // Load parameters
@@ -164,7 +164,7 @@ StatusCode compute_two_body_derivative(
 //         time_array, n_steps
 //     );
 //     if (status != OK) {
-//         LOG("ERROR", "Failed to Generate Two-Body Ephemeris");
+//         LOG(ERROR, "Failed to Generate Two-Body Ephemeris");
 //         return status;
 //     }
 
@@ -196,10 +196,10 @@ StatusCode compute_two_body_derivative(
 //          n_param_evos, "Two-Body Ephemeris"
 //     );
 //     if (status != OK){
-//         LOG("ERROR", "Failed to write parameter evolution file");
+//         LOG(ERROR, "Failed to write parameter evolution file");
 //         return status;
 //     }
-//     LOG("INFO", "Parameter Evolution File written: %s", "two_body_problem.pef");
+//     LOG(INFO, "Parameter Evolution File written: %s", "two_body_problem.pef");
 
 //     return OK;
 // }

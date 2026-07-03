@@ -31,7 +31,8 @@ extern time_t start_time;
 typedef enum {
     OK,
     ERROR,
-    WARNING
+    WARNING,
+    INFO
 } StatusCode;
 
 // Function prototypes
@@ -43,13 +44,13 @@ typedef enum {
  *
  * @param filepath The name of the file that called the logger function.
  * @param line The line number in the file that called the logger function.
- * @param lvl The level of the message, either INFO, WARNING, or ERROR.
+ * @param lvl The StatusCode associated to the message.
  * @param fmt The message to be logged.
  */
 void logger(
         const char* filepath,
         const int line,
-        const char* lvl,
+        const StatusCode lvl,
         const char* fmt, ...);
 
 /**

@@ -31,7 +31,7 @@ StatusCode rotmat_tirs_to_itrs(
 
     // Check the rotation matrix is valid
     if (!mat3_is_rotation(output_rotmat, MATRIX_IDENTITY_TOLERANCE)) {
-        LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
+        LOG(ERROR, "Computed rotation matrix is not a pure rotation matrix");
         return ERROR;
     }
 
@@ -60,7 +60,7 @@ StatusCode rotmat_cirs_to_tirs(
 
     // Check the rotation matrix is valid
     if (!mat3_is_rotation(output_rotmat, MATRIX_IDENTITY_TOLERANCE)) {
-        LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
+        LOG(ERROR, "Computed rotation matrix is not a pure rotation matrix");
         return ERROR;
     }
 
@@ -95,7 +95,7 @@ StatusCode rotmat_gcrs_to_cirs(
             iauC2i06a(jd_part_1, tt_mjd2000, dX_cip, dY_cip, output_rotmat);
             break;
         default:
-            LOG("ERROR", "Invalid C2I method: %d", c2i_method);
+            LOG(ERROR, "Invalid C2I method: %d", c2i_method);
             return ERROR;
     }
 
@@ -106,7 +106,7 @@ StatusCode rotmat_gcrs_to_cirs(
 
     // Check the rotation matrix is valid
     if (!mat3_is_rotation(output_rotmat, MATRIX_IDENTITY_TOLERANCE)) {
-        LOG("ERROR", "Computed rotation matrix is not a pure rotation matrix");
+        LOG(ERROR, "Computed rotation matrix is not a pure rotation matrix");
         return ERROR;
     }
 

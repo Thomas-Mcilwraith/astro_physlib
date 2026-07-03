@@ -39,7 +39,7 @@ StatusCode utc_to_tai(
 
     sofa_status = iauUtctai(utc_jd, 0.0, &tai1, &tai2);
     if (sofa_status == -1) {
-        LOG("ERROR", "Bad date passed to UTC->TAI conversion");
+        LOG(ERROR, "Bad date passed to UTC->TAI conversion");
         return ERROR;
     }
 
@@ -47,7 +47,7 @@ StatusCode utc_to_tai(
     *tai_jd = tai1 + tai2;
 
     if (sofa_status == 1) {
-        LOG("WARNING", "Dubious year detected. Input UTC is too late/early to "
+        LOG(WARNING, "Dubious year detected. Input UTC is too late/early to "
                        "accurately convert to TAI;");
         return WARNING;
     }

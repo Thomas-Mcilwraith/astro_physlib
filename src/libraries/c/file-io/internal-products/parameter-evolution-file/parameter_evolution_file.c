@@ -22,13 +22,13 @@ StatusCode write_parameter_evolution_file(
     char name_and_units[CHARS_PER_COL];
 
     if (!p.filename || !p.parameters || p.n_parameters <= 0) {
-        LOG("ERROR", "Invalid ParameterEvolutionFile input");
+        LOG(ERROR, "Invalid ParameterEvolutionFile input");
         return ERROR;
     }
 
     for (i = 1; i < p.n_parameters; i++) {
         if (p.parameters[i].n_values != p.parameters[0].n_values) {
-            LOG("ERROR",
+            LOG(ERROR,
                 "All arrays written to a .pev must have the same length");
             return ERROR;
         }
@@ -36,7 +36,7 @@ StatusCode write_parameter_evolution_file(
 
     FILE* fp = fopen(p.filename, "w");
     if (!fp) {
-        LOG("ERROR", "Failed to open file %s", p.filename);
+        LOG(ERROR, "Failed to open file %s", p.filename);
         return ERROR;
     }
 
@@ -108,13 +108,13 @@ StatusCode read_parameter_evolution_file(
     int n_values = 0;
 
     if (!out_p || !filename) {
-        LOG("ERROR", "Invalid input to read_parameter_evolution_file");
+        LOG(ERROR, "Invalid input to read_parameter_evolution_file");
         return ERROR;
     }
 
     FILE* fp = fopen(filename, "r");
     if (!fp) {
-        LOG("ERROR", "Failed to open file %s", filename);
+        LOG(ERROR, "Failed to open file %s", filename);
         return ERROR;
     }
 
@@ -141,7 +141,7 @@ StatusCode read_parameter_evolution_file(
             out_p->type = copy_after_prefix(buffer, 7);
             if (!out_p->type) {
                 fclose(fp);
-                LOG("ERROR", "Failed to allocate memory for type");
+                LOG(ERROR, "Failed to allocate memory for type");
                 return ERROR;
             }
             continue;
@@ -151,7 +151,7 @@ StatusCode read_parameter_evolution_file(
             out_p->source = copy_after_prefix(buffer, 9);
             if (!out_p->source) {
                 fclose(fp);
-                LOG("ERROR", "Failed to allocate memory for source");
+                LOG(ERROR, "Failed to allocate memory for source");
                 return ERROR;
             }
             continue;
@@ -161,7 +161,7 @@ StatusCode read_parameter_evolution_file(
             out_p->reference = copy_after_prefix(buffer, 12);
             if (!out_p->reference) {
                 fclose(fp);
-                LOG("ERROR", "Failed to allocate memory for reference");
+                LOG(ERROR, "Failed to allocate memory for reference");
                 return ERROR;
             }
             continue;
@@ -171,7 +171,7 @@ StatusCode read_parameter_evolution_file(
             out_p->comment = copy_after_prefix(buffer, 10);
             if (!out_p->comment) {
                 fclose(fp);
-                LOG("ERROR", "Failed to allocate memory for comment");
+                LOG(ERROR, "Failed to allocate memory for comment");
                 return ERROR;
             }
             continue;
@@ -187,7 +187,7 @@ StatusCode read_parameter_evolution_file(
 
     if (feof(fp)) {
         fclose(fp);
-        LOG("ERROR", "No header line found in file %s", filename);
+        LOG(ERROR, "No header line found in file %s", filename);
         return ERROR;
     }
 
@@ -198,7 +198,7 @@ StatusCode read_parameter_evolution_file(
     if (n_params <= 0) {
         fclose(fp);
         free(out_p->comment);
-        LOG("ERROR", "No parameters found in header");
+        LOG(ERROR, "No parameters found in header");
         return ERROR;
     }
 
@@ -208,7 +208,7 @@ StatusCode read_parameter_evolution_file(
     if (!params) {
         fclose(fp);
         free(out_p->comment);
-        LOG("ERROR", "Failed to allocate memory for params");
+        LOG(ERROR, "Failed to allocate memory for params");
         return ERROR;
     }
 
@@ -228,7 +228,7 @@ StatusCode read_parameter_evolution_file(
             fclose(fp);
             free(params);
             free(out_p->comment);
-            LOG("ERROR", "Separator not found in column %d", i);
+            LOG(ERROR, "Separator not found in column %d", i);
             return ERROR;
         }
 
@@ -254,7 +254,7 @@ StatusCode read_parameter_evolution_file(
             free(params);
             free(out_p->comment);
 
-            LOG("ERROR", "Failed to allocate memory for parameter metadata");
+            LOG(ERROR, "Failed to allocate memory for parameter metadata");
             return ERROR;
         }
 
@@ -283,7 +283,7 @@ StatusCode read_parameter_evolution_file(
             free(params);
             free(out_p->comment);
 
-            LOG("ERROR", "Failed to allocate memory for parameter values");
+            LOG(ERROR, "Failed to allocate memory for parameter values");
             return ERROR;
         }
     }
@@ -318,7 +318,7 @@ StatusCode read_parameter_evolution_file(
                     free(params);
                     free(out_p->comment);
 
-                    LOG("ERROR", "Failed to reallocate parameter values");
+                    LOG(ERROR, "Failed to reallocate parameter values");
                     return ERROR;
                 }
 

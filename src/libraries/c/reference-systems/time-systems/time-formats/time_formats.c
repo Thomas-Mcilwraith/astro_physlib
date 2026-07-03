@@ -15,8 +15,8 @@ StatusCode date_to_jd(
         const int hour, const int minute, const double second) {
 
     if (year<0 || month<0 || day<0 || hour<0 || minute<0 || second<0.0) {
-        LOG("ERROR", "Negative date elements in date_to_jd");
-        LOG("INFO", "%d/%d/%d %d:%d:%f",
+        LOG(ERROR, "Negative date elements in date_to_jd");
+        LOG(INFO, "%d/%d/%d %d:%d:%f",
             year, month, day, hour, minute, second);
         return ERROR;
     }
@@ -29,7 +29,7 @@ StatusCode date_to_jd(
     );
 
     if (year < 1900 || year > 2100) {
-        LOG("WARNING", "Date outwith valid period for date -> JD conversion "
+        LOG(WARNING, "Date outwith valid period for date -> JD conversion "
                        "(1900 < date < 2100).");
         return WARNING;
     }
@@ -46,7 +46,7 @@ StatusCode jd_to_date(
         const double julian_day) {
 
     if (julian_day <= 0.0) {
-        LOG("ERROR", "Negative Julian Day in jd_to_date");
+        LOG(ERROR, "Negative Julian Day in jd_to_date");
         return ERROR;
     }
 
