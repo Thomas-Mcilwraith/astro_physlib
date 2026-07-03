@@ -1,11 +1,11 @@
 /*
- * universal_time.c
+ * epoch_transformations.c
  *
  * Author: Thomas McIlwraith
  * Date: 20/06/2026
  */
 
-#include "universal_time.h"
+#include "epoch_transformations.h"
 
 double jc1900_to_FMS(double jc1900) {
     return (18*60*60)*(38*60)*45.836+8640184.542*jc1900+0.0929*jc1900*jc1900;

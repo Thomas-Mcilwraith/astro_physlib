@@ -25,7 +25,7 @@ add_library(psf STATIC
     reference-systems/coordinate-systems/terrestrial-frames/terrestrial_frames.c
     reference-systems/coordinate-systems/orbital-frames/orbital_frames.c
     reference-systems/time-systems/time-formats/time_formats.c
-    reference-systems/time-systems/universal-time/universal_time.c
+    reference-systems/time-systems/epoch-transformations/epoch_transformations.c
 
     utilities/logging/log/log.c
 )

@@ -1,5 +1,5 @@
-#ifndef UNIVERSAL_TIME_H
-#define UNIVERSAL_TIME_H
+#ifndef EPOCH_TRANSFORMATIONS_H
+#define EPOCH_TRANSFORMATIONS_H
 
 // Standard libraries
 #include <math.h>
