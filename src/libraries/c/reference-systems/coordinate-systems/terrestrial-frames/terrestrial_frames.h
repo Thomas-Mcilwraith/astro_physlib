@@ -76,4 +76,17 @@ StatusCode rotmat_cirs_to_gcrs(
     const bool transpose
     );
 
+/**
+ * @brief Compute the TIO locator for a given terrestrial time
+ * 
+ * @param tt_jd Terrestrial time, expressed in julian days.
+ */
+double get_tio_locator(const double tt_jd);
+
+/**
+ * @brief Compute Earth rotation angle
+ * 
+ * @param ut1_jd UT1 time, expressed in Julian days.
+ */
+double get_earth_rotation_angle(const double ut1_jd);
 #endif

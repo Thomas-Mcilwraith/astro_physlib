@@ -112,3 +112,11 @@ StatusCode rotmat_cirs_to_gcrs(
 
     return OK;
 }
+
+double get_tio_locator(const double tt_jd) {
+    return iauSp00(tt_jd, 0.0);
+}
+
+double get_earth_rotation_angle(const double ut1_jd) {
+    return iauEra00(ut1_jd, 0.0);
+}

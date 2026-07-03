@@ -26,3 +26,45 @@ double utc_to_ut1(double jd_utc, double ut1_minus_utc_seconds) {
 double angle_to_hour_angle(double angle) {
     return angle/DEG_TO_RAD*15;
 }
+
+StatusCode utc_to_tai(
+    // Outputs
+    double *tai_jd,
+    // Inputs
+    const double utc_jd) {
+
+    // Local variables
+    double tai1, tai2;
+    int sofa_status;
+
+    sofa_status = iauUtctai(utc_jd, 0.0, &tai1, &tai2);
+    if (sofa_status == -1) {
+        LOG("ERROR", "Bad date passed to UTC->TAI conversion");
+        return ERROR;
+    }
+
+    // Output JD is sum of SOFA JD parts
+    *tai_jd = tai1 + tai2;
+
+    if (sofa_status == 1) {
+        LOG("WARNING", "Dubious year detected. Input UTC is too late/early to "
+                       "accurately convert to TAI;");
+        return WARNING;
+    }
+
+    return OK;
+}
+
+/**
+ * @brief Converts TAI to Terrestrial time (TT)
+ * 
+ * @param tai_jd TAI time (julian days)
+ */
+double tai_to_tt(const double tai_jd) {
+
+    // Local variables
+    double tt1, tt2;
+
+    iauTaitt(tai_jd, 0.0, &tt1, &tt2);
+    return tt1 + tt2;
+}

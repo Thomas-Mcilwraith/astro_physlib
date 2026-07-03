@@ -6,7 +6,9 @@
 #include <stdbool.h>
 
 // Local libraries
+#include "utilities/logging/log/log.h"
 #include "utilities/constants/constants.h"
+#include "external/sofa/sofa.h"
 
 // Variable and Macro definitions
 
@@ -54,6 +56,18 @@ double utc_to_ut1(const double jd_utc, const double ut1_minus_utc_seconds);
  */
 double angle_to_hour_angle(const double angle);
 
+/**
+ * @brief Converts UTC to TAI
+ * 
+ * @param tai_jd Pointer to TAI time
+ * @param utc_jd UTC time
+ */
+StatusCode utc_to_tai(
+    // Outputs
+    double *tai_jd,
+    // Inputs
+    const double utc_jd);
 
+double tai_to_tt(const double tai_jd);
 
 #endif
