@@ -15,7 +15,7 @@
 #include "reference-systems/time-systems/epoch-transformations/epoch_transformations.h"
 #include "mathematics-library/linear-algebra/matrix-operations/matrix_operations.h"
 #include "external/sofa/sofa.h"
-#include "test_application_inputs.h"
+#include "test_application_interfaces.h"
 
 int main(int argc, char *argv[]) {
     // Program configuration

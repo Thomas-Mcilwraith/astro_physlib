@@ -6,7 +6,7 @@
  * 
  */
 
-#include "test_application_inputs.h"
+#include "test_application_interfaces.h"
 
 StatusCode read_TestApplicationInputs(
         // Outputs

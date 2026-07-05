@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "year",
+    "month",
+    "day",
+    "hour",
+    "minute",
+    "seconds",
+    "gcrf_vec",
+    "utc_ut1_sec",
+    "xp",
+    "yp",
+    "dx_CIP",
+    "dy_CIP",
+    "extra_values"
+  ],
+  "properties": {
+    "year": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "UTC calendar year."
+    },
+    "month": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12,
+      "description": "UTC calendar month (1-12)."
+    },
+    "day": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 31,
+      "description": "UTC day of the month."
+    },
+    "hour": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 23,
+      "description": "UTC hour of the day (0-23)."
+    },
+    "minute": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 59,
+      "description": "UTC minute of the hour (0-59)."
+    },
+    "seconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 60,
+      "description": "UTC seconds, including fractional seconds."
+    },
+    "gcrf_vec": {
+      "type": "array",
+      "description": "Position vector in the Geocentric Celestial Reference Frame (GCRF), expressed in meters as [x, y, z].",
+      "items": {
+        "type": "number",
+        "description": "Cartesian coordinate component in meters."
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "utc_ut1_sec": {
+      "type": "number",
+      "description": "Difference between UTC and UT1 (UT1 − UTC), in seconds."
+    },
+    "xp": {
+      "type": "number",
+      "description": "Polar motion x-coordinate (xp), in radians."
+    },
+    "yp": {
+      "type": "number",
+      "description": "Polar motion y-coordinate (yp), in radians."
+    },
+    "dx_CIP": {
+      "type": "number",
+      "description": "Correction to the Celestial Intermediate Pole (CIP) x-coordinate (dX), in radians."
+    },
+    "dy_CIP": {
+      "type": "number",
+      "description": "Correction to the Celestial Intermediate Pole (CIP) y-coordinate (dY), in radians."
+    },
+    "extra_values": {
+      "type": "array",
+      "description": "Additional numeric values. Used to test the reading of dynamic arrays.",
+      "items": {
+        "type": "number",
+        "description": "An additional numeric value."
+      }
+    }
+  }
+}
