@@ -15,6 +15,12 @@ add_library(cjson STATIC ${CJSON_SOURCES})
 target_include_directories(cjson PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_features(cjson PUBLIC c_std_23)
 
+# SGP4
+file(GLOB SGP4_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/external/sgp4/*.c")
+add_library(sgp4 STATIC ${SGP4_SOURCES})
+target_include_directories(sgp4 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_features(sgp4 PUBLIC c_std_23)
+
 ##############################################################################
 # INTERNAL LIBRARIES ---------------------------------------------------------
 ##############################################################################
