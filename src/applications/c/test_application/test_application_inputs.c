@@ -58,6 +58,24 @@ StatusCode read_TestApplicationInputs(
             cJSON_GetArrayItem(extra, i)->valuedouble;
     }
 
+    // Log all loaded values
+    LOG(INFO, "Loaded Input: Year: %d", options->year);
+    LOG(INFO, "Loaded Input: Month: %d", options->month);
+    LOG(INFO, "Loaded Input: Day: %d", options->day);
+    LOG(INFO, "Loaded Input: Hour: %d", options->hour);
+    LOG(INFO, "Loaded Input: Minute: %d", options->minute);
+    LOG(INFO, "Loaded Input: Seconds: %f", options->seconds);
+    LOG(INFO, "Loaded Input: UTC_UT1_Sec: %f", options->utc_ut1_sec);
+    LOG(INFO, "Loaded Input: XP: %f", options->xp);
+    LOG(INFO, "Loaded Input: YP: %f", options->yp);
+    LOG(INFO, "Loaded Input: DX_CIP: %f", options->dx_CIP);
+    LOG(INFO, "Loaded Input: DY_CIP: %f", options->dy_CIP);
+    LOG(INFO, "Loaded Input: GCRF Vec: %f    %f    %f", options->gcrf_vec[0], options->gcrf_vec[1], options->gcrf_vec[2]);
+    LOG(INFO, "Loaded Input: Extra Values: %d", options->n_extra_values);
+    for (int i = 0; i < options->n_extra_values; i++) {
+        LOG(INFO, "Loaded Input: Extra Values[%d]: %f", i, options->extra_values[i]);
+    }
+
     cJSON_Delete(json);
     return OK;
 }

@@ -4,21 +4,32 @@
  * Author: Thomas McIlwraith
  * Date: 03/07/2026
  * 
- * Computs an example conversion from GCRF to ITRF.
+ * Computes an example conversion from GCRF to ITRF.
  * 
  */
 
-#include "test_application.h"
+#include "utilities/misc/parse-cmdline/parse_cmdline.h"
+#include "utilities/logging/log/log.h"
+#include "reference-systems/coordinate-systems/terrestrial-frames/terrestrial_frames.h"
+#include "reference-systems/time-systems/time-formats/time_formats.h"
+#include "reference-systems/time-systems/epoch-transformations/epoch_transformations.h"
+#include "mathematics-library/linear-algebra/matrix-operations/matrix_operations.h"
+#include "external/sofa/sofa.h"
+#include "test_application_inputs.h"
 
 int main(int argc, char *argv[]) {
-    // Local variables
+    // Program configuration
+    const char *program_name = "test_application";
     TestApplicationInputs main_options;
     ExecutionSettings execution_settings;
+
+    // Program variables
     StatusCode status = OK;
     double utc_jd, ut1_jd, tt_jd, tai_jd, tt_mjd2000;
     double tio_locator, earth_rotation_angle;
     double R_gcrs_tirs[3][3], R_cirs_tirs[3][3], R_gcrs_cirs[3][3], R_tirs_itrs[3][3], R_gcrs_itrs[3][3];
     double itrf_vec[3];
+    double output_vec[3];
 
     status = parse_cmdline(&execution_settings, argc, argv);
     if (status != OK) {
@@ -26,7 +37,7 @@ int main(int argc, char *argv[]) {
         return ERROR;
     }
 
-    init_log(execution_settings.run_title, execution_settings.working_directory);
+    init_log(execution_settings.run_title, execution_settings.working_directory, program_name);
 
     status = read_TestApplicationInputs(&main_options, execution_settings.working_directory,
                                         execution_settings.run_title);
@@ -35,12 +46,7 @@ int main(int argc, char *argv[]) {
         return ERROR;
     }
 
-    LOG(INFO, "length of extra_values: %d", main_options.n_extra_values);
-    for (int i = 0; i < main_options.n_extra_values; i++) {
-        LOG(INFO, "extra_values[%d]: %f", i, main_options.extra_values[i]);
-    }
-
-    // Unpack the main options
+    // Unpack the main options [WILL NOT DO THIS IN REAL APPICATIONS]
     const int year = main_options.year;
     const int month = main_options.month;
     const int day = main_options.day;
@@ -109,8 +115,6 @@ int main(int argc, char *argv[]) {
     mat3_mul(R_gcrs_itrs, R_tirs_itrs, R_gcrs_tirs);
 
     // Final results(s)
-    double output_vec[3];
-
     vec3_rotate(output_vec, R_gcrs_itrs, gcrf_vec);
     LOG(INFO, "ITRF Output vec: %f    %f    %f", output_vec[0], output_vec[1], output_vec[2]);
 
@@ -120,11 +124,11 @@ int main(int argc, char *argv[]) {
     iauC2t06a(tt_jd, 0.0, ut1_jd, 0.0, xp, yp, iauR_gcrs_itrs);
     vec3_rotate(iau_output_vec, iauR_gcrs_itrs, gcrf_vec);
     LOG(INFO, "ITRF Output vec (iau): %f    %f    %f", output_vec[0], output_vec[1], output_vec[2]);
-
     LOG(INFO, "RMS difference with IAU: %.10f", fabs(vec3_norm(iau_output_vec) - vec3_norm(output_vec)));
 
+    // Free memory
+    LOG(INFO, "Program complete: %s %s", program_name, execution_settings.run_title);
     free_TestApplicationInputs(&main_options);
     close_log();
-    LOG(INFO, "Program complete.");
     return OK;
 }

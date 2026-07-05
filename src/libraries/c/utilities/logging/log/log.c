@@ -9,7 +9,6 @@
 #include "log.h"
 
 // start time and log file pointer are stored globally
-time_t start_time;
 static FILE *log_fp = NULL;
 
 void logger(
@@ -20,25 +19,26 @@ void logger(
         ...){
     // Local variables
     time_t now = time(NULL);
-    long elapsed = (long)difftime(now, start_time);
-    char mins[10], secs[10];
     const char* filename;
     const char *lvl_string;
-    va_list args;
+    va_list args, copy;
+
+    struct tm utc;
+    char timestamp[21];  // "YYYY-MM-DDTHH:MM:SSS"
+    gmtime_r(&now, &utc);
+    strftime(timestamp, sizeof(timestamp),
+             "%Y-%m-%dT%H:%M:%S", &utc);
 
     // Select the level string, based on the StatusCode
     switch (lvl) {
-        case 0:
+        case INFO:
             lvl_string = "INFO";
             break;
-        case 1:
+        case ERROR:
             lvl_string = "ERROR";
             break;
-        case 2:
+        case WARNING:
             lvl_string = "WARNING";
-            break;
-        case 3:
-            lvl_string = "INFO";
             break;
         default:
             lvl_string = "INFO";
@@ -48,66 +48,67 @@ void logger(
     // Initialise the variable argument list
     va_start(args, fmt);
 
-    sec_to_mins_secs(mins, secs, elapsed);
-
     // Extract the filename from the __FILE__ macro, it is the last element
     // in the path.
     filename = strrchr(filepath, '/');
     filename = (filename) ? filename + 1 : filepath;
 
-    // Write the messages to both the log file and stdout
-    FILE *out = log_fp ? log_fp : stdout;
-
-    if (strcmp(lvl_string, "INFO") == 0) {
-        fprintf(out, "%s:%s [%s] ", mins, secs, lvl_string);
-        vfprintf(out, fmt, args);
-        fprintf(out, "\n");
-    } else {
-        fprintf(out, "%s:%s [%s] [%s ln%d] ",
-                mins, secs, lvl_string, filename, line);
-        vfprintf(out, fmt, args);
-        fprintf(out, "\n");
+    va_start(args, fmt);
+    if (log_fp) {
+        va_copy(copy, args);
+        log_to_stream(log_fp, timestamp, lvl_string, filename, line, fmt, copy);
+        va_end(copy);
     }
 
+    va_copy(copy, args);
+    log_to_stream(stdout, timestamp, lvl_string, filename, line, fmt, copy);
+    va_end(copy);
     va_end(args);
 
     return;
 }
 
-void init_log(const char *run_title, const char *working_dir){
-    start_time = time(NULL);
+void init_log(
+    // Inputs
+    const char *run_title,
+    const char *working_dir,
+    const char* program_name){
 
+    // Local variables
     char filepath[1024];
-    snprintf(filepath, sizeof(filepath), "%s/%s/%s.log", working_dir, WORKDIR_LOGS, run_title);
 
+    // Open the log file
+    snprintf(filepath, sizeof(filepath), "%s/%s/%s.log", working_dir, WORKDIR_LOGS, run_title);
     log_fp = fopen(filepath, "w");
     if (!log_fp) {
         perror("Failed to open log file");
-        log_fp = stdout; // fallback
+        log_fp = stdout; // fallback to stdout
     }
 
-    struct tm *utc = gmtime(&start_time);
-    LOG(INFO, "Program Start Time: %04d-%02d-%02dT%02d:%02d:%02dZ (UTC)",
-        utc->tm_year + 1900,
-        utc->tm_mon + 1,
-        utc->tm_mday,
-        utc->tm_hour,
-        utc->tm_min,
-        utc->tm_sec);
-}
-
-void sec_to_mins_secs(char* out_mins, char* out_secs,
-        long elapsed){
-    // Local variables
-    long mins = elapsed / 60;
-    long secs = elapsed % 60;
-
-    sprintf(out_mins, "%02ld", mins);
-    sprintf(out_secs, "%02ld", secs);
+    LOG(INFO, "Program Started: %s %s", program_name, run_title);
+    return;
 }
 
 void close_log(void){
     if (log_fp && log_fp != stdout) {
         fclose(log_fp);
     }
+}
+
+void log_to_stream(
+    FILE *stream,
+    const char* timestamp,
+    const char *level,
+    const char *filename,
+    int line,
+    const char *fmt,
+    va_list args) {
+    if (strcmp(level, "INFO") == 0)
+        fprintf(stream, "%s %s ", timestamp, level);
+    else
+        fprintf(stream, "%s %s [%s ln%d] ",
+                timestamp, level, filename, line);
+
+    vfprintf(stream, fmt, args);
+    fprintf(stream, "\n");
 }

@@ -1,5 +1,5 @@
-#ifndef TEST_APPLICATION_MAIN_OPTIONS_H
-#define TEST_APPLICATION_MAIN_OPTIONS_H
+#ifndef TEST_APPLICATION_INPUTS_H
+#define TEST_APPLICATION_INPUTS_H
 
 // Standard libraries
 
@@ -13,6 +13,9 @@
 
 // Function prototypes
 
+/**
+ * @brief Contais the main options for the test application.
+ */
 typedef struct {
     int year;
     int month;

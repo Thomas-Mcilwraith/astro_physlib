@@ -61,24 +61,36 @@ void logger(
  *
  * @param run_title The name of the program for this run.
  * @param working_dir The working directory of the program.
+ * @param program_name The name of the program.
  */
-void init_log(const char *run_title, const char *working_dir);
-
-/**
- * @brief 
- * Converts a time in seconds to minutes and seconds.
- *
- * @param out_mins The output string for the minutes.
- * @param out_secs The output string for the seconds.
- * @param elapsed The time in seconds.
- */
-void sec_to_mins_secs(char* out_mins, char* out_secs,
-        long elapsed);
+void init_log(const char *run_title, const char *working_dir, const char* program_name);
 
 /**
  * @brief 
  * Closes the log file. If the log file is stdout, this function does nothing.
  */
 void close_log(void);
+
+/**
+ * @brief 
+ * Writes a message to a stream. This function is used by logger() and
+ * init_log() to write the log messages to the log file and stdout.
+ *
+ * @param stream The stream to write the message to.
+ * @param timestamp The timestamp of the message.
+ * @param level The StatusCode associated to the message.
+ * @param filename The name of the file that called the logger function.
+ * @param line The line number in the file that called the logger function.
+ * @param fmt The message to be logged.
+ * @param args The arguments to be logged.
+ */
+void log_to_stream(
+    FILE *stream,
+    const char* timestamp,
+    const char *level,
+    const char *filename,
+    int line,
+    const char *fmt,
+    va_list args);
 
 #endif
