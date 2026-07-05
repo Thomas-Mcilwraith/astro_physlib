@@ -12,6 +12,7 @@
 // Variable and Macro definitions
 extern time_t start_time;
 #define LOG(lvl, ...) logger(__FILE__, __LINE__, lvl, __VA_ARGS__)
+#define WORKDIR_LOGS "logs"
 
 /**
  * @brief
@@ -57,8 +58,11 @@ void logger(
  * @brief 
  * Initializes the logger. This must be called before any other logger
  * function is called.
+ *
+ * @param run_title The name of the program for this run.
+ * @param working_dir The working directory of the program.
  */
-void init_log(void);
+void init_log(const char *run_title, const char *working_dir);
 
 /**
  * @brief 
@@ -70,5 +74,11 @@ void init_log(void);
  */
 void sec_to_mins_secs(char* out_mins, char* out_secs,
         long elapsed);
+
+/**
+ * @brief 
+ * Closes the log file. If the log file is stdout, this function does nothing.
+ */
+void close_log(void);
 
 #endif

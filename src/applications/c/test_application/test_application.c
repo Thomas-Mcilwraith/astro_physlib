@@ -7,36 +7,53 @@
  * Computs an example conversion from GCRF to ITRF.
  * 
  */
-#include "utilities/logging/log/log.h"
-#include "reference-systems/coordinate-systems/terrestrial-frames/terrestrial_frames.h"
-#include "reference-systems/time-systems/time-formats/time_formats.h"
-#include "reference-systems/time-systems/epoch-transformations/epoch_transformations.h"
-#include "mathematics-library/linear-algebra/matrix-operations/matrix_operations.h"
-#include "external/sofa/sofa.h"
 
-int main() {
+#include "test_application.h"
+
+int main(int argc, char *argv[]) {
     // Local variables
-    const int year = 2019;
-    const int month = 1;
-    const int day = 4;
-    const int hour = 12;
-    const int minute = 0;
-    const double seconds = 0.0;
-    const double gcrf_vec[3] = {-2981784, 5207055, 3161595};
-    // -------------------------------------------------------------------------
-    const double utc_ut1_sec = -0.0417339; //                                  |
-    const double xp = 0.068294 * ARCSEC_TO_RAD; //                             |
-    const double yp = 0.277004 * ARCSEC_TO_RAD; //            FROM EOP DATA    |
-    const double dx_CIP = 0.426 / 1000 * ARCSEC_TO_RAD; //                     |
-    const double dy_CIP = 0.170 / 1000 * ARCSEC_TO_RAD; //                     |
-    // -------------------------------------------------------------------------
+    TestApplicationInputs main_options;
+    ExecutionSettings execution_settings;
     StatusCode status = OK;
     double utc_jd, ut1_jd, tt_jd, tai_jd, tt_mjd2000;
     double tio_locator, earth_rotation_angle;
     double R_gcrs_tirs[3][3], R_cirs_tirs[3][3], R_gcrs_cirs[3][3], R_tirs_itrs[3][3], R_gcrs_itrs[3][3];
     double itrf_vec[3];
 
-    init_log();
+    status = parse_cmdline(&execution_settings, argc, argv);
+    if (status != OK) {
+        LOG(ERROR, "Failed to parse command line");
+        return ERROR;
+    }
+
+    init_log(execution_settings.run_title, execution_settings.working_directory);
+
+    status = read_TestApplicationInputs(&main_options, execution_settings.working_directory,
+                                        execution_settings.run_title);
+    if (status != OK) {
+        LOG(ERROR, "Failed to read Inputs");
+        return ERROR;
+    }
+
+    LOG(INFO, "length of extra_values: %d", main_options.n_extra_values);
+    for (int i = 0; i < main_options.n_extra_values; i++) {
+        LOG(INFO, "extra_values[%d]: %f", i, main_options.extra_values[i]);
+    }
+
+    // Unpack the main options
+    const int year = main_options.year;
+    const int month = main_options.month;
+    const int day = main_options.day;
+    const int hour = main_options.hour;
+    const int minute = main_options.minute;
+    const double seconds = main_options.seconds;
+    const double gcrf_vec[3] = {main_options.gcrf_vec[0], main_options.gcrf_vec[1], main_options.gcrf_vec[2]};
+    const double utc_ut1_sec = main_options.utc_ut1_sec;
+    const double xp = main_options.xp;
+    const double yp = main_options.yp;
+    const double dx_CIP = main_options.dx_CIP;
+    const double dy_CIP = main_options.dy_CIP;
+
     LOG(INFO, "Computing GCRF -> ITRF Rotation");
     LOG(INFO, "Date: %04d-%02d-%02d %02d:%02d:%06.3f UTC", year, month, day, hour, minute, seconds);
     LOG(INFO, "GCRF Input vec : %f    %f    %f", gcrf_vec[0], gcrf_vec[1], gcrf_vec[2]);
@@ -106,6 +123,8 @@ int main() {
 
     LOG(INFO, "RMS difference with IAU: %.10f", fabs(vec3_norm(iau_output_vec) - vec3_norm(output_vec)));
 
+    free_TestApplicationInputs(&main_options);
+    close_log();
     LOG(INFO, "Program complete.");
     return OK;
 }

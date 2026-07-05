@@ -8,15 +8,10 @@
 
 #include "log.h"
 
+// start time and log file pointer are stored globally
 time_t start_time;
+static FILE *log_fp = NULL;
 
-/**
-  * See log.h for IO description.
-  *
-  * The offending file name and line number are added to WARNING and ERROR
-  * messages. This is not neccessary for INFO messages so we don't do it to
-  * save space.
- */
 void logger(
         const char* filepath,
         const int line,
@@ -60,14 +55,18 @@ void logger(
     filename = strrchr(filepath, '/');
     filename = (filename) ? filename + 1 : filepath;
 
+    // Write the messages to both the log file and stdout
+    FILE *out = log_fp ? log_fp : stdout;
+
     if (strcmp(lvl_string, "INFO") == 0) {
-        printf("%s:%s [%s] ", mins, secs, lvl_string);
-        vprintf(fmt, args);
-        printf("\n");
+        fprintf(out, "%s:%s [%s] ", mins, secs, lvl_string);
+        vfprintf(out, fmt, args);
+        fprintf(out, "\n");
     } else {
-        printf("%s:%s [%s] [%s ln%d] ", mins, secs, lvl_string, filename, line);
-        vprintf(fmt, args);
-        printf("\n");
+        fprintf(out, "%s:%s [%s] [%s ln%d] ",
+                mins, secs, lvl_string, filename, line);
+        vfprintf(out, fmt, args);
+        fprintf(out, "\n");
     }
 
     va_end(args);
@@ -75,13 +74,18 @@ void logger(
     return;
 }
 
-/**
- * See log.h for IO description.
- *
- * This function initialises the time reference for logger()
- */
-void init_log(void){
+void init_log(const char *run_title, const char *working_dir){
     start_time = time(NULL);
+
+    char filepath[1024];
+    snprintf(filepath, sizeof(filepath), "%s/%s/%s.log", working_dir, WORKDIR_LOGS, run_title);
+
+    log_fp = fopen(filepath, "w");
+    if (!log_fp) {
+        perror("Failed to open log file");
+        log_fp = stdout; // fallback
+    }
+
     struct tm *utc = gmtime(&start_time);
     LOG(INFO, "Program Start Time: %04d-%02d-%02dT%02d:%02d:%02dZ (UTC)",
         utc->tm_year + 1900,
@@ -92,11 +96,6 @@ void init_log(void){
         utc->tm_sec);
 }
 
-/**
- * See log.h for IO description.
- *
- * This function converts a time in seconds to minutes and seconds.
- */
 void sec_to_mins_secs(char* out_mins, char* out_secs,
         long elapsed){
     // Local variables
@@ -105,4 +104,10 @@ void sec_to_mins_secs(char* out_mins, char* out_secs,
 
     sprintf(out_mins, "%02ld", mins);
     sprintf(out_secs, "%02ld", secs);
+}
+
+void close_log(void){
+    if (log_fp && log_fp != stdout) {
+        fclose(log_fp);
+    }
 }
