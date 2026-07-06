@@ -90,6 +90,9 @@ int iauUtctai(double utc1, double utc2, double *tai1, double *tai2)
 /* Get TAI-UTC at 0h today. */
    j = iauJd2cal(u1, u2, &iy, &im, &id, &fd);
    if ( j ) return j;
+
+// TODO: Replace this call with a passed TAI-UTC value, this should be taken
+// directly from IERS data, instead of extrapolated from the table with iauDat.
    j = iauDat(iy, im, id, 0.0, &dat0);
    if ( j < 0 ) return j;
 
