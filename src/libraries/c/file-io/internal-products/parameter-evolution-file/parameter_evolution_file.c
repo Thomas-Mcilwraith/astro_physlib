@@ -351,6 +351,35 @@ StatusCode read_parameter_evolution_file(
     return OK;
 }
 
+bool parameter_evolution_file_find(
+    // Outputs
+    int *header_index,
+    // Inputs
+    const ParameterEvolutionFile *params,
+    const char* header) {
+
+    // Local variables
+    char input_header_trimmed[10], param_header_trimmed[10];
+
+    // trim the input header
+    strcpy(input_header_trimmed, header);
+    rtrim(input_header_trimmed);
+
+    for (int i = 0; i < params->n_parameters; i++){
+
+        // trim the header for this parameter
+        strcpy(param_header_trimmed, params->parameters[i].name);
+        rtrim(param_header_trimmed);
+
+        if (strcmp(input_header_trimmed, param_header_trimmed) == 0) {
+            *header_index = i;
+            return true;
+        }
+    }
+
+    return false;
+    }
+
 /**
  * Helper function - Remove trailing whitespace from a string.
  */

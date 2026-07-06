@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 // Local libraries
 #include "utilities/logging/log/log.h"
@@ -124,6 +125,22 @@ StatusCode read_parameter_evolution_file(
         ParameterEvolutionFile* out_p,
         // Inputs
         const char* filename);
+
+/**
+ * @brief
+ * Search a ParameterEvolutionFile for a header, return the index of the header
+ * 
+ * @param header_index Index of header with name *header*
+ * @param params Pointer to parameter evolution file object
+ * @param header Header to search for
+ * @return True if found, false otherwise
+ */
+bool parameter_evolution_file_find(
+    // Outputs
+    int *header_index,
+    // Inputs
+    const ParameterEvolutionFile *params,
+    const char* header);
 
 /**
  * @brief 

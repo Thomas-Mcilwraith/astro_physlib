@@ -19,6 +19,7 @@ StatusCode parse_cmdline(
 
     if (argc != 4) {
         LOG(ERROR, "Incorrect number of CMD line arguments (%d)", argc);
+        LOG(ERROR, "Usage: %s <run_title> <working_directory> <threads>", argv[0]);
         return ERROR;
     }
 
