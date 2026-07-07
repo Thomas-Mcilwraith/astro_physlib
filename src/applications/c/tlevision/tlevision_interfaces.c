@@ -8,11 +8,3 @@
  * 
  */
 
-typedef struct {
-    
-} TlevisionInputs;
-
-typedef struct {
-    
-} TlevisionOutputs;
-
