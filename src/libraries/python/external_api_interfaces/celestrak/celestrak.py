@@ -12,14 +12,15 @@ import logging
 # Global variables
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%S"
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
 )
+
 
 class CelestrakAPI:
     def __init__(self):
-        self.domain: str = "https://celestrak.org" 
-        self.EOP_last_5_years: str = f"/SpaceData/EOP-Last5Years.csv"
+        self.domain: str = "https://celestrak.org"
+        self.EOP_last_5_years: str = "/SpaceData/EOP-Last5Years.csv"
         self.latest_response: requests.Response | None = None
         logging.info("Initialized CelestrakAPI")
         return
@@ -54,7 +55,10 @@ class CelestrakAPI:
             print(err)
         return None
 
+
 if __name__ == "__main__":
     api = CelestrakAPI()
     api.get_EOP_last_5_years()
-    api.save_raw_response(r"C:\Users\tmcilwraith\Documents\github\psf_physlib\src\python\eop_last_5_years.csv")
+    api.save_raw_response(
+        r"C:\Users\tmcilwraith\Documents\github\psf_physlib\src\python\eop_last_5_years.csv"
+    )
