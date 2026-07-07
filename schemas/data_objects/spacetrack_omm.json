@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Space-Track OMM Response",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "CCSDS_OMM_VERS",
+      "COMMENT",
+      "CREATION_DATE",
+      "ORIGINATOR",
+      "OBJECT_NAME",
+      "OBJECT_ID",
+      "CENTER_NAME",
+      "REF_FRAME",
+      "TIME_SYSTEM",
+      "MEAN_ELEMENT_THEORY",
+      "EPOCH",
+      "MEAN_MOTION",
+      "ECCENTRICITY",
+      "INCLINATION",
+      "RA_OF_ASC_NODE",
+      "ARG_OF_PERICENTER",
+      "MEAN_ANOMALY",
+      "EPHEMERIS_TYPE",
+      "CLASSIFICATION_TYPE",
+      "NORAD_CAT_ID",
+      "ELEMENT_SET_NO",
+      "REV_AT_EPOCH",
+      "BSTAR",
+      "MEAN_MOTION_DOT",
+      "MEAN_MOTION_DDOT",
+      "SEMIMAJOR_AXIS",
+      "PERIOD",
+      "APOAPSIS",
+      "PERIAPSIS",
+      "OBJECT_TYPE",
+      "RCS_SIZE",
+      "COUNTRY_CODE",
+      "LAUNCH_DATE",
+      "SITE",
+      "DECAY_DATE",
+      "FILE",
+      "GP_ID",
+      "TLE_LINE0",
+      "TLE_LINE1",
+      "TLE_LINE2"
+    ],
+    "properties": {
+      "CCSDS_OMM_VERS": {
+        "type": "string"
+      },
+      "COMMENT": {
+        "type": "string"
+      },
+      "CREATION_DATE": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "ORIGINATOR": {
+        "type": "string"
+      },
+      "OBJECT_NAME": {
+        "type": "string"
+      },
+      "OBJECT_ID": {
+        "type": "string"
+      },
+      "CENTER_NAME": {
+        "type": "string"
+      },
+      "REF_FRAME": {
+        "type": "string"
+      },
+      "TIME_SYSTEM": {
+        "type": "string"
+      },
+      "MEAN_ELEMENT_THEORY": {
+        "type": "string"
+      },
+      "EPOCH": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "MEAN_MOTION": {
+        "type": "string"
+      },
+      "ECCENTRICITY": {
+        "type": "string"
+      },
+      "INCLINATION": {
+        "type": "string"
+      },
+      "RA_OF_ASC_NODE": {
+        "type": "string"
+      },
+      "ARG_OF_PERICENTER": {
+        "type": "string"
+      },
+      "MEAN_ANOMALY": {
+        "type": "string"
+      },
+      "EPHEMERIS_TYPE": {
+        "type": "string"
+      },
+      "CLASSIFICATION_TYPE": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1
+      },
+      "NORAD_CAT_ID": {
+        "type": "string"
+      },
+      "ELEMENT_SET_NO": {
+        "type": "string"
+      },
+      "REV_AT_EPOCH": {
+        "type": "string"
+      },
+      "BSTAR": {
+        "type": "string"
+      },
+      "MEAN_MOTION_DOT": {
+        "type": "string"
+      },
+      "MEAN_MOTION_DDOT": {
+        "type": "string"
+      },
+      "SEMIMAJOR_AXIS": {
+        "type": "string"
+      },
+      "PERIOD": {
+        "type": "string"
+      },
+      "APOAPSIS": {
+        "type": "string"
+      },
+      "PERIAPSIS": {
+        "type": "string"
+      },
+      "OBJECT_TYPE": {
+        "type": "string"
+      },
+      "RCS_SIZE": {
+        "type": "string"
+      },
+      "COUNTRY_CODE": {
+        "type": "string"
+      },
+      "LAUNCH_DATE": {
+        "type": "string",
+        "format": "date"
+      },
+      "SITE": {
+        "type": "string"
+      },
+      "DECAY_DATE": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "date"
+      },
+      "FILE": {
+        "type": "string"
+      },
+      "GP_ID": {
+        "type": "string"
+      },
+      "TLE_LINE0": {
+        "type": "string"
+      },
+      "TLE_LINE1": {
+        "type": "string"
+      },
+      "TLE_LINE2": {
+        "type": "string"
+      }
+    }
+  }
+}
