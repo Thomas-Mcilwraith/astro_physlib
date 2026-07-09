@@ -27,7 +27,7 @@ StatusCode read_tlevision_inputs(
 
     // Construct the file path
     snprintf(filepath, sizeof(filepath), "%s/%s/%s_%s.json", working_directory,
-             WORKDIR_INPUTS, program_name, run_title);
+             WORKDIR_INPUTS, run_title, program_name);
 
     // Read the JSON file
     status = read_json(&json, filepath);

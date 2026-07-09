@@ -32,6 +32,7 @@ add_library(psf STATIC
 
     mathematics-library/linear-algebra/matrix-operations/matrix_operations.c
     mathematics-library/numerical-methods/runge-kutta-4/runge_kutta_4.c
+    mathematics-library/numerical-methods/interpolation/interpolation.c
 
     orbit-dynamics/equations-of-motion/two-body-problem/two_body_problem.c
 
