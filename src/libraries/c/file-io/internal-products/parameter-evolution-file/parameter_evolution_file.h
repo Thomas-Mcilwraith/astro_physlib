@@ -9,6 +9,7 @@
 
 // Local libraries
 #include "utilities/logging/log/log.h"
+#include "reference-systems/time-systems/time-formats/time_formats.h"
 
 // Variable and Macro definitions
 #define CHARS_PER_WORD 10        // Formatting
@@ -33,6 +34,7 @@
 #define QUAT "QUAT"
 #define UTC "UTC"
 #define UT1 "UT1"
+#define TT "TT"
 
 // Variable units
 #define NO_UNIT "-"
@@ -50,6 +52,7 @@
 #define HOURS "hr"
 #define DAYS "d"
 #define JD "JD"
+#define MJD "MJD"
 #define MJD2000 "MJD2000"
 
 // ParameterEvolutionFile Types
@@ -141,6 +144,23 @@ bool parameter_evolution_file_find(
     // Inputs
     const ParameterEvolutionFile *params,
     const char* header);
+
+/**
+ * @brief
+ * Search a ParameterEvolutionFile for a header, return the index of the header
+ *
+ * @note out_timespan must be freed by the caller.
+ * 
+ * @param header_index Index of header with name *header*
+ * @param params Pointer to parameter evolution file object
+ * @param header Header to search for
+ * @return True if found, false otherwise
+ */
+StatusCode parameter_evolution_file_get_jd(
+    // Outputs
+    ParameterEvolution* out_timespan,
+    // Inputs
+    const ParameterEvolutionFile *params);
 
 /**
  * @brief 

@@ -380,6 +380,75 @@ bool parameter_evolution_file_find(
     return false;
     }
 
+StatusCode parameter_evolution_file_get_jd(
+    // Outputs
+    ParameterEvolution* out_timespan,
+    // Inputs
+    const ParameterEvolutionFile *params) {
+
+    // Local variables
+    int time_header_index;
+    bool found_time;
+
+    *out_timespan = (ParameterEvolution){0};
+
+    out_timespan->n_values = params->parameters[0].n_values;
+    out_timespan->values = malloc(out_timespan->n_values * sizeof(double));
+    if (!out_timespan->values) {
+        LOG(ERROR, "Failed to allocate memory for timespan");
+        return ERROR;
+    }
+
+    // Search for all time representations
+    found_time = parameter_evolution_file_find(&time_header_index, params, "UTC");
+    if (!found_time) {
+        found_time = parameter_evolution_file_find(&time_header_index, params, "UT1");
+    }
+    if (!found_time) {
+        found_time = parameter_evolution_file_find(&time_header_index, params, "TT");
+    }
+    if (!found_time) {
+        LOG(WARNING, "No timespan found in Parameter Evolution File");
+        free(out_timespan->name);
+        free(out_timespan->units);
+        free(out_timespan->values);
+        *out_timespan = (ParameterEvolution){0};
+        return WARNING;
+    }
+
+    out_timespan->name = strdup(params->parameters[time_header_index].name);
+
+    // Convert the units to JD
+    if (strcmp(params->parameters[time_header_index].units, MJD) == 0) {
+        for (int i = 0; i < out_timespan->n_values; i++){
+            out_timespan->values[i] = mjd_to_jd(
+                    params->parameters[time_header_index].values[i]);
+        }
+    } else if (strcmp(params->parameters[time_header_index].units, MJD2000) == 0) {
+        for (int i = 0; i < out_timespan->n_values; i++){
+            out_timespan->values[i] = mjd2000_to_jd(
+                    params->parameters[time_header_index].values[i]);
+        }
+    } else if (strcmp(params->parameters[time_header_index].units, JD) == 0) {
+        for (int i = 0; i < out_timespan->n_values; i++){
+            out_timespan->values[i] = params->parameters[time_header_index].values[i];
+        }
+    } else {
+        LOG(ERROR, "Unexpected time units in Parameter Evolution File: %s",
+                   params->parameters[time_header_index].units);
+        free(out_timespan->name);
+        free(out_timespan->units);
+        free(out_timespan->values);
+        *out_timespan = (ParameterEvolution){0};
+        return ERROR;
+    }
+
+    out_timespan->units = strdup(JD);
+
+    return OK;
+}
+
+
 /**
  * Helper function - Remove trailing whitespace from a string.
  */

@@ -103,20 +103,40 @@ double jd_to_mjd(const double julian_day) {
     return julian_day - 2400000.5;
 }
 
+double mjd_to_jd(const double modified_julian_day) {
+    return modified_julian_day + 2400000.5;
+}
+
 double jd_to_mjd2000(const double julian_day) {
     return julian_day - 2451545.0;
+}
+
+double mjd2000_to_jd(const double modified_julian_day) {
+    return modified_julian_day + 2451545.0;
 }
 
 double jd_to_mjd1900(const double julian_day) {
     return julian_day - 2415021.0;
 }
 
+double mjd1900_to_jd(const double modified_julian_day) {
+    return modified_julian_day + 2415021.0;
+}
+
 double jd_to_mjdGPS(const double julian_day) {
     return julian_day - 2444244.5;
 }
 
+double mjdGPS_to_jd(const double modified_julian_day_GPS) {
+    return modified_julian_day_GPS + 2444244.5;
+}
+
 double jd_to_jc(const double julian_day) {
     return julian_day/36525.0;
+}
+
+double jc_to_jd(const double julian_century) {
+    return julian_century * 36525.0;
 }
 
 StatusCode iso8601_to_date(

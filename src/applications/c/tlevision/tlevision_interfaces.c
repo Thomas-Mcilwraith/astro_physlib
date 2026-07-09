@@ -9,6 +9,7 @@
  */
 
 #include "tlevision_interfaces.h"
+#include "utilities/misc/paths/paths.h"
 
 StatusCode read_tlevision_inputs(
     // Outputs
@@ -21,13 +22,14 @@ StatusCode read_tlevision_inputs(
     // Local variables
     cJSON *json;
     StatusCode status = OK;
-    char filepath[1024];
+    char filepath[FULL_PATH_BUFFER_SIZE], filename[FILE_NAME_BUFFER_SIZE];
 
     LOG(INFO, "Reading %s Inputs", program_name);
 
+    // Construct the file name
+    snprintf(filename, sizeof(filename), "%s_%s.json", run_title, program_name);
     // Construct the file path
-    snprintf(filepath, sizeof(filepath), "%s/%s/%s_%s.json", working_directory,
-             WORKDIR_INPUTS, run_title, program_name);
+    working_area_path(filepath, working_directory, INPUTS, filename, FULL_PATH_BUFFER_SIZE);
 
     // Read the JSON file
     status = read_json(&json, filepath);
@@ -60,29 +62,29 @@ StatusCode read_tlevision_inputs(
 
     // Log all loaded values
     if (inputs->timespan_source == 0) {
-        LOG(INFO, "Timespan Source: User inputs");
-        LOG(INFO, "Loaded Input: ISO8601 Start Time: %s", inputs->iso8601_start_time);
-        LOG(INFO, "Loaded Input: ISO8601 Stop Time: %s", inputs->iso8601_stop_time);
-        LOG(INFO, "Loaded Input: Step Size Seconds: %f", inputs->step_size_seconds);
+        LOG(INFO, "Loaded Input (Timespan Source): User inputs");
+        LOG(INFO, "Loaded Input (ISO8601 Start Time): %s", inputs->iso8601_start_time);
+        LOG(INFO, "Loaded Input (ISO8601 Stop Time): %s", inputs->iso8601_stop_time);
+        LOG(INFO, "Loaded Input (Step Size): %f seconds", inputs->step_size_seconds);
     } else if (inputs->timespan_source == 1) {
-        LOG(INFO, "Timespan Source: PEV file");
-        LOG(INFO, "Loaded Input: PEV Filename for timespan: %s", inputs->pev_filename);
+        LOG(INFO, "Loaded Input (Timespan Source): PEV file");
+        LOG(INFO, "Loaded Input (Timespan PEV File): %s", inputs->pev_filename);
     } else if (inputs->timespan_source == 2) {
-        LOG(INFO, "Timespan Source: From %s %s", inputs->timespan_source_program, inputs->timespan_source_id);
+        LOG(INFO, "Loaded Input (Timespan Source): From %s %s", inputs->timespan_source_id, inputs->timespan_source_program);
     }
 
     if (inputs->tle_data_source == 0) {
-        LOG(INFO, "TLE Data Source: User defined TLE strings");
-        LOG(INFO, "Loaded Input: TLE Line 1: %s", inputs->tle_line_1);
-        LOG(INFO, "Loaded Input: TLE Line 2: %s", inputs->tle_line_2);
+        LOG(INFO, "Loaded Input (TLE Data Source): User defined TLE strings");
+        LOG(INFO, "Loaded Input (TLE Line 1): %s", inputs->tle_line_1);
+        LOG(INFO, "Loaded Input (TLE Line 2): %s", inputs->tle_line_2);
     } else if (inputs->tle_data_source == 1) {
-        LOG(INFO, "TLE Data Source: Search TLE catalogue for IDs");
-        LOG(INFO, "Loaded Input: N Object IDs: %d", inputs->n_object_ids);
+        LOG(INFO, "Loaded Input (TLE Data Source): Search TLE catalogue for IDs");
+        LOG(INFO, "Loaded Input (N Object IDs): %d", inputs->n_object_ids);
         for (int i = 0; i < inputs->n_object_ids; i++) {
-            LOG(INFO, "Loaded Input: Object IDs[%d]: %s", i, inputs->object_ids[i]);
+            LOG(INFO, "Loaded Input (Object IDs[%d]): %s", i, inputs->object_ids[i]);
         }
     } else if (inputs->tle_data_source == 2) {
-        LOG(INFO, "TLE Data Source: From %s %s", inputs->tle_source_program, inputs->tle_source_id);
+        LOG(INFO, "Loaded Input (TLE Data Source): From %s %s", inputs->tle_source_id, inputs->tle_source_program);
     }
 
     return OK;

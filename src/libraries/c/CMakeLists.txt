@@ -43,6 +43,7 @@ add_library(psf STATIC
 
     utilities/logging/log/log.c
     utilities/misc/parse-cmdline/parse_cmdline.c
+    utilities/misc/paths/paths.c
 )
 
 target_link_libraries(psf PUBLIC sofa cjson)

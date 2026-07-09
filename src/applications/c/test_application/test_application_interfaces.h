@@ -8,6 +8,7 @@
 #include "external/cjson/cJSON.h"
 #include "file-io/internal-products/read-json/read_json.h"
 #include "utilities/misc/parse-cmdline/parse_cmdline.h"
+#include "utilities/misc/paths/paths.h"
 
 // Variable and Macro definitions
 
@@ -39,6 +40,7 @@ typedef struct {
  * @param options The main options to be read.
  * @param working_directory The working directory.
  * @param filename The name of the JSON file to read.
+ * @param program_name the name of the program
  * @return OK if successful, ERROR otherwise.
  */
 StatusCode read_TestApplicationInputs(
@@ -46,7 +48,8 @@ StatusCode read_TestApplicationInputs(
         TestApplicationInputs *options,
         // Inputs
         const char *working_directory,
-        const char *filename);
+        const char *filename,
+        const char *program_name);
 
 /**
  * @brief Frees the main options.

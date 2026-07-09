@@ -6,6 +6,7 @@
 // Local libraries
 #include "utilities/logging/log/log.h"
 #include "utilities/misc/parse-cmdline/parse_cmdline.h"
+#include "utilities/misc/paths/paths.h"
 #include "external/cjson/cJSON.h"
 #include "file-io/internal-products/read-json/read_json.h"
 
