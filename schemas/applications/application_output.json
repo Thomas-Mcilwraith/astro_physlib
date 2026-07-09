@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ephemeris Input Configuration",
+  "type": "object",
+  "properties": {
+    "n_TLE": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "TLE": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "n_EPHM": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "EPHM": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "n_TSPN": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "TSPN": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "n_TLE",
+    "TLE",
+    "n_EPHM",
+    "EPHM",
+    "n_TSPN",
+    "TSPN"
+  ],
+  "additionalProperties": false
+}

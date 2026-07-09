@@ -8,6 +8,7 @@
  * 
  */
 
+#include "file-io/internal-products/application_output/application_output.h"
 #include "file-io/internal-products/parameter-evolution-file/parameter_evolution_file.h"
 #include "tlevision_interfaces.h"
 #include "mathematics-library/numerical-methods/interpolation/interpolation.h"
@@ -22,7 +23,7 @@ int main(int argc, char *argv[]) {
     const char* program_name = "tlevision";
     ExecutionSettings execution_settings;
     tlevision_inputs_t inputs;
-    tlevision_outputs_t outputs;
+    application_output_t tspan_outputs;
 
     // Program variables
     StatusCode status = OK;
@@ -111,13 +112,44 @@ int main(int argc, char *argv[]) {
 
     } else if (inputs.timespan_source == TLEVISION_INPUTS_TSPN_PROGRAM) {
 
-        // TODO: Generate timespan
+        status = application_output_read(&tspan_outputs, execution_settings.working_directory,
+                                         inputs.timespan_source_id, inputs.timespan_source_program);
+        if (status != OK) {
+            LOG(ERROR, "Failed to read application output");
+            return ERROR;
+        }
+
+        if (tspan_outputs.n_TSPN != 1) {
+            LOG(ERROR, "Expected 1 TSPAN file, found %d", tspan_outputs.n_TSPN);
+            return ERROR;
+        }
+
+        status = working_area_path(pev_with_timespan_filepath,
+                execution_settings.working_directory, FILES, 
+                tspan_outputs.TSPN[0], FULL_PATH_BUFFER_SIZE);
+        if (status != OK) {
+            LOG(ERROR, "Failed to construct path for PEV file: %s", tspan_outputs.TSPN[0]);
+            return ERROR;
+        }
+
+        status = read_parameter_evolution_file(&pev_with_timespan, pev_with_timespan_filepath);
+        if (status != OK) {
+            LOG(ERROR, "Failed to read PEV file to retreive timespan: %s", pev_with_timespan_filepath);
+            return ERROR;
+        }
+
+        status = parameter_evolution_file_get_jd(&timespan, &pev_with_timespan);
+        if (status != OK) {
+            LOG(ERROR, "Failed to retrieve timespan from PEV file");
+            return ERROR;
+        }
 
     }
 
+    // TODO: Compute UTC if time is provided in others
     if (strcmp(timespan.name, UTC) != 0) {
-        LOG(WARNING, "Timespan is not in UTC. Timespan is in %s", timespan.name);
-        LOG(WARNING, "UTC will be assumed for the rest of this program");
+        LOG(WARNING, "Timespan is in %s", timespan.name);
+        LOG(WARNING, "UTC == UT1 == TT will be assumed for the rest of this program");
         LOG(WARNING, "For improved accuracy, ensure source timespan is in UTC");
     }
 
@@ -125,6 +157,7 @@ int main(int argc, char *argv[]) {
 
     LOG(INFO, "Program complete: %s (%s)", program_name, execution_settings.run_title);
     tlevision_inputs_free(&inputs);
+    application_output_free(&tspan_outputs);
     free(jd_timespan);
     close_log();
     return OK;

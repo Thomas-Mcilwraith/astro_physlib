@@ -29,6 +29,7 @@ add_library(psf STATIC
 
     file-io/internal-products/parameter-evolution-file/parameter_evolution_file.c
     file-io/internal-products/read-json/read_json.c
+    file-io/internal-products/application_output/application_output.c
 
     mathematics-library/linear-algebra/matrix-operations/matrix_operations.c
     mathematics-library/numerical-methods/runge-kutta-4/runge_kutta_4.c
