@@ -16,7 +16,7 @@ StatusCode read_json(
     // Read the JSON file
     char *json_string = read_file(filename);
     if (!json_string) {
-        LOG(ERROR, "Error reading file");
+        LOG(ERROR, "Error reading file: %s", filename);
         return ERROR;
     }
 
