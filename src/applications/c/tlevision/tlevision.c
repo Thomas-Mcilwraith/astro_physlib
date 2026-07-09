@@ -18,6 +18,7 @@
 #include "utilities/misc/parse-cmdline/parse_cmdline.h"
 #include "utilities/misc/paths/paths.h"
 #include "utilities/constants/constants.h"
+#include "external/sgp4/TLE.h"
 
 int main(int argc, char *argv[]) {
     // Program configuration
@@ -28,12 +29,13 @@ int main(int argc, char *argv[]) {
 
     // Program variables
     StatusCode status = OK;
-    // TODO: Retrieve from database
-    const char* tle_file = "/home/admin/test_spacetrack_tle_cat.json";
+    const char* tle_file = "/home/admin/test_spacetrack_tle_cat.json";  // TODO: Retrieve from database
     char pev_with_timespan_filename[FILE_NAME_BUFFER_SIZE];
     char pev_with_timespan_filepath[FULL_PATH_BUFFER_SIZE];
     ParameterEvolutionFile pev_with_timespan = {0};
     ParameterEvolution timespan = {0};
+    TLE *tles = NULL;
+    int n_tles = 0;
 
     // Parse command line, initialise log file
     status = parse_cmdline(&execution_settings, argc, argv);
@@ -103,10 +105,42 @@ int main(int argc, char *argv[]) {
 
     LOG(INFO, "Timespan with %d points loaded successfully", timespan.n_values);
 
+    // Load all the TLEs into TLE objects
+    // Manual input only supports one input TLE
+    if (inputs.tle_data_source == TLEVISION_INPUTS_TLE_MANUAL) {
+        n_tles = 1;
+        tles = malloc(sizeof(TLE));
+        if (tles == NULL) {
+            LOG(ERROR, "Failed to allocate memory for TLE");
+            return ERROR;
+        }
+        // TODO: Add constants model choice to this call and program inputs
+        parseLines(tles, inputs.tle_line_1, inputs.tle_line_2);
+
+    // If a list of TLE IDs is provided, the catalog must be loaded and seached
+    } else if (inputs.tle_data_source == TLEVISION_INPUTS_TLE_ID) {
+        // TODO: Load the catalog
+        // TODO: Search the catalog for the TLE IDs
+        // TODO: Add those TLEs to tles
+       
+    // If TLEs are provided by another program, load every item from that catalog
+    } else if (inputs.tle_data_source == TLEVISION_INPUTS_TLE_PROGRAM) {
+        // TODO: Load the ouputs from the other program (reduced catalog)
+        // TODO: Add those TLEs to tles
+    }
+
+    LOG(INFO, "Loaded %d TLEs successfully", n_tles);
+    LOG(INFO, "TLE (1): %s", tles[0].line1);
+    LOG(INFO, "TLE (2): %s", tles[0].line2);
+
     LOG(INFO, "Program complete: %s (%s)", program_name, execution_settings.run_title);
+
+    // Deallocate memory
+    free(tles);
     tlevision_inputs_free(&inputs);
     application_output_free(&tspn_outputs);
     close_log();
+
     return OK;
 }
 
