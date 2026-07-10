@@ -9,6 +9,7 @@
  */
 
 #include "tlevision_interfaces.h"
+#include "file-io/data_structures/application_input_tle/application_input_tle.h"
 
 StatusCode read_tlevision_inputs(
     // Outputs
@@ -90,6 +91,32 @@ StatusCode read_tlevision_inputs(
         if (status != OK) {
             LOG(ERROR, "Failed to read Inputs: a_tle[%d]", i);
             return ERROR;
+        }
+    }
+
+    // Printouts
+    LOG(INFO, "Loaded Input (wgs_model): %d", inputs->wgs_model);
+    LOG(INFO, "Loaded Input (tspn source): %d", inputs->tspn.source);
+    if (inputs->tspn.source == TSPN_SOURCE_PROGRAM) {
+        LOG(INFO, "Loaded Input (tspn source_program_id): %s", inputs->tspn.source_program_id);
+        LOG(INFO, "Loaded Input (tspn source_program_name): %s", inputs->tspn.source_program_name);
+    } else if (inputs->tspn.source == TSPN_SOURCE_USER) {
+        LOG(INFO, "Loaded Input (tspn iso8601_start_time): %s", inputs->tspn.iso8601_start_time);
+        LOG(INFO, "Loaded Input (tspn iso8601_stop_time): %s", inputs->tspn.iso8601_stop_time);
+        LOG(INFO, "Loaded Input (tspn step_size_seconds): %f", inputs->tspn.step_size_seconds);
+    }
+
+    LOG(INFO, "Loaded Input (a_tle source): %d", inputs->a_tle[0].source);
+    for (int i = 0; i < inputs->n_tle; i++) {
+        if (inputs->a_tle[i].source == TLE_SOURCE_PROGRAM) {
+            LOG(INFO, "Loaded Input (a_tle[%d] source_program_id): %s", i, inputs->a_tle[i].source_program_id);
+            LOG(INFO, "Loaded Input (a_tle[%d] source_program_name): %s", i, inputs->a_tle[i].source_program_name);
+        } else if (inputs->a_tle[i].source == TLE_SOURCE_USER) {
+            LOG(INFO, "Loaded Input (a_tle[%d] object_name): %s", i, inputs->a_tle[i].object_name);
+            LOG(INFO, "Loaded Input (a_tle[%d] line_1): %s", i, inputs->a_tle[i].tle_line_1);
+            LOG(INFO, "Loaded Input (a_tle[%d] line_2): %s", i, inputs->a_tle[i].tle_line_2);
+        } else if (inputs->a_tle[i].source == TLE_SOURCE_CATALOG) {
+            LOG(INFO, "Loaded Input (a_tle[%d] object_cospar_id): %s", i, inputs->a_tle[i].object_cospar_id);
         }
     }
 

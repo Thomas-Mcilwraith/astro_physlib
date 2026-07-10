@@ -48,10 +48,10 @@ int main(int argc, char *argv[]) {
 
     // If timespan is loaded from another program. Load that output here.
     if (tlevision_input.tspn.source == TSPN_SOURCE_PROGRAM) {
+        LOG(INFO, "Loading TSPN outputs from program : %s %s", tlevision_input.tspn.source_program_id, tlevision_input.tspn.source_program_name);
         status = application_output_read_json(&tspn_output, execution_settings.working_directory, tlevision_input.tspn.source_program_id, tlevision_input.tspn.source_program_name);
         if (status != OK) {
-            LOG(ERROR, "Failed to read application output: %s %s",
-                       tlevision_input.tspn.source_program_id, tlevision_input.tspn.source_program_name);
+            LOG(ERROR, "Failed to read program output: %s %s", tlevision_input.tspn.source_program_id, tlevision_input.tspn.source_program_name);
             return ERROR;
         }
     }
@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
     // If the TLE is loaded from another program, load that output here.
     // Since TLEs must be source from the same program, assume first element
     if (tlevision_input.a_tle[0].source == TLE_SOURCE_PROGRAM) {
+        LOG(INFO, "Loading aTLE outputs from program : %s %s", tlevision_input.tspn.source_program_id, tlevision_input.tspn.source_program_name);
         status = application_output_read_json(&a_tle_output, execution_settings.working_directory, tlevision_input.a_tle[0].source_program_id, tlevision_input.a_tle[0].source_program_name);
         if (status != OK) {
             LOG(ERROR, "Failed to read application output: %s %s",
@@ -69,6 +70,7 @@ int main(int argc, char *argv[]) {
 
     // If the TLE is to be loaded from the catalog, load the catalog here.
     if (tlevision_input.a_tle[0].source == TLE_SOURCE_CATALOG) {
+        LOG(INFO, "Loading SpaceTrack TLE catalogue");
         status = read_json(&tle_cat, database_tle_file);
         if (status != OK) {
             LOG(ERROR, "Failed to read JSON file: %s", database_tle_file);
@@ -77,17 +79,28 @@ int main(int argc, char *argv[]) {
     }
 
     // Load the timespan
+    LOG(INFO, "Loading timespan");
     status = application_inputs_tspn_load(&tspn, &tlevision_input.tspn, &tspn_output, &execution_settings, program_name);
     if (status != OK) {
         LOG(ERROR, "Failed to load timespan");
         return ERROR;
     }
+    LOG(INFO, "Loaded: TSPN start: %f (%s %s)", tspn.values[0], tspn.name, tspn.units);
+    LOG(INFO, "Loaded: TSPN end: %f (%s %s)", tspn.values[tspn.n_values - 1], tspn.name, tspn.units);
+    LOG(INFO, "Loaded: TSPN n_points: %d", tspn.n_values);
+    LOG(INFO, "Loaded: TSPN duration: %f days", tspn.values[tspn.n_values - 1] - tspn.values[0]);
 
     // Load the TLEs
+    LOG(INFO, "Loading TLEs");
     status = tle_load(&a_tle, &n_tles, tlevision_input.a_tle, tlevision_input.n_tle, &a_tle_output, &execution_settings, tle_cat);
     if (status != OK) {
         LOG(ERROR, "Failed to load TLEs");
         return ERROR;
+    }
+    for (int i = 0; i < n_tles; i++) {
+        LOG(INFO, "Loaded: aTLE[%d]: %s", i, a_tle[i].object_name);
+        LOG(INFO, "Loaded: aTLE[%d]: %s", i, a_tle[i].tle_line1);
+        LOG(INFO, "Loaded: aTLE[%d]: %s", i, a_tle[i].tle_line2);
     }
 
     // // If the timespan is taken from another programs outputs, load the PEV here

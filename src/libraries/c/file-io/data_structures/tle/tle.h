@@ -77,4 +77,6 @@ StatusCode tle_load(
     const cJSON *spacetrack_catalog_json
     );
 
+char *cospar_short_to_long(const char *short_cospar);
+
 #endif

@@ -445,9 +445,9 @@ StatusCode tle_load(
     const int len_cat = cJSON_GetArraySize(spacetrack_catalog_json);
     cJSON *cat_entry, *cat_entry_cospar_id_json, *program_tle_json;
     char *cat_entry_cospar_id;
-    char *source_program_filepath[FULL_PATH_BUFFER_SIZE];
+    char source_program_filepath[FULL_PATH_BUFFER_SIZE];
     int n_search_cospar_ids = 0;
-    char **search_cospar_ids = {0};
+    char **search_cospar_ids = NULL;
 
     *n_tles = 0;
 
@@ -464,40 +464,43 @@ StatusCode tle_load(
 
         // The only fields we can allocate in this case are the lines and name
         for (int i = 0; i < n_tle_input; i++) {
-            tles[i]->tle_line1 = strdup(tle_input[i]->tle_line_1);
-            tles[i]->tle_line2 = strdup(tle_input[i]->tle_line_2);
-            tles[i]->object_name = strdup(tle_input[i]->object_name);
+            (*tles)[i].tle_line1 = strdup(tle_input[i].tle_line_1);
+            (*tles)[i].tle_line2 = strdup(tle_input[i].tle_line_2);
+            (*tles)[i].object_name = strdup(tle_input[i].object_name);
+            (*tles)[i].object_id = cospar_short_to_long(tle_input[i].tle_line_1 + 9);
             (*n_tles)++;
         }
 
     // Case source == 1 - Read the TLEs from the catalog
     // Since all programs can only have one input type, assume first element
-    } else if (tle_input[0]->source == TLE_SOURCE_CATALOG) {
+    } else if (tle_input[0].source == TLE_SOURCE_CATALOG) {
 
         // Generate the combined list and count for cospars to search for
         // Start with one element
-        *search_cospar_ids = malloc(1 * sizeof(char*));
-        if (*search_cospar_ids == NULL) {
+        search_cospar_ids = malloc(1 * sizeof(char*));
+        if (search_cospar_ids == NULL) {
             LOG(ERROR, "Failed to allocate memory for search cospar IDs");
             return ERROR;
         }
 
         // Loop over all the input TLEs and add the cospars to the list
         for (int i = 0; i < n_tle_input; i++) {
-            search_cospar_ids[i] = strdup(tle_input[i]->object_cospar_id);
-            if (search_cospar_ids[0] == NULL) {
-                LOG(WARNING, "Failed to allocate memory for search cospar ID: %s", tle_input[i]->object_cospar_id);
+            search_cospar_ids[i] = strdup(tle_input[i].object_cospar_id);
+            if (search_cospar_ids[i] == NULL) {
+                LOG(WARNING, "Failed to allocate memory for search cospar ID: %s", tle_input[i].object_cospar_id);
                 continue;
             }
             n_search_cospar_ids++;
 
             // Reallocate the array for the next cospar ID
-            *search_cospar_ids = realloc(*search_cospar_ids, (n_search_cospar_ids+1) * sizeof(char*));
+            search_cospar_ids = realloc(search_cospar_ids, (n_search_cospar_ids + 1) * sizeof(char *));
             if (*search_cospar_ids == NULL) {
                 LOG(ERROR, "Failed to allocate memory for search cospar IDs");
                 return ERROR;
             }
         }
+
+        LOG(INFO, "Searching the catalog for %d object(s)", n_search_cospar_ids);
 
         // Allocate memory, initial guess is to assume all cospars will be found
         *tles = malloc(n_search_cospar_ids * sizeof(tle_t));
@@ -529,7 +532,7 @@ StatusCode tle_load(
             // Match the cospar IDs
             for (int j = 0; j < n_search_cospar_ids; j++) {
                 if (strncmp(cat_entry_cospar_id, search_cospar_ids[j], 9) == 0) {
-                    status = tle_read_json(tles[*n_tles], cat_entry);
+                    status = tle_read_json(&(*tles)[*n_tles], cat_entry);
                     if (status != OK) {
                         LOG(ERROR, "Failed to load catalog into TLE for %s", cat_entry_cospar_id);
                         return ERROR;
@@ -541,22 +544,28 @@ StatusCode tle_load(
 
     // Case source == 2 - Read the TLEs from another program
     // Since all programs can only have one input type, assume first element
-    } else if (tle_input[0]->source == TLE_SOURCE_PROGRAM) {
+    } else if (tle_input[0].source == TLE_SOURCE_PROGRAM) {
+
+        *tles = malloc(tle_output->n_TLE * sizeof(tle_t));
+        if (*tles == NULL) {
+            LOG(ERROR, "Failed to allocate memory for TLEs");
+            return ERROR;
+        }
 
         for (int i = 0; i < tle_output->n_TLE; i++) {
 
             // Construct the file path
-            working_area_path(*source_program_filepath, execution_settings->working_directory, INPUTS, tle_output->TLE[i], FULL_PATH_BUFFER_SIZE);
+            working_area_path(source_program_filepath, execution_settings->working_directory, FILES, tle_output->TLE[i], FULL_PATH_BUFFER_SIZE);
 
             // Read the file
-            status = read_json(&program_tle_json, *source_program_filepath);
+            status = read_json(&program_tle_json, source_program_filepath);
             if (status != OK) {
-                LOG(ERROR, "Failed to read TLE JSON file: %s", *source_program_filepath);
+                LOG(ERROR, "Failed to read TLE JSON file: %s", source_program_filepath);
                 return ERROR;
             }
 
             // Load the TLE
-            status = tle_read_json(tles[*n_tles], program_tle_json);
+            status = tle_read_json(&(*tles)[*n_tles], program_tle_json);
             if (status != OK) {
                 LOG(ERROR, "Failed to load TLE from JSON file: %s", *source_program_filepath);
                 return ERROR;
@@ -569,3 +578,25 @@ StatusCode tle_load(
     return OK;
 }
 
+#include <stdio.h>
+#include <stdlib.h>
+
+char *cospar_short_to_long(const char *short_cospar)
+{
+    if (short_cospar == NULL)
+        return NULL;
+
+    int yy = (short_cospar[0] - '0') * 10 + (short_cospar[1] - '0');
+    int year = (yy >= 57) ? (1900 + yy) : (2000 + yy);
+
+    char *long_id = malloc(10);
+    if (long_id == NULL)
+        return NULL;
+
+    sprintf(long_id, "%04d-%.3s%c",
+            year,
+            short_cospar + 2,
+            short_cospar[5]);
+
+    return long_id;
+}
