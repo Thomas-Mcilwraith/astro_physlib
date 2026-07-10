@@ -1,15 +1,13 @@
-#ifndef APPLICATION_INTERFACES_H
-#define APPLICATION_INTERFACES_H
+#ifndef APPLICATION_OUTPUT_H
+#define APPLICATION_OUTPUT_H
 
 // Standard libraries
-#include <stdlib.h>
-#include <string.h>
 
 // Local libraries
-#include "utilities/logging/log/log.h"
-#include "utilities/misc/paths/paths.h"
 #include "external/cjson/cJSON.h"
 #include "file-io/internal-products/read-json/read_json.h"
+#include "utilities/logging/log/log.h"
+#include "utilities/misc/paths/paths.h"
 
 // Variable and Macro definitions
 #define MAX_OUTPUT_FILES 100
@@ -34,7 +32,7 @@ typedef struct {
  * @param program_name Name of the program
  * @return StatusCode OK if successful, ERROR otherwise
  */
-StatusCode application_output_read(
+StatusCode application_output_read_json(
     // Outputs
     application_output_t *application_output,
     // Inputs
@@ -43,19 +41,12 @@ StatusCode application_output_read(
     const char* program_name);
 
 /**
- * @brief Initialise the application_output_t struct
- *
- * @param application_output Pointer to the application_output_t struct
- * @return StatusCode OK if successful, ERROR otherwise
- */
-StatusCode application_output_initialise(application_output_t *application_output);
-
-/**
  * @brief Free the application_output_t struct
  *
  * @param application_output Pointer to the application_output_t struct
  * @return StatusCode OK if successful, ERROR otherwise
  */
 StatusCode application_output_free(application_output_t *application_output);
+
 
 #endif

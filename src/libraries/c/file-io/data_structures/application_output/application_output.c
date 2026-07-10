@@ -1,14 +1,13 @@
 /*
- * application_interfaces.c
+ * application_output.c
  *
  * Author: Thomas McIlwraith
  * Date: 18/04/2026
  */
 
-#include "application_interfaces.h"
-#include "file-io/internal-products/parameter-evolution-file/parameter_evolution_file.h"
+#include "application_output.h"
 
-StatusCode application_output_read(
+StatusCode application_output_read_json(
     // Outputs
     application_output_t *application_output,
     // Inputs
@@ -25,12 +24,6 @@ StatusCode application_output_read(
     if (application_output == NULL) {
         LOG(ERROR, "Bad pointer to application_output_read");
         return ERROR;
-    }
-
-    status = application_output_initialise(application_output);
-    if (status != OK) {
-        LOG(ERROR, "Failed to initialise application output");
-        return status;
     }
 
     len_filename = snprintf(filename, FILE_NAME_BUFFER_SIZE, "%s_%s.json", run_title, program_name);
@@ -126,26 +119,7 @@ StatusCode application_output_read(
 
     cJSON_Delete(json);
     return OK;
-}
 
-StatusCode application_output_initialise(application_output_t *application_output) {
-
-    if (application_output == NULL) {
-        LOG(ERROR, "Bad pointer to application_output_initialise");
-        return ERROR;
-    }
-
-    application_output->n_TLE = 0;
-    application_output->n_EPHM = 0;
-    application_output->n_TSPN = 0;
-
-    for (int i = 0; i < MAX_OUTPUT_FILES; i++) {
-        application_output->TLE[i] = NULL;
-        application_output->EPHM[i] = NULL;
-        application_output->TSPN[i] = NULL;
-    }
-
-    return OK;
 }
 
 StatusCode application_output_free(application_output_t *application_output) {
@@ -175,13 +149,3 @@ StatusCode application_output_free(application_output_t *application_output) {
     return OK;
 }
 
-StatusCode foo(
-    // Outputs
-    ParameterEvolution * tspn,
-    // Inputs
-    const 
-    const application_output_t *outfile_tspan,
-    ) {
-
-    return OK;
-}
