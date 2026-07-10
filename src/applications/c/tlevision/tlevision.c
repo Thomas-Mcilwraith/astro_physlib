@@ -97,90 +97,17 @@ int main(int argc, char *argv[]) {
         LOG(ERROR, "Failed to load TLEs");
         return ERROR;
     }
+    LOG(INFO, "Loaded %d TLEs successfully", n_tles);
     for (int i = 0; i < n_tles; i++) {
         LOG(INFO, "Loaded: aTLE[%d]: %s", i, a_tle[i].object_name);
         LOG(INFO, "Loaded: aTLE[%d]: %s", i, a_tle[i].tle_line1);
         LOG(INFO, "Loaded: aTLE[%d]: %s", i, a_tle[i].tle_line2);
     }
 
-    // // If the timespan is taken from another programs outputs, load the PEV here
-    // if (inputs.timespan_source == TLEVISION_INPUTS_TSPN_PROGRAM) {
-    //     status = application_output_read(&tspn_outputs, execution_settings.working_directory, inputs.timespan_source_id, inputs.timespan_source_program);
-    //     if (status != OK) {
-    //         LOG(ERROR, "Failed to read application output: %s %s",
-    //                    inputs.timespan_source_id, inputs.timespan_source_program);
-    //         return ERROR;
-    //     }
-    //
-    //     if (tspn_outputs.n_TSPN != 1) {
-    //         LOG(ERROR, "Expected 1 TSPAN file, found %d", tspn_outputs.n_TSPN);
-    //         return ERROR;
-    //     }
-    //
-    //     status = working_area_path(pev_with_timespan_filepath, execution_settings.working_directory, FILES, tspn_outputs.TSPN[0], FULL_PATH_BUFFER_SIZE);
-    //     if (status != OK) {
-    //         LOG(ERROR, "Failed to construct path for PEV file: %s", tspn_outputs.TSPN[0]);
-    //         return ERROR;
-    //     }
-    //
-    //     status = read_parameter_evolution_file(&pev_with_timespan, pev_with_timespan_filepath);
-    //     if (status != OK) {
-    //         LOG(ERROR, "Failed to read PEV file to retreive timespan: %s", pev_with_timespan_filepath);
-    //         return ERROR;
-    //     }
-    //
-    // // If the timespan is taken from a specific PEV file, load the PEV here
-    // } else if (inputs.timespan_source == TLEVISION_INPUTS_TSPN_PEV) {
-    //
-    //     status = working_area_path(pev_with_timespan_filepath, execution_settings.working_directory, FILES, inputs.pev_filename, FULL_PATH_BUFFER_SIZE);
-    //     if (status != OK) {
-    //         LOG(ERROR, "Failed to construct path for PEV file: %s", inputs.pev_filename);
-    //         return ERROR;
-    //     }
-    //
-    //     status = read_parameter_evolution_file(&pev_with_timespan, pev_with_timespan_filepath);
-    //     if (status != OK) {
-    //         LOG(ERROR, "Failed to read PEV file to retreive timespan: %s", pev_with_timespan_filepath);
-    //         return ERROR;
-    //     }
-    //
-    // }
-    //
-    // // Load the timespan
-    // LOG(INFO, "Generating timespan");
-    // status = load_timespan(&timespan, &pev_with_timespan, &inputs, &execution_settings);
-    // if (status != OK) {
-    //     LOG(ERROR, "Failed to load timespan");
-    //     return ERROR;
-    // }
-    //
-    // LOG(INFO, "Timespan with %d points loaded successfully", timespan.n_values);
+    // Generate the ephemeris with SGP4 model
+    LOG(INFO, "Generating ephemeris with SGP4");
+    status = 
 
-    // // Load all the TLEs into TLE objects
-    // // Manual input only supports one input TLE
-    // if (inputs.tle_data_source == TSPN_SOURCE_PROGRAM) {
-    //     n_tles = 1;
-    //     tles = malloc(sizeof(TLE));
-    //     if (tles == NULL) {
-    //         LOG(ERROR, "Failed to allocate memory for TLE");
-    //         return ERROR;
-    //     }
-    //     // TODO: Add constants model choice to this call and program inputs
-    //     parseLines(tles, inputs.tle_line_1, inputs.tle_line_2);
-    //
-    // // If a list of TLE IDs is provided, the catalog must be loaded and seached
-    // } else if (inputs.tle_data_source == TLEVISION_INPUTS_TLE_ID) {
-    //     // TODO: Load the catalog
-    //     // TODO: Search the catalog for the TLE IDs
-    //     // TODO: Add those TLEs to tles
-    //
-    // // If TLEs are provided by another program, load every item from that catalog
-    // } else if (inputs.tle_data_source == TLEVISION_INPUTS_TLE_PROGRAM) {
-    //     // TODO: Load the ouputs from the other program (reduced catalog)
-    //     // TODO: Add those TLEs to tles
-    // }
-
-    LOG(INFO, "Loaded %d TLEs successfully", n_tles);
 
     LOG(INFO, "Program complete: %s (%s)", program_name, execution_settings.run_title);
 

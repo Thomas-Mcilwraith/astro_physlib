@@ -13,10 +13,10 @@ static double gdi(char *str, int ind1, int ind2);
 
 static void setValsToRec(TLE *tle, ElsetRec *rec);
 
-void parseLines(TLE *tle, char *line1, char *line2)
+void parseLines(TLE *tle, char *line1, char *line2, int wgs_model)
 {
     int i=0;
-    tle->rec.whichconst=wgs72;
+    tle->rec.whichconst=wgs_model;
     // copy the lines
     strncpy(tle->line1,line1,69);
     strncpy(tle->line2,line2,69);
