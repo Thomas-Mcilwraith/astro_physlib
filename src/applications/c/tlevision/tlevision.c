@@ -12,6 +12,7 @@
 #include "file-io/internal-products/read-json/read_json.h"
 #include "file-io/data_structures/tle/tle.h"
 #include "tlevision_interfaces.h"
+#include "utilities/misc/paths/paths.h"
 
 int main(int argc, char *argv[]) {
     // Program configuration
@@ -25,10 +26,10 @@ int main(int argc, char *argv[]) {
     // Program variables
     StatusCode status = OK;
     ParameterEvolution tspn = {0};
+    tle_t *a_tle = {0};
+    int n_tles = 0;
     const char* database_tle_file = "/home/admin/test_spacetrack_tle_cat.json";  // TODO: Retrieve from database
     cJSON *tle_cat;
-    tle_t *a_tle = NULL;
-    int n_tles = 0;
 
     // Parse command line, initialise log file
     status = parse_cmdline(&execution_settings, argc, argv);
@@ -73,24 +74,6 @@ int main(int argc, char *argv[]) {
             LOG(ERROR, "Failed to read JSON file: %s", database_tle_file);
             return ERROR;
         }
-
-        // test reading a single element of the catalog
-        a_tle = malloc(sizeof(tle_t));
-        const int len_cat = cJSON_GetArraySize(tle_cat);
-        LOG(INFO, "Number of TLEs in catalog: %d", len_cat);
-        const cJSON *vanguard = cJSON_GetArrayItem(tle_cat, 0);
-        status = tle_read_json(a_tle, vanguard);
-        if (status != OK) {
-            LOG(ERROR, "Failed to read TLE from JSON");
-            return ERROR;
-        }
-
-        cJSON_Delete(tle_cat);
-
-        LOG(INFO, "tle0: %s", a_tle->tle_line0);
-        LOG(INFO, "tle1: %s", a_tle->tle_line1);
-        LOG(INFO, "ephem_type: %d", a_tle->ephemeris_type);
-        LOG(INFO, "argp: %f", a_tle->arg_of_pericenter);
     }
 
     // Load the timespan
@@ -101,7 +84,11 @@ int main(int argc, char *argv[]) {
     }
 
     // Load the TLEs
-    // status = application_inputs_tle_load();
+    status = tle_load(&a_tle, &n_tles, tlevision_input.a_tle, tlevision_input.n_tle, &a_tle_output, &execution_settings, tle_cat);
+    if (status != OK) {
+        LOG(ERROR, "Failed to load TLEs");
+        return ERROR;
+    }
 
     // // If the timespan is taken from another programs outputs, load the PEV here
     // if (inputs.timespan_source == TLEVISION_INPUTS_TSPN_PROGRAM) {
