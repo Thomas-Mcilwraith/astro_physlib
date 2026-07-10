@@ -1,11 +1,12 @@
 /*
- * application_output.c
+ * application_interfaces.c
  *
  * Author: Thomas McIlwraith
  * Date: 18/04/2026
  */
 
-#include "application_output.h"
+#include "application_interfaces.h"
+#include "file-io/internal-products/parameter-evolution-file/parameter_evolution_file.h"
 
 StatusCode application_output_read(
     // Outputs
@@ -170,6 +171,17 @@ StatusCode application_output_free(application_output_t *application_output) {
     application_output->n_TLE = 0;
     application_output->n_EPHM = 0;
     application_output->n_TSPN = 0;
+
+    return OK;
+}
+
+StatusCode foo(
+    // Outputs
+    ParameterEvolution * tspn,
+    // Inputs
+    const 
+    const application_output_t *outfile_tspan,
+    ) {
 
     return OK;
 }

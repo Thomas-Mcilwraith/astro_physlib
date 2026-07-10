@@ -1,5 +1,5 @@
-#ifndef APPLICATION_OUTPUT_H
-#define APPLICATION_OUTPUT_H
+#ifndef APPLICATION_INTERFACES_H
+#define APPLICATION_INTERFACES_H
 
 // Standard libraries
 #include <stdlib.h>
