@@ -448,7 +448,7 @@ StatusCode tle_load(
     char source_program_filepath[FULL_PATH_BUFFER_SIZE];
     int n_search_cospar_ids = 0;
     char **search_cospar_ids = NULL;
-
+    int n_found = 0;
     *n_tles = 0;
 
     // Case source == 0 - Read the TLE from the user
@@ -533,14 +533,23 @@ StatusCode tle_load(
             for (int j = 0; j < n_search_cospar_ids; j++) {
                 if (strncmp(cat_entry_cospar_id, search_cospar_ids[j], 9) == 0) {
                     status = tle_read_json(&(*tles)[*n_tles], cat_entry);
+                    LOG(INFO, "Found TLE for %s", cat_entry_cospar_id);
                     if (status != OK) {
                         LOG(ERROR, "Failed to load catalog into TLE for %s", cat_entry_cospar_id);
                         return ERROR;
                     }
                     (*n_tles)++;
+                    n_found++;
                 }
             }
+
+            if (n_found == n_search_cospar_ids) {
+                break;
+            }
         }
+
+        // Free memory
+        free (search_cospar_ids);
 
     // Case source == 2 - Read the TLEs from another program
     // Since all programs can only have one input type, assume first element

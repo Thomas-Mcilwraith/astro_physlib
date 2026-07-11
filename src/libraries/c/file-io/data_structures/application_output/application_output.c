@@ -117,9 +117,10 @@ StatusCode application_output_read_json(
         }
     }
 
+    // Free memory
     cJSON_Delete(json);
-    return OK;
 
+    return OK;
 }
 
 StatusCode application_output_free(application_output_t *application_output) {

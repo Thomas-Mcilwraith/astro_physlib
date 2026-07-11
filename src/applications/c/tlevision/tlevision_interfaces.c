@@ -9,6 +9,7 @@
  */
 
 #include "tlevision_interfaces.h"
+#include "external/cjson/cJSON.h"
 #include "file-io/data_structures/application_input_tle/application_input_tle.h"
 
 StatusCode read_tlevision_inputs(
@@ -42,6 +43,7 @@ StatusCode read_tlevision_inputs(
     const cJSON *tlevision = cJSON_GetObjectItemCaseSensitive(json, "tlevision");
     if (!cJSON_IsObject(tlevision)) {
         LOG(ERROR, "Malformed Inputs: tlevision");
+        cJSON_Delete(json);
         return ERROR;
     }
 
@@ -49,6 +51,7 @@ StatusCode read_tlevision_inputs(
     const cJSON *wgs_model = cJSON_GetObjectItemCaseSensitive(tlevision, "wgs_model");
     if (!cJSON_IsNumber(wgs_model)) {
         LOG(ERROR, "Incorrect type in TSPN: wgs_model");
+        cJSON_Delete(json);
         return ERROR;
     }
     inputs->wgs_model = wgs_model->valueint;
@@ -57,11 +60,13 @@ StatusCode read_tlevision_inputs(
     const cJSON *tspn = cJSON_GetObjectItemCaseSensitive(json, "tspn");
     if (!cJSON_IsObject(tspn)) {
         LOG(ERROR, "Malformed Inputs: tspn");
+        cJSON_Delete(json);
         return ERROR;
     }
     status = application_input_tspn_read_json(&inputs->tspn, tspn);;
     if (status != OK) {
         LOG(ERROR, "Failed to read Inputs: tspn");
+        cJSON_Delete(json);
         return ERROR;
     }
 
@@ -69,6 +74,7 @@ StatusCode read_tlevision_inputs(
     const cJSON *a_tle = cJSON_GetObjectItemCaseSensitive(json, "a_tle");
     if (!cJSON_IsArray(a_tle)) {
         LOG(ERROR, "Malformed Inputs: a_tle");
+        cJSON_Delete(json);
         return ERROR;
     }
     inputs->n_tle = cJSON_GetArraySize(a_tle);
@@ -77,6 +83,8 @@ StatusCode read_tlevision_inputs(
     inputs->a_tle = malloc(inputs->n_tle * sizeof(application_input_tle_t));
     if (inputs->a_tle == NULL) {
         LOG(ERROR, "Failed to allocate memory for TLEs");
+        cJSON_Delete(json);
+        application_input_tle_free(inputs->a_tle);
         return ERROR;
     }
 
@@ -85,11 +93,15 @@ StatusCode read_tlevision_inputs(
         const cJSON *tle = cJSON_GetArrayItem(a_tle, i);
         if (!cJSON_IsObject(tle)) {
             LOG(ERROR, "Malformed Inputs: a_tle[%d]", i);
+            cJSON_Delete(json);
+            application_input_tle_free(inputs->a_tle);
             return ERROR;
         }
         status = application_input_tle_read_json(&inputs->a_tle[i], tle);
         if (status != OK) {
             LOG(ERROR, "Failed to read Inputs: a_tle[%d]", i);
+            cJSON_Delete(json);
+            application_input_tle_free(inputs->a_tle);
             return ERROR;
         }
     }
@@ -119,6 +131,9 @@ StatusCode read_tlevision_inputs(
             LOG(INFO, "Loaded Input (a_tle[%d] object_cospar_id): %s", i, inputs->a_tle[i].object_cospar_id);
         }
     }
+
+    // Free memory
+    cJSON_Delete(json);
 
     return OK;
 }
