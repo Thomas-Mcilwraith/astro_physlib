@@ -87,7 +87,7 @@ bool isLeap(int year)
     return TRUE;
 }
 
-long parseEpoch(ElsetRec *rec, char *str)
+double parseEpoch(ElsetRec *rec, char *str)
 {
     char tmp[16];
     strncpy(tmp,str,14);
@@ -154,13 +154,7 @@ long parseEpoch(ElsetRec *rec, char *str)
     day = doy;
     jday(year, mon, day, hr, mn, sec, &rec->jdsatepoch, &rec->jdsatepochF);
 
-    double diff = rec->jdsatepoch - 2440587.5;
-    double diff2 = 86400000.0*rec->jdsatepochF;
-    diff*=86400000.0;
-
-    long epoch = (long)diff2;
-    epoch+=(long)diff;
-    return epoch;
+    return rec->jdsatepoch + rec->jdsatepochF;
 }
 
 void getRVForDate(TLE *tle, long millisSince1970, double r[3], double v[3])

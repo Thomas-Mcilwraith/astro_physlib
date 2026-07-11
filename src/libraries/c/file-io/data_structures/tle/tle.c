@@ -6,7 +6,6 @@
  */
 
 #include "tle.h"
-#include "utilities/misc/paths/paths.h"
 
 StatusCode tle_read_json(
     // Outputs
@@ -548,6 +547,12 @@ StatusCode tle_load(
             }
         }
 
+        if (n_found != n_search_cospar_ids) {
+            LOG(WARNING, "Found %d/%d TLEs", n_found, n_search_cospar_ids);
+        } else {
+            LOG(INFO, "Found %d/%d TLEs", n_found, n_search_cospar_ids);
+        }
+
         // Free memory
         free (search_cospar_ids);
 
@@ -586,9 +591,6 @@ StatusCode tle_load(
     }
     return OK;
 }
-
-#include <stdio.h>
-#include <stdlib.h>
 
 char *cospar_short_to_long(const char *short_cospar)
 {

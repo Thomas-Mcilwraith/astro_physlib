@@ -13,5 +13,14 @@
 // Variable and Macro definitions
 
 // Function prototypes
+StatusCode ephm_generate_SGP4(
+        // Outputs
+        ParameterEvolutionFile *a_ephm,
+        int *n_ephm,
+        // Inputs
+        const ParameterEvolution *timespan,
+        const tle_t *a_tle,
+        const int n_tles,
+        const int wgs_model);
 
 #endif

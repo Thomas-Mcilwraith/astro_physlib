@@ -3,6 +3,8 @@
 
 // Standard libraries
 #include <stdlib.h>
+#include <stdio.h>
+
 
 // Local libraries
 #include "external/cjson/cJSON.h"
@@ -10,6 +12,7 @@
 #include "file-io/data_structures/application_output/application_output.h"
 #include "utilities/logging/log/log.h"
 #include "utilities/misc/parse-cmdline/parse_cmdline.h"
+#include "utilities/misc/paths/paths.h"
 #include "external/sgp4/TLE.h"
 
 // Variable and Macro definitions

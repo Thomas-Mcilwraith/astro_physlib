@@ -11,6 +11,7 @@
 #include "file-io/internal-products/parameter-evolution-file/parameter_evolution_file.h"
 #include "file-io/internal-products/read-json/read_json.h"
 #include "file-io/data_structures/tle/tle.h"
+#include "tlevision/tlevision_generate_arc.h"
 #include "tlevision_interfaces.h"
 #include "utilities/misc/paths/paths.h"
 
@@ -94,13 +95,27 @@ int main(int argc, char *argv[]) {
         LOG(ERROR, "Failed to load TLEs");
         return ERROR;
     }
-    LOG(INFO, "Loaded %d TLEs successfully", n_tles);
+    LOG(INFO, "Loaded TLEs successfully", n_tles);
 
     // Generate the ephemeris with SGP4 model
     LOG(INFO, "Generating ephemerides with SGP4");
-    // status = 
+    status = ephm_generate_SGP4(ephm_output, &n_ephm_output, &tspn, a_tle, n_tles, tlevision_input.wgs_model);
+    if (status != OK) {
+        LOG(ERROR, "Failed to generate ephemerides");
+        return ERROR;
+    }
+    LOG(INFO, "Generated ephemerides successfully");
 
 
+// StatusCode ephm_generate_SGP4(
+//         // Outputs
+//         ParameterEvolutionFile *a_ephm,
+//         int *n_ephm,
+//         // Inputs
+//         const ParameterEvolution *timespan,
+//         const tle_t *a_tle,
+//         const int n_tles,
+//         const int wgs_model) {
     LOG(INFO, "Program complete: %s (%s)", program_name, execution_settings.run_title);
 
     // Free memory
