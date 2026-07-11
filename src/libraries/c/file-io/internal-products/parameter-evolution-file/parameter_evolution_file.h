@@ -13,8 +13,8 @@
 
 // Variable and Macro definitions
 #define CHARS_PER_WORD 10        // Formatting
-#define CHARS_PER_COL 23
-#define WORD_PRECISION 8
+#define CHARS_PER_COL 31
+#define WORD_PRECISION 16
 #define VAR_UNITS_SEPARATOR "~"
 
 // Variable Names
@@ -57,12 +57,15 @@
 
 // ParameterEvolutionFile Types
 #define NO_TYPE "UNSPECIFIED"
+#define PEVF_TYPE_EPHM_NO_COV "EPHEM_NO_COV"
 
 // ParameterEvolutionFile Sources
 #define NO_SOURCE "UNSPECIFIED"
+#define PEVF_TLEVISION_SGP4 "TLEVISION_SGP4"
 
 // ParameterEvolutionFile References
 #define NO_REFERENCE "UNSPECIFIED"
+#define PEVF_REFERENCE_TEME "TEME"
 
 // Data structure definitions
 

@@ -99,23 +99,19 @@ int main(int argc, char *argv[]) {
 
     // Generate the ephemeris with SGP4 model
     LOG(INFO, "Generating ephemerides with SGP4");
-    status = ephm_generate_SGP4(ephm_output, &n_ephm_output, &tspn, a_tle, n_tles, tlevision_input.wgs_model);
+    status = ephm_generate_SGP4(&ephm_output, &n_ephm_output, &tspn, a_tle, n_tles, tlevision_input.wgs_model, execution_settings.run_title);
     if (status != OK) {
         LOG(ERROR, "Failed to generate ephemerides");
         return ERROR;
     }
     LOG(INFO, "Generated ephemerides successfully");
 
+    status = write_parameter_evolution_file(ephm_output[0]);
+    if (status != OK) {
+        LOG(ERROR, "Failed to write ephemeris file");
+        return ERROR;
+    }
 
-// StatusCode ephm_generate_SGP4(
-//         // Outputs
-//         ParameterEvolutionFile *a_ephm,
-//         int *n_ephm,
-//         // Inputs
-//         const ParameterEvolution *timespan,
-//         const tle_t *a_tle,
-//         const int n_tles,
-//         const int wgs_model) {
     LOG(INFO, "Program complete: %s (%s)", program_name, execution_settings.run_title);
 
     // Free memory
