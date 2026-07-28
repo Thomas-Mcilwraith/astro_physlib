@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
     // Program variables
     StatusCode status = OK;
     const char* database_tle_file = "/home/admin/test_spacetrack_tle_cat.json";  // TODO: Retrieve from database
+    char output_filepath_buf[1024];
     cJSON *tle_cat;
     ParameterEvolution tspn = {0};
     tle_t *a_tle = {0};
@@ -106,10 +107,18 @@ int main(int argc, char *argv[]) {
     }
     LOG(INFO, "Generated ephemerides successfully");
 
-    status = write_parameter_evolution_file(ephm_output[0]);
-    if (status != OK) {
-        LOG(ERROR, "Failed to write ephemeris file");
-        return ERROR;
+    // Write all the output files
+    LOG(INFO, "Generating Outputs");
+    for (int i = 0; i < n_ephm_output; i++) {
+        // Define the file path for this file
+        status = working_area_path(output_filepath_buf, execution_settings.working_directory, FILES, "test", 1024);
+        status = write_parameter_evolution_file(ephm_output[i]);
+        if (status == OK) {
+            LOG(INFO, "Output File: %s", ephm_output[i].filename);
+        } else {
+            LOG(ERROR, "Failed to write ephemeris file");
+            return ERROR;
+        }
     }
 
     LOG(INFO, "Program complete: %s (%s)", program_name, execution_settings.run_title);

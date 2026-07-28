@@ -7,8 +7,11 @@
 // Local libraries
 #include "utilities/logging/log/log.h"
 #include "utilities/constants/constants.h"
+#include "utilities/misc/parse-cmdline/parse_cmdline.h"
+#include "utilities/misc/paths/paths.h"
 #include "file-io/data_structures/tle/tle.h"
 #include "file-io/internal-products/parameter-evolution-file/parameter_evolution_file.h"
+#include "external/sgp4/TLE.h"
 
 // Variable and Macro definitions
 

@@ -9,10 +9,7 @@
  */
 
 #include "tlevision_generate_arc.h"
-#include "external/sgp4/TLE.h"
-#include "file-io/internal-products/parameter-evolution-file/parameter_evolution_file.h"
-#include "utilities/constants/constants.h"
-#include "utilities/misc/parse-cmdline/parse_cmdline.h"
+#include "utilities/misc/paths/paths.h"
 
 StatusCode ephm_generate_SGP4(
         // Outputs
@@ -31,7 +28,7 @@ StatusCode ephm_generate_SGP4(
     double r_km_buf[3], v_kms_buf[3];
     double minutes_after_epoch;
     ParameterEvolution r0, r1, r2, v0, v1, v2;
-    char buf[256];
+    char buf[256], filepath_buffer[1024];
 
     *n_ephm = n_tles;
 
@@ -75,13 +72,6 @@ StatusCode ephm_generate_SGP4(
             return ERROR;;
         }
 
-        snprintf(buf, sizeof(buf), "%s_EPHM_TLEVISION_%s.pev", run_title, a_tle[i].object_id);
-        (*a_ephm)[i].filename = strdup(buf);
-        if ((*a_ephm)[i].filename == NULL) {
-            LOG(ERROR, "Failed to allocate memory for ephm filename");
-            return ERROR;;
-        }
-       
         // Load the TLE lines into the satrec
         parseLines(&satrec, a_tle[i].tle_line1, a_tle[i].tle_line2, wgs_model);
         if (satrec.sgp4Error != 0) {
