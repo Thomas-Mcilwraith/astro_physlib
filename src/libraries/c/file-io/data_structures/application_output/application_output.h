@@ -15,12 +15,13 @@
 // Function prototypes
 
 typedef struct {
+    char *run_title;
     int n_TLE;
-    char *TLE[MAX_OUTPUT_FILES];
+    char *aTLE[MAX_OUTPUT_FILES];
     int n_EPHM;
-    char *EPHM[MAX_OUTPUT_FILES];
+    char *aEPHM[MAX_OUTPUT_FILES];
     int n_TSPN;
-    char *TSPN[MAX_OUTPUT_FILES];
+    char *aTSPN[MAX_OUTPUT_FILES];
 } application_output_t;
 
 /**
@@ -28,8 +29,7 @@ typedef struct {
  *
  * @param application_output Pointer to the application_output_t struct
  * @param working_directory Path to the working directory
- * @param run_title Title of the run
- * @param program_name Name of the program
+ * @param run_title Title of the program to read outputs from
  * @return StatusCode OK if successful, ERROR otherwise
  */
 StatusCode application_output_read_json(
@@ -37,8 +37,7 @@ StatusCode application_output_read_json(
     application_output_t *application_output,
     // Inputs
     const char* working_directory,
-    const char* run_title,
-    const char* program_name);
+    const char* run_title);
 
 /**
  * @brief Free the application_output_t struct
