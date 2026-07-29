@@ -6,12 +6,9 @@
 
 // Local libraries
 #include "utilities/logging/log/log.h"
+#include "utilities/misc/paths/paths.h"
 
 // Variable and Macro definitions
-
-#define WORKDIR_INPUTS "inputs"
-#define WORKDIR_OUTPUTS "outputs"
-#define WORKDIR_FILES "files"
 
 // Function prototypes
 

@@ -2,7 +2,9 @@
 #define TIME_FORMATS
 
 // Standard libraries
+#include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 // Local libraries
 #include "utilities/logging/log/log.h"
@@ -11,56 +13,48 @@
 // Variable and Macro definitions
 
 // Function prototypes
+typedef struct {
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    double second;
+} datetime_t;
 
 /**
  * @brief Converts calendar date into Julian Day.
  * 
  * @param julian_day (*double) Julian Day [4713 B.C.]
- * @param year Year (between 1900 -> 2100)
- * @param month Month of Year
- * @param day Day of Month
- * @param hour Hour of Day
- * @param minute Minute of Hour
- * @param second Second+Millisecond of Minute
+ * @param date Gregorian calendar date/time
  * 
  */
 StatusCode date_to_jd(
         // Outputs
         double *julian_day,
         // Inputs
-        const int year, const int month, const int day,
-        const int hour, const int minute, const double second);
+        const datetime_t date);
 
 
 /**
  * @brief Converts Julian Day into calendar date.
  * 
- * @param year Year (between 1900 -> 2100)
- * @param month Month of Year
- * @param day Day of Month
- * @param hour Hour of Day
- * @param minute Minute of Hour
- * @param second Second+Millisecond of Minute
+ * @param date Gregorian calendar date/time
  * @param julian_day (*double) Julian Day [4713 B.C.]
  */
 StatusCode jd_to_date(
         // Outputs
-        int *year, int *month, int *day,
-        int *hour, int *minute, double *second,
+        datetime_t *date,
         // Inputs
-        const double julian_day
-    );
+        const double julian_day);
 
 /**
  * Returns the day of the year for a given date.
  *
- * @param year Year
- * @param month Month of Year
- * @param day Day of Month
- *
+ * @param date Gregorian calendar date/time
  * @return Day of Year
  */
-int day_of_year(int year, int month, int day);
+int day_of_year(const datetime_t date);
 
 /**
  * @brief
@@ -81,6 +75,15 @@ int day_of_week(double julian_day);
 double jd_to_mjd(const double julian_day);
 
 /**
+ * @brief Converts Modified Julian Date to Julian Day.
+ * 
+ * @param modified_julian_day (*double) Modified Julian Date
+ * 
+ * @return Julian Day [4713 B.C.]
+ */
+double mjd_to_jd(const double modified_julian_day);
+
+/**
  * @brief Converts Julian Day to Modified Julian Date (2000).
  * 
  * @param julian_day (*double) Julian Day [4713 B.C.]
@@ -88,6 +91,15 @@ double jd_to_mjd(const double julian_day);
  * @return Modified Julian Date (2000)
  */
 double jd_to_mjd2000(const double julian_day);
+
+/**
+ * @brief Converts Modified Julian Date (2000) to Julian Day.
+ * 
+ * @param modified_julian_day (*double) Modified Julian Date (2000)
+ * 
+ * @return Julian Day [4713 B.C.]
+ */
+double mjd2000_to_jd(const double modified_julian_day);
 
 /**
  * @brief Converts Julian Day to Modified Julian Date (1900).
@@ -99,13 +111,13 @@ double jd_to_mjd2000(const double julian_day);
 double jd_to_mjd1900(const double julian_day);
 
 /**
- * @brief Converts Julian Day to Modified Julian Date (GPS).
+ * @brief Converts Modified Julian Date (1900) to Julian Day.
  * 
- * @param julian_day (*double) Julian Day [4713 B.C.]
+ * @param modified_julian_day (*double) Modified Julian Date (1900)
  * 
- * @return Modified Julian Date (GPS)
+ * @return Julian Day [4713 B.C.]
  */
-double jd_to_mjd1900(const double julian_day);
+double mjd1900_to_jd(const double modified_julian_day);
 
 /**
  * @brief Converts Julian Day to GPS Epoch.
@@ -117,6 +129,15 @@ double jd_to_mjd1900(const double julian_day);
 double jd_to_mjdGPS(const double julian_day);
 
 /**
+ * @brief Converts GPS Epoch to Julian Day.
+ * 
+ * @param modified_julian_day_GPS (*double) Modified Julian Date (1900)
+ * 
+ * @return Julian Day [4713 B.C.]
+ */
+double mjdGPS_to_jd(const double modified_julian_day_GPS);
+
+/**
  * @brief Converts Julian Day to Julian Century.
  * 
  * @param julian_day (*double) Julian Day [4713 B.C.]
@@ -125,4 +146,39 @@ double jd_to_mjdGPS(const double julian_day);
  */
 double jd_to_jc(const double julian_day);
 
+/**
+ * @brief Converts Julian Century to Julian Day.
+ * 
+ * @param julian_century (*double) Julian Century
+ * 
+ * @return Julian Day [4713 B.C.]
+ */
+double jc_to_jd(const double julian_century);
+
+/**
+ * @brief Converts ISO8601 date/time string to calendar date/time.
+ * 
+ * @param date Gregorian calendar date/time
+ * @param iso8601 ISO8601 date/time string
+ */
+StatusCode iso8601_to_date(
+        // Outputs
+        datetime_t *date,
+        bool *is_utc,
+        // Inputs
+        const char *iso8601);
+
+/**
+ * @brief Converts calendar date/time to ISO8601 date/time string.
+ * 
+ * @param iso8601 ISO8601 date/time string
+ * @param date Gregorian calendar date/time
+ * @param is_utc (*bool) True if date/time is UTC
+ */
+StatusCode date_to_iso8601(
+        // Outputs
+        char *iso8601,
+        // Inputs
+        const datetime_t date,
+        const bool is_utc);
 #endif

@@ -78,14 +78,15 @@ void init_log(
     char filepath[1024];
 
     // Open the log file
-    snprintf(filepath, sizeof(filepath), "%s/%s/%s.log", working_dir, WORKDIR_LOGS, run_title);
+    snprintf(filepath, sizeof(filepath), "%s/%s/%s_%s.log", working_dir,
+             WORKDIR_LOGS, run_title, program_name);
     log_fp = fopen(filepath, "w");
     if (!log_fp) {
         perror("Failed to open log file");
         log_fp = stdout; // fallback to stdout
     }
 
-    LOG(INFO, "Program Started: %s %s", program_name, run_title);
+    LOG(INFO, "Program Started: %s (%s)", program_name, run_title);
     return;
 }
 

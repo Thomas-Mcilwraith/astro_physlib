@@ -25,9 +25,9 @@ typedef struct TLE {
     int sgp4Error;
 } TLE;
 
-void parseLines(TLE *tle, char *line1, char *line2);
+void parseLines(TLE *tle, char *line1, char *line2, int wgs_model);
 
-long parseEpoch(ElsetRec *rec, char *str);
+double parseEpoch(ElsetRec *rec, char *str);
 
 void getRVForDate(TLE *tle, long millisSince1970, double r[3], double v[3]);
 

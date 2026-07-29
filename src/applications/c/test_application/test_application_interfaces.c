@@ -7,21 +7,26 @@
  */
 
 #include "test_application_interfaces.h"
+#include "utilities/misc/paths/paths.h"
+#include <stdio.h>
 
 StatusCode read_TestApplicationInputs(
         // Outputs
         TestApplicationInputs *options,
         // Inputs
         const char *working_directory,
-        const char *run_title) {
+        const char *run_title,
+        const char *program_name) {
 
     // Local variables
     cJSON *json;
     StatusCode status = OK;
-    char filepath[1024];
+    char filepath[FULL_PATH_BUFFER_SIZE], filename[FILE_NAME_BUFFER_SIZE];
 
+    // Construct the file name
+    snprintf(filename, sizeof(filename), "%s_%s.json", run_title, program_name);
     // Construct the file path
-    snprintf(filepath, sizeof(filepath), "%s/%s/%s.json", working_directory, WORKDIR_INPUTS, run_title);
+    working_area_path(filepath, working_directory, INPUTS, filename, FULL_PATH_BUFFER_SIZE);
 
     // Read the JSON file
     status = read_json(&json, filepath);

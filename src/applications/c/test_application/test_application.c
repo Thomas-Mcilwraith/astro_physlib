@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
     double R_gcrs_tirs[3][3], R_cirs_tirs[3][3], R_gcrs_cirs[3][3], R_tirs_itrs[3][3], R_gcrs_itrs[3][3];
     double itrf_vec[3];
     double output_vec[3];
+    datetime_t date;
 
     status = parse_cmdline(&execution_settings, argc, argv);
     if (status != OK) {
@@ -40,19 +41,19 @@ int main(int argc, char *argv[]) {
     init_log(execution_settings.run_title, execution_settings.working_directory, program_name);
 
     status = read_TestApplicationInputs(&main_options, execution_settings.working_directory,
-                                        execution_settings.run_title);
+                                        execution_settings.run_title, program_name);
     if (status != OK) {
         LOG(ERROR, "Failed to read Inputs");
         return ERROR;
     }
 
     // Unpack the main options [WILL NOT DO THIS IN REAL APPICATIONS]
-    const int year = main_options.year;
-    const int month = main_options.month;
-    const int day = main_options.day;
-    const int hour = main_options.hour;
-    const int minute = main_options.minute;
-    const double seconds = main_options.seconds;
+    date.year = main_options.year;
+    date.month = main_options.month;
+    date.day = main_options.day;
+    date.hour = main_options.hour;
+    date.minute = main_options.minute;
+    date.second = main_options.seconds;
     const double gcrf_vec[3] = {main_options.gcrf_vec[0], main_options.gcrf_vec[1], main_options.gcrf_vec[2]};
     const double utc_ut1_sec = main_options.utc_ut1_sec;
     const double xp = main_options.xp;
@@ -60,11 +61,12 @@ int main(int argc, char *argv[]) {
     const double dx_CIP = main_options.dx_CIP;
     const double dy_CIP = main_options.dy_CIP;
 
+
     LOG(INFO, "Computing GCRF -> ITRF Rotation");
-    LOG(INFO, "Date: %04d-%02d-%02d %02d:%02d:%06.3f UTC", year, month, day, hour, minute, seconds);
+    LOG(INFO, "Date: %04d-%02d-%02d %02d:%02d:%06.3f UTC", date.year, date.month, date.day, date.hour, date.minute, date.second);
     LOG(INFO, "GCRF Input vec : %f    %f    %f", gcrf_vec[0], gcrf_vec[1], gcrf_vec[2]);
 
-    status = date_to_jd(&utc_jd, year, month, day, hour, minute, seconds);
+    status = date_to_jd(&utc_jd, date);
     if (status != OK) {
         LOG(ERROR, "Failed to compute JD from date");
         return ERROR;

@@ -29,9 +29,14 @@ add_library(psf STATIC
 
     file-io/internal-products/parameter-evolution-file/parameter_evolution_file.c
     file-io/internal-products/read-json/read_json.c
+    file-io/data_structures/application_output/application_output.c
+    file-io/data_structures/application_input_tle/application_input_tle.c
+    file-io/data_structures/application_input_tspn/application_input_tspn.c
+    file-io/data_structures/tle/tle.c
 
     mathematics-library/linear-algebra/matrix-operations/matrix_operations.c
     mathematics-library/numerical-methods/runge-kutta-4/runge_kutta_4.c
+    mathematics-library/numerical-methods/interpolation/interpolation.c
 
     orbit-dynamics/equations-of-motion/two-body-problem/two_body_problem.c
 
@@ -42,6 +47,7 @@ add_library(psf STATIC
 
     utilities/logging/log/log.c
     utilities/misc/parse-cmdline/parse_cmdline.c
+    utilities/misc/paths/paths.c
 )
 
 target_link_libraries(psf PUBLIC sofa cjson)
