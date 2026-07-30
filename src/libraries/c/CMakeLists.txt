@@ -30,6 +30,7 @@ add_library(psf STATIC
     file-io/internal-products/parameter-evolution-file/parameter_evolution_file.c
     file-io/internal-products/read-json/read_json.c
     file-io/data_structures/application_output/application_output.c
+    file-io/data_structures/workflow_graph/workflow_graph.c
     file-io/data_structures/tle/tle.c
 
     mathematics-library/linear-algebra/matrix-operations/matrix_operations.c
