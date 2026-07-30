@@ -32,7 +32,7 @@ typedef struct {
  * @param run_title Title of the program to read outputs from
  * @return StatusCode OK if successful, ERROR otherwise
  */
-StatusCode application_output_read_json(
+StatusCode application_output_read(
     // Outputs
     application_output_t *application_output,
     // Inputs

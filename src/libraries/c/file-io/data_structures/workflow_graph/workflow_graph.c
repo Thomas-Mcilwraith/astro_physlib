@@ -292,3 +292,66 @@ StatusCode workflow_graph_read(
     return OK;
 }
 
+StatusCode workflow_graph_find_input_node(
+    // Outputs
+    workflow_node_t **connected_node,
+    //Inputs
+    const workflow_graph_t *graph,
+    const workflow_node_t *this_node,
+    const char* port_name,
+    const char* port_type
+    ) {
+
+    // Local variables
+    bool found = false;
+    workflow_edge_t *connected_edge = {0};
+    size_t this_port_id = 0;
+    
+    // Check that the search term exists in this node
+    for (size_t i = 0; i < this_node->n_inputs; i++) {
+        if (strcmp(this_node->inputs[i].name, port_name) == 0 &&
+            strcmp(this_node->inputs[i].type, port_type) == 0) {
+
+            this_port_id = this_node->inputs[i].id;
+            found = true;
+        }
+    }
+
+    if (!found) {
+        LOG(ERROR, "Failed to find port %s:%s in node %s", port_name, port_type, this_node->program);
+        return ERROR;
+    }
+
+    // Now search for the port id in edges
+    found = false;
+    for (size_t i = 0; i < graph->n_edges; i++) {
+        if (graph->edges[i].to == this_port_id) {
+            connected_edge = &graph->edges[i];
+            found = true;
+        }
+    }
+
+    if (!found) {
+        LOG(ERROR, "Failed to find connected edge for port %s:%s in node %s", port_name, port_type, this_node->program);
+        return ERROR;
+    }
+
+    // Now search for the connected node in the graph, this is the node which
+    found = false;
+    for (size_t i = 0; i < graph->n_nodes; i++) {
+        for (size_t j = 0; j < graph->nodes[i].n_outputs; j++) {
+            if (graph->nodes[i].outputs[j].id == connected_edge->from) {
+                *connected_node = &graph->nodes[i];
+                found = true;
+            }
+        }
+    }
+
+    if (!found) {
+        LOG(ERROR, "Failed to find connected node for port %s:%s in node %s", port_name, port_type, this_node->program);
+        return ERROR;
+    }
+
+    return OK;
+}
+

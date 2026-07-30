@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
     // int n_ephm_output = 0;
     // // Inputs
     // tlevision_input_t tlevision_input = {0};
-    const char* program_name = "tlevision";
     ExecutionSettings execution_settings = {0};
     // application_output_t tspn_output = {0};
     // application_output_t a_tle_output = {0};
@@ -32,6 +31,8 @@ int main(int argc, char *argv[]) {
     StatusCode status = OK;
     workflow_graph_t graph;
     workflow_node_t *this_node = NULL;
+    workflow_node_t *input_aTLE_node = NULL;
+    application_output_t input_aTLE_output = {0};
     // const char* database_tle_file = "/home/admin/test_spacetrack_tle_cat.json";  // TODO: Retrieve from database
     // char output_filepath_buf[1024];
     // cJSON *tle_cat;
@@ -45,7 +46,7 @@ int main(int argc, char *argv[]) {
         LOG(ERROR, "Failed to parse command line");
         return ERROR;
     }
-    init_log(execution_settings.run_title, execution_settings.working_directory, program_name);
+    init_log(execution_settings.run_title, execution_settings.working_directory, execution_settings.program_name);
 
     // Load the workflow graph
     status = workflow_graph_read(&graph, &this_node, execution_settings);
@@ -54,34 +55,24 @@ int main(int argc, char *argv[]) {
         return ERROR;
     }
 
-    // THMM checking
-    LOG(INFO, "Checking NODES");
-    for (int i = 0; i < graph.n_nodes; i++) {
-        workflow_node_t node = graph.nodes[i];
-        LOG(INFO, "Node: %s %s", node.id, node.program);
-        for (int j = 0; j < node.n_inputs; j++) {
-            workflow_port_t port = node.inputs[j];
-            LOG(INFO, "Input: %d %s %s", port.id, port.name, port.type);
-        }
-        for (int k = 0; k < node.n_outputs; k++) {
-            workflow_port_t port = node.outputs[k];
-            LOG(INFO, "Output: %d %s %s", port.id, port.name, port.type);
-        }
+    // Load the input TLEs node
+    status = workflow_graph_find_input_node(&input_aTLE_node, &graph, this_node, "aTLE", "aTLE");
+    if (status != OK) {
+        LOG(ERROR, "Failed to find aTLE input node");
+        return ERROR;
     }
-    LOG(INFO, "Checking EDGES");
-    for (int j = 0; j < graph.n_edges; j++) {
-        workflow_edge_t edge = graph.edges[j];
-        LOG(INFO, "Edge: %d %d", edge.from, edge.to);
+
+    // Load the outputs from the TLEs node
+    status = application_output_read(&input_aTLE_output, execution_settings.working_directory, input_aTLE_node->id);
+    if (status != OK) {
+        LOG(ERROR, "Failed to read aTLE outputs");
+        return ERROR;
     }
-    LOG(INFO, "Checking THIS NODE");
-    for (int k = 0; k < this_node->n_inputs; k++) {
-        workflow_port_t port = this_node->inputs[k];
-        LOG(INFO, "Input: %d %s %s", port.id, port.name, port.type);
+
+    for (int i = 0; i < input_aTLE_output.n_TLE; i++){
+        LOG(INFO, "found TLE: %s", input_aTLE_output.aTLE[i]);
     }
-    for (int l = 0; l < this_node->n_outputs; l++) {
-        workflow_port_t port = this_node->outputs[l];
-        LOG(INFO, "Output: %d %s %s", port.id, port.name, port.type);
-    }
+
     //
     // // Read the input file
     // status = read_tlevision_inputs(&tlevision_input, execution_settings.working_directory, execution_settings.run_title, program_name);

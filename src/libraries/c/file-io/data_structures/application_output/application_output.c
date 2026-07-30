@@ -7,7 +7,7 @@
 
 #include "application_output.h"
 
-StatusCode application_output_read_json(
+StatusCode application_output_read(
     // Outputs
     application_output_t *application_output,
     // Inputs

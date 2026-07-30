@@ -20,6 +20,7 @@
  * @param n_threads Number of threads
  */
 typedef struct {
+    char *program_name;
     char *run_title;
     char *working_directory;
     int n_threads;
@@ -39,5 +40,13 @@ StatusCode parse_cmdline(
         // Inputs
         const int argc,
         char *argv[]);
+
+/**
+ * @brief Gets the program name from the command line arguments
+ *
+ * @param argv Command line arguments
+ * @return Program name
+ */
+const char *get_program_name(char *argv[]);
 
 #endif

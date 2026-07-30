@@ -99,6 +99,7 @@ StatusCode workflow_port_read(
 /**
  * @brief Reads a node cJSON object into a workflow_node_t object
  * 
+    size_t *connected_port,
  * @param node The node object to read into
  * @param node_json The cJSON object to read from
  */
@@ -134,9 +135,14 @@ StatusCode workflow_graph_read(
     // Inputs
     const ExecutionSettings execution_settings);
 
-StatusCode workflow_graph_find_connected_node(
+StatusCode workflow_graph_find_input_node(
     // Outputs
+    workflow_node_t **connected_node,
     //Inputs
+    const workflow_graph_t *graph,
+    const workflow_node_t *this_node,
+    const char* port_name,
+    const char* port_type
     );
 
 #endif

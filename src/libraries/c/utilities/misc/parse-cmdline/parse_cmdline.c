@@ -31,10 +31,21 @@ StatusCode parse_cmdline(
         return ERROR;
     }
 
+    cfg->program_name = strdup(get_program_name(argv));
+    if (cfg->program_name == NULL) {
+        LOG(ERROR, "Failed to allocate memory for program name");
+        return ERROR;
+    }
+
     cfg->run_title = argv[1];
     cfg->working_directory = argv[2];
     cfg->n_threads = threads;
 
     return OK;
+}
+
+const char *get_program_name(char *argv[]) {
+    const char *name = strrchr(argv[0], '/');
+    return (name != NULL) ? name + 1 : argv[0];
 }
 
