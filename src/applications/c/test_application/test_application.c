@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     // Program configuration
     const char *program_name = "test_application";
     TestApplicationInputs main_options;
-    ExecutionSettings execution_settings;
+    execution_settings_t execution_settings;
 
     // Program variables
     StatusCode status = OK;

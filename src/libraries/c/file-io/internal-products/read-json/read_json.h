@@ -16,14 +16,26 @@
  * @brief Reads a JSON file into a cJSON object
  *
  * @param json The cJSON object to populate
- * @param filename The name of the file to read
+ * @param filepath The name of the file to read
  * @return OK if successful, ERROR otherwise
  */
 StatusCode read_json(
         // Outputs
         cJSON **json,
         // Inputs
-        const char *filename);
+        const char *filepath);
+
+/**
+ * @brief Writes a cJSON object to a file
+ *
+ * @param json The cJSON object to write
+ * @param filepath The name of the file to write
+ * @return OK if successful, ERROR otherwise
+ */
+StatusCode write_json(
+        // Inputs
+        const cJSON *json,
+        const char *filepath);
 
 /**
  * @brief Reads a file into a string

@@ -5,23 +5,24 @@
 
 // Local libraries
 #include "external/cjson/cJSON.h"
+#include "file-io/data_structures/tle/tle.h"
 #include "file-io/internal-products/read-json/read_json.h"
 #include "utilities/logging/log/log.h"
 #include "utilities/misc/paths/paths.h"
 
 // Variable and Macro definitions
-#define MAX_OUTPUT_FILES 100
 
 // Function prototypes
 
 typedef struct {
-    char *run_title;
+
     int n_TLE;
-    char *aTLE[MAX_OUTPUT_FILES];
+    char **aTLE;
     int n_EPHM;
-    char *aEPHM[MAX_OUTPUT_FILES];
+    char **aEPHM;
     int n_TSPN;
-    char *aTSPN[MAX_OUTPUT_FILES];
+    char **aTSPN;
+
 } application_output_t;
 
 /**
@@ -38,6 +39,44 @@ StatusCode application_output_read(
     // Inputs
     const char* working_directory,
     const char* run_title);
+
+StatusCode application_output_write(
+    // Inputs
+    const application_output_t *application_output,
+    // Inputs
+    const char* working_directory,
+    const char* run_title);
+
+StatusCode application_output_read_aTLE(
+    // Outputs
+    tle_t **aTLE,
+    int *n_TLE,
+    // Inputs
+    const application_output_t *application_output,
+    const char* working_directory
+    );
+
+StatusCode application_output_add_TLE(
+    // Outputs
+    application_output_t *application_output,
+    // Inputs
+    const char *filename);
+
+StatusCode application_output_add_EPHM(
+    // Outputs
+    application_output_t *application_output,
+    // Inputs
+    const char *filename);
+
+StatusCode application_output_add_TSPN(
+    // Outputs
+    application_output_t *application_output,
+    // Inputs
+    const char *filename);
+
+// TODO: Fill these out, same as application_output_read_aTLE
+StatusCode application_output_read_aEPHM();
+StatusCode application_output_read_aTSPN();
 
 /**
  * @brief Free the application_output_t struct

@@ -133,7 +133,7 @@ StatusCode workflow_graph_read(
     workflow_graph_t *graph,
     workflow_node_t **this_node,
     // Inputs
-    const ExecutionSettings execution_settings);
+    const execution_settings_t execution_settings);
 
 StatusCode workflow_graph_find_input_node(
     // Outputs

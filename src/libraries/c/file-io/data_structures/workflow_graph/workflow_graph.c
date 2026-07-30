@@ -178,7 +178,7 @@ StatusCode workflow_graph_read(
     workflow_graph_t *graph,
     workflow_node_t **this_node,
     // Inputs
-    const ExecutionSettings execution_settings) {
+    const execution_settings_t execution_settings) {
 
     // Local variables
     StatusCode status = OK;
@@ -351,6 +351,8 @@ StatusCode workflow_graph_find_input_node(
         LOG(ERROR, "Failed to find connected node for port %s:%s in node %s", port_name, port_type, this_node->program);
         return ERROR;
     }
+
+    LOG(INFO, "Port %s is connected to program %s", port_name, (*connected_node)->program);
 
     return OK;
 }

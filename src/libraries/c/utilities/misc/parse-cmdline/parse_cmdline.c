@@ -9,7 +9,7 @@
 
 StatusCode parse_cmdline(
         // Outputs
-        ExecutionSettings *cfg,
+        execution_settings_t *cfg,
         // Inputs
         const int argc,
         char *argv[]) {
@@ -48,4 +48,3 @@ const char *get_program_name(char *argv[]) {
     const char *name = strrchr(argv[0], '/');
     return (name != NULL) ? name + 1 : argv[0];
 }
-

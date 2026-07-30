@@ -13,10 +13,10 @@
 
 StatusCode ephm_generate_SGP4(
         // Outputs
-        ParameterEvolutionFile **a_ephm,
+        parameter_evolution_file_t **a_ephm,
         int *n_ephm,
         // Inputs
-        const ParameterEvolution *timespan,
+        const parameter_evolution_t *timespan,
         const tle_t *a_tle,
         const int n_tles,
         const int wgs_model,
@@ -27,7 +27,7 @@ StatusCode ephm_generate_SGP4(
     TLE satrec = {0};
     double r_km_buf[3], v_kms_buf[3];
     double minutes_after_epoch;
-    ParameterEvolution r0, r1, r2, v0, v1, v2;
+    parameter_evolution_t r0, r1, r2, v0, v1, v2;
     char buf[256], filepath_buffer[1024];
 
     *n_ephm = n_tles;
@@ -38,7 +38,7 @@ StatusCode ephm_generate_SGP4(
     }
 
     // Allocate the pevfs
-    *a_ephm = calloc(n_tles, sizeof(ParameterEvolutionFile));
+    *a_ephm = calloc(n_tles, sizeof(parameter_evolution_file_t));
     if (a_ephm == NULL) {
         LOG(ERROR, "Failed to allocate memory for ephm");
         return ERROR;;
@@ -69,6 +69,13 @@ StatusCode ephm_generate_SGP4(
         (*a_ephm)[i].comment = strdup(buf);
         if ((*a_ephm)[i].comment == NULL) {
             LOG(ERROR, "Failed to allocate memory for ephm comment");
+            return ERROR;;
+        }
+        
+        snprintf(buf, sizeof(buf), "%s_%d_%s.pev", run_title, i,  a_tle[i].object_id);
+        (*a_ephm)[i].filename = strdup(buf);
+        if ((*a_ephm)[i].filename == NULL) {
+            LOG(ERROR, "Failed to allocate memory for ephm filename");
             return ERROR;;
         }
 
@@ -135,7 +142,7 @@ StatusCode ephm_generate_SGP4(
         }
 
         // Add the data to the pevf
-        (*a_ephm)[i].parameters = malloc(7 * sizeof(ParameterEvolution));
+        (*a_ephm)[i].parameters = malloc(7 * sizeof(parameter_evolution_t));
         if ((*a_ephm)[i].parameters == NULL) {
             LOG(ERROR, "Failed to allocate memory for ephemeris parameters for object: %s", a_tle[i].object_id);
             return ERROR;

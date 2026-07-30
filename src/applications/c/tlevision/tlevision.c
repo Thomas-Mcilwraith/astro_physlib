@@ -8,6 +8,7 @@
  * 
  */
 
+#include "file-io/data_structures/application_output/application_output.h"
 #include "file-io/internal-products/parameter-evolution-file/parameter_evolution_file.h"
 #include "file-io/internal-products/read-json/read_json.h"
 #include "file-io/data_structures/tle/tle.h"
@@ -17,29 +18,24 @@
 #include "file-io/data_structures/workflow_graph/workflow_graph.h"
 
 int main(int argc, char *argv[]) {
-    // // Outputs
-    // application_output_t tlevision_output = {0};
-    // ParameterEvolutionFile *ephm_output = {0};
-    // int n_ephm_output = 0;
-    // // Inputs
-    // tlevision_input_t tlevision_input = {0};
-    ExecutionSettings execution_settings = {0};
-    // application_output_t tspn_output = {0};
-    // application_output_t a_tle_output = {0};
-    //
-    // // Program variables
+
+    // Program variables
+    execution_settings_t execution_settings = {0};
     StatusCode status = OK;
     workflow_graph_t graph;
     workflow_node_t *this_node = NULL;
     workflow_node_t *input_aTLE_node = NULL;
+    workflow_node_t *input_TSPN_node = NULL;
     application_output_t input_aTLE_output = {0};
-    // const char* database_tle_file = "/home/admin/test_spacetrack_tle_cat.json";  // TODO: Retrieve from database
-    // char output_filepath_buf[1024];
-    // cJSON *tle_cat;
-    // ParameterEvolution tspn = {0};
-    // tle_t *a_tle = {0};
-    // int n_tles = 0;
-    //
+    application_output_t input_TSPN_output = {0};
+    application_output_t output_file = {0};
+    tle_t *aTLE = NULL;
+    int n_TLE = 0;
+    parameter_evolution_file_t TSPN_file = {0};
+    parameter_evolution_t TSPN = {0};
+    parameter_evolution_file_t *EPHM_files = NULL;
+    int n_EPHM = 0;
+
     // Parse command line, initialise log file
     status = parse_cmdline(&execution_settings, argc, argv);
     if (status != OK) {
@@ -69,97 +65,90 @@ int main(int argc, char *argv[]) {
         return ERROR;
     }
 
-    for (int i = 0; i < input_aTLE_output.n_TLE; i++){
-        LOG(INFO, "found TLE: %s", input_aTLE_output.aTLE[i]);
+    if (input_aTLE_output.n_TLE == 0) {
+        LOG(ERROR, "No TLEs were output by %s. Exiting.", input_aTLE_node->program);
+        return ERROR;
     }
 
-    //
-    // // Read the input file
-    // status = read_tlevision_inputs(&tlevision_input, execution_settings.working_directory, execution_settings.run_title, program_name);
-    // if (status != OK) {
-    //     LOG(ERROR, "Failed to read Inputs");
-    //     return ERROR;
-    // }
-    //
-    // // If timespan is loaded from another program. Load that output here.
-    // if (tlevision_input.tspn.source == TSPN_SOURCE_PROGRAM) {
-    //     status = application_output_read_json(&tspn_output, execution_settings.working_directory, tlevision_input.tspn.source_program_id, tlevision_input.tspn.source_program_name);
-    //     if (status != OK) {
-    //         LOG(ERROR, "Failed to read program output: %s %s", tlevision_input.tspn.source_program_id, tlevision_input.tspn.source_program_name);
-    //         return ERROR;
-    //     }
-    // }
-    //
-    // // If the TLE is loaded from another program, load that output here.
-    // // Since TLEs must be source from the same program, assume first element
-    // if (tlevision_input.a_tle[0].source == TLE_SOURCE_PROGRAM) {
-    //     status = application_output_read_json(&a_tle_output, execution_settings.working_directory, tlevision_input.a_tle[0].source_program_id, tlevision_input.a_tle[0].source_program_name);
-    //     if (status != OK) {
-    //         LOG(ERROR, "Failed to read program output: %s %s", tlevision_input.a_tle[0].source_program_id, tlevision_input.a_tle[0].source_program_name);
-    //         return ERROR;
-    //     }
-    // }
-    //
-    // // If the TLE is to be loaded from the catalog, load the catalog here.
-    // if (tlevision_input.a_tle[0].source == TLE_SOURCE_CATALOG) {
-    //     LOG(INFO, "Loading SpaceTrack TLE catalogue");
-    //     status = read_json(&tle_cat, database_tle_file);
-    //     if (status != OK) {
-    //         LOG(ERROR, "Failed to read JSON file: %s", database_tle_file);
-    //         return ERROR;
-    //     }
-    // }
-    //
-    // // Load the timespan
-    // LOG(INFO, "Loading TSPN into object");
-    // status = application_inputs_tspn_load(&tspn, &tlevision_input.tspn, &tspn_output, &execution_settings, program_name);
-    // if (status != OK) {
-    //     LOG(ERROR, "Failed to load timespan");
-    //     return ERROR;
-    // }
-    // LOG(INFO, "Loaded TSPN object successfully");
-    //
-    // // Load the TLEs
-    // LOG(INFO, "Loading TLEs into object(s)");
-    // status = tle_load(&a_tle, &n_tles, tlevision_input.a_tle, tlevision_input.n_tle, &a_tle_output, &execution_settings, tle_cat);
-    // if (status != OK) {
-    //     LOG(ERROR, "Failed to load TLEs");
-    //     return ERROR;
-    // }
-    // LOG(INFO, "Loaded TLEs successfully", n_tles);
-    //
-    // // Generate the ephemeris with SGP4 model
-    // LOG(INFO, "Generating ephemerides with SGP4");
-    // status = ephm_generate_SGP4(&ephm_output, &n_ephm_output, &tspn, a_tle, n_tles, tlevision_input.wgs_model, execution_settings.run_title);
-    // if (status != OK) {
-    //     LOG(ERROR, "Failed to generate ephemerides");
-    //     return ERROR;
-    // }
-    // LOG(INFO, "Generated ephemerides successfully");
-    //
-    // // Write all the output files
-    // LOG(INFO, "Generating Outputs");
-    // for (int i = 0; i < n_ephm_output; i++) {
-    //     // Define the file path for this file
-    //     status = working_area_path(output_filepath_buf, execution_settings.working_directory, FILES, "test", 1024);
-    //     status = write_parameter_evolution_file(ephm_output[i]);
-    //     if (status == OK) {
-    //         LOG(INFO, "Output File: %s", ephm_output[i].filename);
-    //     } else {
-    //         LOG(ERROR, "Failed to write ephemeris file");
-    //         return ERROR;
-    //     }
-    // }
-    //
-    // LOG(INFO, "Program complete: %s (%s)", program_name, execution_settings.run_title);
-    //
-    // // Free memory
-    // if (tlevision_input.a_tle[0].source == TLE_SOURCE_CATALOG) cJSON_Delete(tle_cat);
-    // if (tlevision_input.tspn.source == TSPN_SOURCE_PROGRAM) application_output_free(&tspn_output);
-    // if (tlevision_input.a_tle[0].source == TLE_SOURCE_PROGRAM) application_output_free(&a_tle_output);
-    // free (a_tle);
-    // close_log();
-    //
+    // Load the TLE objects into memory
+    status = application_output_read_aTLE(&aTLE, &n_TLE, &input_aTLE_output, execution_settings.working_directory);
+    if (status != OK) {
+        LOG(ERROR, "Failed to load aTLE outputs into memory");
+        return ERROR;
+    }
+
+    // Load the TSPN node
+    status = workflow_graph_find_input_node(&input_TSPN_node, &graph, this_node, "TSPN", "TSPN");
+    if (status != OK) {
+        LOG(ERROR, "Failed to find TSPN input node");
+        return ERROR;
+    }
+
+    // Load the outputs from the TSPN node
+    status = application_output_read(&input_TSPN_output, execution_settings.working_directory, input_TSPN_node->id);
+    if (status != OK) {
+        LOG(ERROR, "Failed to read TSPN node outputs");
+        return ERROR;
+    }
+
+    if (input_TSPN_output.n_TSPN == 0) {
+        LOG(ERROR, "Expected TSPN was not generated by %s. Exiting", input_TSPN_node->program);
+        return ERROR;
+    } else if (input_TSPN_output.n_TSPN != 1) {
+        LOG(ERROR, "%d TSPNs were generated by %s when 1 was expected. Exiting", input_TSPN_output.n_TSPN, input_TSPN_node->program);
+        return ERROR;
+    }
+
+    // Load the TSPN into memory
+    status = parameter_evolution_file_read(&TSPN_file, input_TSPN_output.aTSPN[0], execution_settings.working_directory);
+    if (status != OK) {
+        LOG(ERROR, "Failed to load TSPN parameter evolution file into memory");
+        return ERROR;
+    }
+
+    // Isolate the timespan from the TSPN evolution file
+    status = parameter_evolution_file_get_jd(&TSPN, &TSPN_file);
+    if (status != OK) {
+        LOG(ERROR, "Failed to find TSPN array in TSPN parameter evolution file");
+        return ERROR;
+    }
+
+    // Run the propagation for each TLE
+    status = ephm_generate_SGP4(&EPHM_files, &n_EPHM, &TSPN, aTLE, n_TLE, 0, execution_settings.run_title); 
+    if (status != OK) {
+        LOG(ERROR, "Failed to generate ephemerides");
+        return ERROR;
+    }
+
+    // Write all the output files
+    for (int i = 0; i < n_EPHM; i++) {
+        status = parameter_evolution_file_write(EPHM_files[i], execution_settings.working_directory);
+        if (status != OK) {
+            LOG(ERROR, "Failed to write ephemeris file: %s", EPHM_files[i].filename);
+            return ERROR;
+        } else {
+            LOG(INFO, "EPHM data written: %s", EPHM_files[i].filename);
+
+            // add the filename to the list of files to be written to the output file
+            status = application_output_add_EPHM(&output_file, EPHM_files[i].filename);
+            if (status != OK) {
+                LOG(ERROR, "Failed to add EPHM filename to output file");
+                return ERROR;
+            }
+
+        }
+    }
+
+    LOG(INFO, "Successfully generated %d EPHM files", output_file.n_EPHM);
+
+    // Write the program output_file
+    status = application_output_write(&output_file, execution_settings.working_directory, execution_settings.run_title);
+    if (status != OK) {
+        LOG(ERROR, "Failed to write output file");
+        return ERROR;
+    }
+
+    LOG(INFO, "Program complete: %s (%s)", execution_settings.program_name, execution_settings.run_title);
     return OK;
 }
 

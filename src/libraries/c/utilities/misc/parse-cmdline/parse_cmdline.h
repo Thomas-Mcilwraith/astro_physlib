@@ -24,7 +24,7 @@ typedef struct {
     char *run_title;
     char *working_directory;
     int n_threads;
-} ExecutionSettings;
+} execution_settings_t;
 
 /**
  * @brief Parses the command line arguments
@@ -36,7 +36,7 @@ typedef struct {
  */
 StatusCode parse_cmdline(
         // Outputs
-        ExecutionSettings *cfg,
+        execution_settings_t *cfg,
         // Inputs
         const int argc,
         char *argv[]);
