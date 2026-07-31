@@ -11,6 +11,7 @@ target_link_libraries(test_application PRIVATE psf sofa m)
 
 add_executable(tlevision 
     tlevision/tlevision.c
+    tlevision/tlevision_inputs.c
     tlevision/tlevision_generate_arc.c
 )
 target_include_directories(tlevision PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../libraries/c")

@@ -2,7 +2,7 @@
  * tlevision.c
  *
  * Author: Thomas McIlwraith
- * Date: 63/07/2026
+ * Date: 01/07/2026
  * 
  * Program for generating ephemerides from TLEs.
  * 
@@ -10,17 +10,16 @@
 
 #include "file-io/data_structures/application_output/application_output.h"
 #include "file-io/internal-products/parameter-evolution-file/parameter_evolution_file.h"
-#include "file-io/internal-products/read-json/read_json.h"
 #include "file-io/data_structures/tle/tle.h"
 #include "tlevision/tlevision_generate_arc.h"
-// #include "tlevision_interfaces.h"
-#include "utilities/misc/paths/paths.h"
+#include "tlevision/tlevision_inputs.h"
 #include "file-io/data_structures/workflow_graph/workflow_graph.h"
 
 int main(int argc, char *argv[]) {
 
     // Program variables
     execution_settings_t execution_settings = {0};
+    tlevision_inputs_t inputs = {0};
     StatusCode status = OK;
     workflow_graph_t graph;
     workflow_node_t *this_node = NULL;
@@ -43,6 +42,13 @@ int main(int argc, char *argv[]) {
         return ERROR;
     }
     init_log(execution_settings.run_title, execution_settings.working_directory, execution_settings.program_name);
+
+    // Load the inputs
+    status = tlevision_inputs_read(&inputs, execution_settings.working_directory, execution_settings.run_title);
+    if (status != OK) {
+        LOG(ERROR, "Failed to load inputs");
+        return ERROR;
+    }
 
     // Load the workflow graph
     status = workflow_graph_read(&graph, &this_node, execution_settings);
@@ -114,7 +120,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Run the propagation for each TLE
-    status = ephm_generate_SGP4(&EPHM_files, &n_EPHM, &TSPN, aTLE, n_TLE, 0, execution_settings.run_title); 
+    status = ephm_generate_SGP4(&EPHM_files, &n_EPHM, &TSPN, aTLE, n_TLE, inputs.wgs_model, execution_settings.run_title); 
     if (status != OK) {
         LOG(ERROR, "Failed to generate ephemerides");
         return ERROR;

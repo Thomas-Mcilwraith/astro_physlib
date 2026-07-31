@@ -19,7 +19,7 @@ StatusCode ephm_generate_SGP4(
         const parameter_evolution_t *timespan,
         const tle_t *a_tle,
         const int n_tles,
-        const int wgs_model,
+        const char *wgs_model,
         const char* run_title) {
 
     // Local variables
@@ -29,6 +29,7 @@ StatusCode ephm_generate_SGP4(
     double minutes_after_epoch;
     parameter_evolution_t r0, r1, r2, v0, v1, v2;
     char buf[256], filepath_buffer[1024];
+    int wgs_model_int = 0;
 
     *n_ephm = n_tles;
 
@@ -43,6 +44,19 @@ StatusCode ephm_generate_SGP4(
         LOG(ERROR, "Failed to allocate memory for ephm");
         return ERROR;;
     }
+
+    // Select the WGS model integer from the string input
+    if (strcmp(wgs_model, "WGS72 OLD") == 0) {
+        wgs_model_int = 1;
+    } else if (strcmp(wgs_model, "WGS72") == 0) {
+        wgs_model_int = 2;
+    } else if (strcmp(wgs_model, "WGS84") == 0) {
+        wgs_model_int = 3;
+    } else {
+        LOG(ERROR, "WGS model not recognised: %s", wgs_model);
+        return ERROR;
+    }
+    LOG(INFO, "Selected WGS model: %s", wgs_model);
 
     // Loop over all the TLEs
     for (int i = 0; i < n_tles; i++) {
@@ -80,7 +94,7 @@ StatusCode ephm_generate_SGP4(
         }
 
         // Load the TLE lines into the satrec
-        parseLines(&satrec, a_tle[i].tle_line1, a_tle[i].tle_line2, wgs_model);
+        parseLines(&satrec, a_tle[i].tle_line1, a_tle[i].tle_line2, wgs_model_int);
         if (satrec.sgp4Error != 0) {
             LOG(WARNING, "SGP4 error detected (%d) when parsing TLE for object %s", satrec.sgp4Error, a_tle[i].object_id);
             if (satrec.sgp4Error == 1) LOG(WARNING, "Mean elements, ecc >= 1.0 or ecc < -0.001 or a < 0.95 er");
