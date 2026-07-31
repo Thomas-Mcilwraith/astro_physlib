@@ -10,6 +10,7 @@
 // Local libraries
 #include "utilities/logging/log/log.h"
 #include "reference-systems/time-systems/time-formats/time_formats.h"
+#include "utilities/misc/paths/paths.h"
 
 // Variable and Macro definitions
 #define CHARS_PER_WORD 10        // Formatting
@@ -84,7 +85,7 @@ typedef struct {
     char* units;
     double* values;
     int n_values;
-} ParameterEvolution;
+} parameter_evolution_t;
 
 /**
  * @brief
@@ -100,24 +101,26 @@ typedef struct {
  * @param comment Extra information useful to a human, not the computer.
  */
 typedef struct {
-    ParameterEvolution* parameters;
+    parameter_evolution_t* parameters;
     int n_parameters;
     char* filename;
     char* type;
     char* source;
     char* reference;
     char* comment;
-} ParameterEvolutionFile;
+} parameter_evolution_file_t;
 
 /**
  * @brief
  * Write an array of Parameter evolution arrays to a file.
  * 
  * @param p ParameterEvolutionFile contents + metadata to write to a file.
+ * @param working_directory working directory to write file to.
  */
-StatusCode write_parameter_evolution_file(
+StatusCode parameter_evolution_file_write(
     // Inputs
-    const ParameterEvolutionFile p);
+    const parameter_evolution_file_t p,
+    const char *working_directory);
 
 /**
  * @brief
@@ -125,12 +128,14 @@ StatusCode write_parameter_evolution_file(
  * 
  * @param out_p ParameterEvolutionFile object data.
  * @param filename file to read data from.
+ * @param working_directory working directory to read file from.
  */
-StatusCode read_parameter_evolution_file(
+StatusCode parameter_evolution_file_read(
         // Outputs
-        ParameterEvolutionFile* out_p,
+        parameter_evolution_file_t* out_p,
         // Inputs
-        const char* filename);
+        const char* filename,
+        const char* working_directory);
 
 /**
  * @brief
@@ -145,7 +150,7 @@ bool parameter_evolution_file_find(
     // Outputs
     int *header_index,
     // Inputs
-    const ParameterEvolutionFile *params,
+    const parameter_evolution_file_t *params,
     const char* header);
 
 /**
@@ -161,9 +166,9 @@ bool parameter_evolution_file_find(
  */
 StatusCode parameter_evolution_file_get_jd(
     // Outputs
-    ParameterEvolution* out_timespan,
+    parameter_evolution_t* out_timespan,
     // Inputs
-    const ParameterEvolutionFile *params);
+    const parameter_evolution_file_t *params);
 
 /**
  * @brief 

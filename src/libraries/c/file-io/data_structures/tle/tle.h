@@ -8,8 +8,6 @@
 
 // Local libraries
 #include "external/cjson/cJSON.h"
-#include "file-io/data_structures/application_input_tle/application_input_tle.h"
-#include "file-io/data_structures/application_output/application_output.h"
 #include "utilities/logging/log/log.h"
 #include "utilities/misc/parse-cmdline/parse_cmdline.h"
 #include "utilities/misc/paths/paths.h"
@@ -62,23 +60,11 @@ typedef struct {
     double periapsis;
 } tle_t;
 
-StatusCode tle_read_json(
+StatusCode tle_read_single_json(
     // Outputs
     tle_t *tle,
     // Inputs
     const cJSON *omm_json);
-
-StatusCode tle_load(
-    // Outputs
-    tle_t **tles,
-    int *n_tles,
-    // Inputs
-    const application_input_tle_t *tle_input,
-    const int n_tle_input,
-    const application_output_t *tle_output,
-    const ExecutionSettings *execution_settings,
-    const cJSON *spacetrack_catalog_json
-    );
 
 char *cospar_short_to_long(const char *short_cospar);
 

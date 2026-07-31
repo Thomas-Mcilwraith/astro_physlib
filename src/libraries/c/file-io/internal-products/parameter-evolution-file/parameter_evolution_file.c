@@ -14,12 +14,16 @@
  * the write will raise an error.
  * comment can be passed as NULL to write no comment.
  */
-StatusCode write_parameter_evolution_file(
+StatusCode parameter_evolution_file_write(
     // Inputs
-    const ParameterEvolutionFile p) {
+    const parameter_evolution_file_t p,
+    const char *working_directory) {
 
+    // Local variables
+    StatusCode status = OK;
     int i, j;
     char name_and_units[CHARS_PER_COL];
+    char buffer[1024];
 
     if (!p.filename || !p.parameters || p.n_parameters <= 0) {
         LOG(ERROR, "Invalid ParameterEvolutionFile input");
@@ -34,7 +38,14 @@ StatusCode write_parameter_evolution_file(
         }
     }
 
-    FILE* fp = fopen(p.filename, "w");
+    // Define path to the parameter evolution file
+    status = working_area_path(buffer, working_directory, FILES, p.filename, 1024);
+    if (status != OK) {
+        LOG(ERROR, "Failed to define path to workflow file");
+        return ERROR;
+    }
+
+    FILE* fp = fopen(buffer, "w");
     if (!fp) {
         LOG(ERROR, "Failed to open file %s", p.filename);
         return ERROR;
@@ -97,28 +108,38 @@ StatusCode write_parameter_evolution_file(
  * This function assumes the same conditions as write_parameter_evolution_file.
  * Only one comment line is permitted.
 */
-StatusCode read_parameter_evolution_file(
+StatusCode parameter_evolution_file_read(
         // Outputs
-        ParameterEvolutionFile* out_p,
+        parameter_evolution_file_t* out_p,
         // Inputs
-        const char* filename) {
+        const char* filename,
+        const char* working_directory) {
 
+    // Local variables
+    StatusCode status = OK;
     char buffer[1024];
     int i, line_len, n_params, capacity;
     int n_values = 0;
 
-    if (!out_p || !filename) {
+    if (!working_directory|| !filename) {
         LOG(ERROR, "Invalid input to read_parameter_evolution_file");
         return ERROR;
     }
 
-    FILE* fp = fopen(filename, "r");
-    if (!fp) {
-        LOG(ERROR, "Failed to open file %s", filename);
+    // Define path to the parameter evolution file
+    status = working_area_path(buffer, working_directory, FILES, filename, 1024);
+    if (status != OK) {
+        LOG(ERROR, "Failed to define path to workflow file");
         return ERROR;
     }
 
-    memset(out_p, 0, sizeof(ParameterEvolutionFile));
+    FILE* fp = fopen(buffer, "r");
+    if (!fp) {
+        LOG(ERROR, "Failed to open file %s", buffer);
+        return ERROR;
+    }
+
+    memset(out_p, 0, sizeof(parameter_evolution_file_t));
 
     out_p->filename = NULL;
     out_p->type = NO_TYPE;
@@ -202,8 +223,8 @@ StatusCode read_parameter_evolution_file(
         return ERROR;
     }
 
-    ParameterEvolution* params =
-        malloc(n_params * sizeof(ParameterEvolution));
+    parameter_evolution_t* params =
+        malloc(n_params * sizeof(parameter_evolution_t));
 
     if (!params) {
         fclose(fp);
@@ -212,7 +233,7 @@ StatusCode read_parameter_evolution_file(
         return ERROR;
     }
 
-    memset(params, 0, n_params * sizeof(ParameterEvolution));
+    memset(params, 0, n_params * sizeof(parameter_evolution_t));
 
     // Parse header columns.
     for (i = 0; i < n_params; i++) {
@@ -355,7 +376,7 @@ bool parameter_evolution_file_find(
     // Outputs
     int *header_index,
     // Inputs
-    const ParameterEvolutionFile *params,
+    const parameter_evolution_file_t *params,
     const char* header) {
 
     // Local variables
@@ -382,15 +403,15 @@ bool parameter_evolution_file_find(
 
 StatusCode parameter_evolution_file_get_jd(
     // Outputs
-    ParameterEvolution* out_timespan,
+    parameter_evolution_t* out_timespan,
     // Inputs
-    const ParameterEvolutionFile *params) {
+    const parameter_evolution_file_t *params) {
 
     // Local variables
     int time_header_index;
     bool found_time;
 
-    *out_timespan = (ParameterEvolution){0};
+    *out_timespan = (parameter_evolution_t){0};
 
     out_timespan->n_values = params->parameters[0].n_values;
     out_timespan->values = malloc(out_timespan->n_values * sizeof(double));
@@ -412,7 +433,7 @@ StatusCode parameter_evolution_file_get_jd(
         free(out_timespan->name);
         free(out_timespan->units);
         free(out_timespan->values);
-        *out_timespan = (ParameterEvolution){0};
+        *out_timespan = (parameter_evolution_t){0};
         return WARNING;
     }
 
@@ -439,7 +460,7 @@ StatusCode parameter_evolution_file_get_jd(
         free(out_timespan->name);
         free(out_timespan->units);
         free(out_timespan->values);
-        *out_timespan = (ParameterEvolution){0};
+        *out_timespan = (parameter_evolution_t){0};
         return ERROR;
     }
 

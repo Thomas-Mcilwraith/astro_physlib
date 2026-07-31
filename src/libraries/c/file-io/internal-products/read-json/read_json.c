@@ -33,6 +33,39 @@ StatusCode read_json(
     return OK;
 }
 
+StatusCode write_json(
+        // Inputs
+        const cJSON *json,
+        const char *filepath) {
+
+    // Local variables
+    char *json_string = cJSON_Print(json);
+
+    if (json_string == NULL) {
+        LOG(ERROR, "Failed generate JSON string for %s", filepath);
+        return ERROR;
+    }
+
+    FILE *fp = fopen(filepath, "w");
+    if (fp == NULL) {
+        LOG(ERROR, "Failed to open file %s", filepath);
+        free(json_string);
+        return ERROR;
+    }
+
+    if (fputs(json_string, fp) == EOF) {
+        LOG(ERROR, "Failed to write to file %s", filepath);
+        free(json_string);
+        fclose(fp);
+        return ERROR;
+    }
+
+    fclose(fp);
+    free(json_string);
+
+    return OK;
+}
+
 char *read_file(const char *filename) {
     FILE *fp = fopen(filename, "rb");
     if (fp == NULL)
