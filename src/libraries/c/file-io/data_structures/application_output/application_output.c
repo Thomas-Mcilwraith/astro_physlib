@@ -117,7 +117,6 @@ StatusCode application_output_read(
 StatusCode application_output_write(
     // Inputs
     const application_output_t *application_output,
-    // Inputs
     const char* working_directory,
     const char* run_title) {
 
@@ -264,41 +263,27 @@ StatusCode application_output_add_TLE(
         return ERROR;
     }
 
-    // if no elements are in the array, allocate memory for the first element
-    if (application_output->n_TLE == 0) {
-
-        application_output->aTLE = malloc(sizeof(char *));
-        if (application_output->aTLE == NULL) {
-            LOG(ERROR, "Failed to allocate memory for TLE");
-            return ERROR;
-        }
-
-        application_output->aTLE[0] = strdup(filename);
-        if (application_output->aTLE[0] == NULL) {
-            LOG(ERROR, "Failed to set memory for TLE");
-            return ERROR;
-        }
-
-        application_output->n_TLE++;
-
-    // if there are elements in the array, realloc memory for the array
-    } else {
-
-        // otherwise, reallocate memory for the array
-        application_output->aTLE = realloc(application_output->aTLE, (application_output->n_TLE + 1) * sizeof(char *));
-        if (application_output->aTLE == NULL) {
-            LOG(ERROR, "Failed to reallocate memory for TLE");
-            return ERROR;
-        }
-
-        application_output->aTLE[application_output->n_TLE] = strdup(filename);
-        if (application_output->aTLE[application_output->n_TLE] == NULL) {
-            LOG(ERROR, "Failed to set memory for TLE");
-            return ERROR;
-        }
-
-        application_output->n_TLE++;
+    // Resize the pointer array
+    application_output->aTLE = realloc(application_output->aTLE, (application_output->n_TLE + 1) * sizeof(char *));
+    if (application_output->aTLE == NULL) {
+        LOG(ERROR, "Failed to reallocate aTLE array pointers");
+        return ERROR;
     }
+
+    // Allocate memeory for this entry
+    application_output->aTLE[application_output->n_TLE] = malloc(sizeof(char *));
+    if (application_output->aTLE[application_output->n_TLE] == NULL) {
+        LOG(ERROR, "Failed to allocate memory for TLE");
+        return ERROR;
+    }
+
+    application_output->aTLE[application_output->n_TLE] = strdup(filename);
+    if (application_output->aTLE[application_output->n_TLE] == NULL) {
+        LOG(ERROR, "Failed to set memory for TLE");
+        return ERROR;
+    }
+
+    application_output->n_TLE++;
 
     return OK;
 }

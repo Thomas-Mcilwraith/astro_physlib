@@ -17,3 +17,10 @@ add_executable(tlevision
 target_include_directories(tlevision PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../libraries/c")
 target_include_directories(tlevision PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(tlevision PRIVATE psf sofa sgp4 m)
+
+add_executable(in_TLE 
+    in_TLE/in_TLE.c
+)
+target_include_directories(in_TLE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../libraries/c")
+target_include_directories(in_TLE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(in_TLE PRIVATE psf sofa sgp4 m)

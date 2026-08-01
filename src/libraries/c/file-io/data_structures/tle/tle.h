@@ -66,6 +66,14 @@ StatusCode tle_read_single_json(
     // Inputs
     const cJSON *omm_json);
 
+StatusCode tle_write_single_json(
+    // Outputs
+    char** written_filename,
+    // Inputs
+    const tle_t *tle,
+    const char* working_directory,
+    const char* run_title);
+
 char *cospar_short_to_long(const char *short_cospar);
 
 #endif
