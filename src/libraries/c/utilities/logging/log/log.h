@@ -12,6 +12,9 @@
 // Variable and Macro definitions
 extern time_t start_time;
 #define LOG(lvl, ...) logger(__FILE__, __LINE__, lvl, __VA_ARGS__)
+#define OK(...) ok()
+#define WARNING(...) warning(__FILE__, __LINE__, __VA_ARGS__)
+#define ERROR(...) error(__FILE__, __LINE__, __VA_ARGS__)
 #define WORKDIR_LOGS "logs"
 
 /**
@@ -49,10 +52,11 @@ typedef enum {
  * @param fmt The message to be logged.
  */
 void logger(
-        const char* filepath,
-        const int line,
-        const StatusCode lvl,
-        const char* fmt, ...);
+    // Inputs
+    const char* filepath,
+    const int line,
+    const StatusCode lvl,
+    const char* fmt, ...);
 
 /**
  * @brief 
@@ -63,7 +67,11 @@ void logger(
  * @param working_dir The working directory of the program.
  * @param program_name The name of the program.
  */
-void init_log(const char *run_title, const char *working_dir, const char* program_name);
+void init_log(
+    // Inputs
+    const char *run_title,
+    const char *working_dir,
+    const char* program_name);
 
 /**
  * @brief 
@@ -85,6 +93,7 @@ void close_log(void);
  * @param args The arguments to be logged.
  */
 void log_to_stream(
+    // Inputs
     FILE *stream,
     const char* timestamp,
     const char *level,
@@ -92,5 +101,17 @@ void log_to_stream(
     int line,
     const char *fmt,
     va_list args);
+
+StatusCode ok();
+
+StatusCode warning(
+    const char* filepath,
+    const int line,
+    const char* fmt, ...);
+
+StatusCode error(
+    const char* filepath,
+    const int line,
+    const char* fmt, ...);
 
 #endif
