@@ -59,7 +59,8 @@ StatusCode tle_write_single_json(
     // Inputs
     const tle_t *tle,
     const char* working_directory,
-    const char* run_title) {
+    const char* run_title,
+    const int file_number) {
 
     // Local variables
     StatusCode status = OK;
@@ -75,7 +76,7 @@ StatusCode tle_write_single_json(
         return ERROR;
     }
 
-    len_filename = snprintf(filename, FILE_NAME_BUFFER_SIZE, "%s_TLE_%s.json", run_title, tle->object_id);
+    len_filename = snprintf(filename, FILE_NAME_BUFFER_SIZE, "%s_%d_TLE_%s.json", run_title, file_number, tle->object_id);
     if (len_filename >= FILE_NAME_BUFFER_SIZE) {
         LOG(ERROR, "Filename too long: %s", filename);
         return ERROR;

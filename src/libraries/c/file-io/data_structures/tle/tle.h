@@ -72,7 +72,8 @@ StatusCode tle_write_single_json(
     // Inputs
     const tle_t *tle,
     const char* working_directory,
-    const char* run_title);
+    const char* run_title,
+    const int file_number);
 
 char *cospar_short_to_long(const char *short_cospar);
 

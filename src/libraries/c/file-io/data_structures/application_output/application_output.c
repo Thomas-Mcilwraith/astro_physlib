@@ -300,41 +300,27 @@ StatusCode application_output_add_EPHM(
         return ERROR;
     }
 
-    // if no elements are in the array, allocate memory for the first element
-    if (application_output->n_EPHM == 0) {
-
-        application_output->aEPHM = malloc(sizeof(char *));
-        if (application_output->aEPHM == NULL) {
-            LOG(ERROR, "Failed to allocate memory for EPHM");
-            return ERROR;
-        }
-
-        application_output->aEPHM[0] = strdup(filename);
-        if (application_output->aEPHM[0] == NULL) {
-            LOG(ERROR, "Failed to set memory for EPHM");
-            return ERROR;
-        }
-
-        application_output->n_EPHM++;
-
-    // if there are elements in the array, realloc memory for the array
-    } else {
-
-        // otherwise, reallocate memory for the array
-        application_output->aEPHM = realloc(application_output->aEPHM, (application_output->n_EPHM + 1) * sizeof(char *));
-        if (application_output->aEPHM == NULL) {
-            LOG(ERROR, "Failed to reallocate memory for EPHM");
-            return ERROR;
-        }
-
-        application_output->aEPHM[application_output->n_EPHM] = strdup(filename);
-        if (application_output->aEPHM[application_output->n_EPHM] == NULL) {
-            LOG(ERROR, "Failed to set memory for EPHM");
-            return ERROR;
-        }
-
-        application_output->n_EPHM++;
+    // Resize the pointer array
+    application_output->aEPHM = realloc(application_output->aEPHM, (application_output->n_EPHM + 1) * sizeof(char *));
+    if (application_output->aEPHM == NULL) {
+        LOG(ERROR, "Failed to reallocate aEPHM array pointers");
+        return ERROR;
     }
+
+    // Allocate memeory for this entry
+    application_output->aEPHM[application_output->n_EPHM] = malloc(sizeof(char *));
+    if (application_output->aEPHM[application_output->n_EPHM] == NULL) {
+        LOG(ERROR, "Failed to allocate memory for EPHM");
+        return ERROR;
+    }
+
+    application_output->aEPHM[application_output->n_EPHM] = strdup(filename);
+    if (application_output->aEPHM[application_output->n_EPHM] == NULL) {
+        LOG(ERROR, "Failed to set memory for EPHM");
+        return ERROR;
+    }
+
+    application_output->n_EPHM++;
 
     return OK;
 }
@@ -351,41 +337,27 @@ StatusCode application_output_add_TSPN(
         return ERROR;
     }
 
-    // if no elements are in the array, allocate memory for the first element
-    if (application_output->n_TSPN == 0) {
-
-        application_output->aTSPN = malloc(sizeof(char *));
-        if (application_output->aTSPN == NULL) {
-            LOG(ERROR, "Failed to allocate memory for TSPN");
-            return ERROR;
-        }
-
-        application_output->aTSPN[0] = strdup(filename);
-        if (application_output->aTSPN[0] == NULL) {
-            LOG(ERROR, "Failed to set memory for TSPN");
-            return ERROR;
-        }
-
-        application_output->n_TSPN++;
-
-    // if there are elements in the array, realloc memory for the array
-    } else {
-
-        // otherwise, reallocate memory for the array
-        application_output->aTSPN = realloc(application_output->aTSPN, (application_output->n_TSPN + 1) * sizeof(char *));
-        if (application_output->aTSPN == NULL) {
-            LOG(ERROR, "Failed to reallocate memory for TSPN");
-            return ERROR;
-        }
-
-        application_output->aTSPN[application_output->n_TSPN] = strdup(filename);
-        if (application_output->aTSPN[application_output->n_TSPN] == NULL) {
-            LOG(ERROR, "Failed to set memory for TSPN");
-            return ERROR;
-        }
-
-        application_output->n_TSPN++;
+    // Resize the pointer array
+    application_output->aTSPN = realloc(application_output->aTSPN, (application_output->n_TSPN + 1) * sizeof(char *));
+    if (application_output->aTSPN == NULL) {
+        LOG(ERROR, "Failed to reallocate aTSPN array pointers");
+        return ERROR;
     }
+
+    // Allocate memeory for this entry
+    application_output->aTSPN[application_output->n_TSPN] = malloc(sizeof(char *));
+    if (application_output->aTSPN[application_output->n_TSPN] == NULL) {
+        LOG(ERROR, "Failed to allocate memory for TSPN");
+        return ERROR;
+    }
+
+    application_output->aTSPN[application_output->n_TSPN] = strdup(filename);
+    if (application_output->aTSPN[application_output->n_TSPN] == NULL) {
+        LOG(ERROR, "Failed to set memory for TSPN");
+        return ERROR;
+    }
+
+    application_output->n_TSPN++;
 
     return OK;
 }

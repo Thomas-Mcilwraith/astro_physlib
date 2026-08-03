@@ -1,5 +1,5 @@
-#ifndef IN_TLE_H
-#define IN_TLE_H
+#ifndef IN_TLE_INPUTS_H
+#define IN_TLE_INPUTS_H
 
 // Standard libraries
 
