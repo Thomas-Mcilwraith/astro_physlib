@@ -59,10 +59,12 @@
 // ParameterEvolutionFile Types
 #define NO_TYPE "UNSPECIFIED"
 #define PEVF_TYPE_EPHM_NO_COV "EPHEM_NO_COV"
+#define PEVF_TYPE_TSPN "TSPN"
 
 // ParameterEvolutionFile Sources
 #define NO_SOURCE "UNSPECIFIED"
 #define PEVF_TLEVISION_SGP4 "TLEVISION_SGP4"
+#define PEVF_USER_DEFINED "USER_DEFINED"
 
 // ParameterEvolutionFile References
 #define NO_REFERENCE "UNSPECIFIED"

@@ -42,7 +42,7 @@ StatusCode ephm_generate_SGP4(
     *a_ephm = calloc(n_tles, sizeof(parameter_evolution_file_t));
     if (a_ephm == NULL) {
         LOG(ERROR, "Failed to allocate memory for ephm");
-        return ERROR;;
+        return ERROR;
     }
 
     // Select the WGS model integer from the string input
@@ -64,33 +64,33 @@ StatusCode ephm_generate_SGP4(
         (*a_ephm)[i].type = strdup(PEVF_TYPE_EPHM_NO_COV);
         if ((*a_ephm)[i].type == NULL) {
             LOG(ERROR, "Failed to allocate memory for ephm type");
-            return ERROR;;
+            return ERROR;
         }
 
         (*a_ephm)[i].reference = strdup(PEVF_REFERENCE_TEME);
         if ((*a_ephm)[i].reference == NULL) {
             LOG(ERROR, "Failed to allocate memory for ephm reference");
-            return ERROR;;
+            return ERROR;
         }
 
         (*a_ephm)[i].source = strdup(PEVF_TLEVISION_SGP4);
         if ((*a_ephm)[i].source == NULL) {
             LOG(ERROR, "Failed to allocate memory for ephm source");
-            return ERROR;;
+            return ERROR;
         }
 
         snprintf(buf, sizeof(buf), "Generated from TLE for object: %s", a_tle[i].object_id);
         (*a_ephm)[i].comment = strdup(buf);
         if ((*a_ephm)[i].comment == NULL) {
             LOG(ERROR, "Failed to allocate memory for ephm comment");
-            return ERROR;;
+            return ERROR;
         }
         
-        snprintf(buf, sizeof(buf), "%s_%d_%s.pev", run_title, i,  a_tle[i].object_id);
+        snprintf(buf, sizeof(buf), "%s_%d_EPHM_%s.pev", run_title, i,  a_tle[i].object_id);
         (*a_ephm)[i].filename = strdup(buf);
         if ((*a_ephm)[i].filename == NULL) {
             LOG(ERROR, "Failed to allocate memory for ephm filename");
-            return ERROR;;
+            return ERROR;
         }
 
         // Load the TLE lines into the satrec
